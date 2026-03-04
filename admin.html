@@ -3,21 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Admin - Benis Burguer</title>
+<title>Painel Admin</title>
 <link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header class="admin-header">
-    <h1>🍔 Painel Administrativo</h1>
-    <button onclick="loadOrders()" class="refresh-btn">Atualizar</button>
-</header>
+<h1>🍔 Painel de Pedidos</h1>
 
-<section class="admin-section">
-    <h3>Pedidos Recebidos</h3>
-    <div id="orders"></div>
-</section>
+<audio id="notification-sound">
+<source src="https://www.soundjay.com/buttons/sounds/beep-07.mp3">
+</audio>
+
+<div id="orders"></div>
 
 <script src="admin.js"></script>
 </body>
