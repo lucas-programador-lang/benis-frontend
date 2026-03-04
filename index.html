@@ -1,1 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benis Burguer</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://kit.fontawesome.com/4b8b59b6f0.js" crossorigin="anonymous"></script>
+</head>
+<body>
 
+<header>
+    <img src="logo.png" class="logo">
+    <div class="header-info">
+        <h2>🍔 Somente Delivery</h2>
+        <p>Terça a Domingo • 19:00 às 23h59</p>
+    </div>
+    <div class="social">
+        <a href="https://www.instagram.com/obenisburguer/" target="_blank">
+            <i class="fab fa-instagram"></i>
+        </a>
+    </div>
+</header>
+
+<section class="description">
+    <p>🔥 Chapa quente, sabor único!</p>
+    <p>📍 Paulo Fortes 6245, Bairro Aponiã</p>
+</section>
+
+<section class="menu">
+    <h2>Cardápio</h2>
+    <div id="products"></div>
+</section>
+
+<div class="cart-button" onclick="toggleCart()">
+    🛒 <span id="cart-count">0</span>
+</div>
+
+<div class="cart-modal" id="cart-modal">
+    <div class="cart-content">
+        <h3>Seu Pedido</h3>
+        <div id="cart-items"></div>
+        <p>Total: R$ <span id="total">0.00</span></p>
+        <button onclick="checkout()">Finalizar no WhatsApp</button>
+        <button class="close" onclick="toggleCart()">Fechar</button>
+    </div>
+</div>
+
+<a href="https://wa.me/5569993668336" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<footer>
+    <p>© 2024 Benis Burguer</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
