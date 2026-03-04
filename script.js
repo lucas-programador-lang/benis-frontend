@@ -1,97 +1,122 @@
 const API_URL = "https://benis-backend.onrender.com"
-const phone = "5569993668336"
 
 let currentUser = JSON.parse(localStorage.getItem("user"))
 let cart = []
+let currentProduct = null
 
 /* ================= PRODUTOS ================= */
 
 const products = [
-
-/* ================= LANCHES ================= */
-
-{category:"lanches",name:"Misto Quente",price:7,description:"Pão, queijo e presunto"},
-{category:"lanches",name:"X-Bauru",price:8,description:"Pão, queijo, presunto, alface e tomate"},
-{category:"lanches",name:"X-Burger",price:13,description:"Hambúrguer tradicional completo"},
-{category:"lanches",name:"X-Salada",price:14,description:"Hambúrguer com ovo e salada"},
-{category:"lanches",name:"X-Salada Especial",price:17,description:"Especial com salsicha e banana"},
-{category:"lanches",name:"X-Calabresa",price:18,description:"Hambúrguer com calabresa"},
-{category:"lanches",name:"X-Bacon",price:19,description:"Hambúrguer com bacon crocante"},
-{category:"lanches",name:"X-Frango",price:18,description:"Filé de frango completo"},
-{category:"lanches",name:"X-Turbinado",price:20,description:"Duplo hambúrguer"},
-{category:"lanches",name:"X-Bagunça",price:20,description:"Mistura especial da casa"},
-{category:"lanches",name:"X-Tudo",price:23,description:"Completo com tudo"},
-{category:"lanches",name:"X-Havaiano",price:19,description:"Com banana e abacaxi"},
-{category:"lanches",name:"X-Benis",price:26,description:"O lanche premium da casa"},
-
-/* ================= PORÇÕES ================= */
-
+{category:"lanches",name:"X-Burger",price:13,description:"Clássico tradicional"},
+{category:"lanches",name:"X-Tudo",price:23,description:"Completo especial"},
+{category:"lanches",name:"X-Benis",price:26,description:"Premium da casa"},
 {category:"porcoes",name:"Batata Frita",price:15,description:"Porção crocante"},
-{category:"porcoes",name:"Batata + Cheddar + Bacon",price:25,description:"Batata especial completa"},
-
-/* ================= BEBIDAS ================= */
-
-{category:"bebidas",name:"Coca Cola 2L",price:15,description:"Refrigerante 2L"},
-{category:"bebidas",name:"Coca Cola 1L",price:10,description:"Refrigerante 1L"},
-{category:"bebidas",name:"Tuchaua 2L",price:9,description:"Refrigerante 2L"},
-{category:"bebidas",name:"Dydyo 2L",price:9,description:"Refrigerante 2L"},
-{category:"bebidas",name:"Coca Cola Lata",price:7,description:"Refrigerante lata 350ml"}
+{category:"bebidas",name:"Coca Cola 2L",price:15,description:"Refrigerante 2L"}
 ]
 
-/* ================= RENDER ================= */
+const adicionais = [
+{name:"Bacon Extra",price:3},
+{name:"Cheddar",price:4},
+{name:"Catupiry",price:4},
+{name:"Ovo",price:2}
+]
 
 const container = document.getElementById("products")
 
+/* ================= RENDER ================= */
+
 function renderProducts(){
+container.innerHTML=""
 
-container.innerHTML = ""
-
-const categorias = ["lanches","porcoes","bebidas"]
-
-categorias.forEach(cat=>{
-
-const itens = products.filter(p=>p.category===cat)
-
-container.innerHTML += `<h2 style="margin-top:40px;text-transform:uppercase">${cat}</h2>`
-
-itens.forEach(p=>{
-container.innerHTML += `
+products.forEach(p=>{
+container.innerHTML+=`
 <div class="card">
 <h3>${p.name}</h3>
 <small>${p.description}</small>
 <p>R$ ${p.price.toFixed(2)}</p>
-<button onclick="addToCart('${p.name}',${p.price})">Adicionar</button>
+<button onclick="openProduct('${p.name}',${p.price})">
+Personalizar
+</button>
+</div>`
+})
+}
+
+renderProducts()
+
+/* ================= MODAL PRODUTO ================= */
+
+function openProduct(name,price){
+currentProduct = {name,price}
+let extrasHTML = adicionais.map(a=>`
+<label>
+<input type="checkbox" value="${a.name}" data-price="${a.price}">
+${a.name} (+R$ ${a.price})
+</label>
+`).join("")
+
+document.body.insertAdjacentHTML("beforeend",`
+<div class="modal-bg" id="product-modal" style="display:flex">
+<div class="modal">
+<h2>${name}</h2>
+<p>Preço base: R$ ${price}</p>
+<div>${extrasHTML}</div>
+<label>Quantidade:
+<input type="number" id="qty" value="1" min="1">
+</label>
+<button onclick="addProductToCart()">Adicionar</button>
+<button class="close" onclick="closeProduct()">Cancelar</button>
 </div>
-`
+</div>
+`)
+}
+
+function closeProduct(){
+document.getElementById("product-modal").remove()
+}
+
+function addProductToCart(){
+let qty = parseInt(document.getElementById("qty").value)
+let selected = document.querySelectorAll("#product-modal input[type=checkbox]:checked")
+
+let extras=[]
+let extraTotal=0
+
+selected.forEach(s=>{
+extras.push({name:s.value,price:Number(s.dataset.price)})
+extraTotal+=Number(s.dataset.price)
 })
 
+cart.push({
+name:currentProduct.name,
+price:currentProduct.price,
+extras,
+quantity:qty
 })
 
+closeProduct()
+updateCart()
 }
 
 /* ================= CARRINHO ================= */
 
-function addToCart(name,price){
-cart.push({name,price})
-updateCart()
-}
-
-function removeItem(index){
-cart.splice(index,1)
-updateCart()
-}
-
 function updateCart(){
-
 const items=document.getElementById("cart-items")
 items.innerHTML=""
 let total=0
 
-cart.forEach((i,index)=>{
-total+=i.price
+cart.forEach((item,index)=>{
+let extrasText = item.extras.map(e=>e.name).join(", ")
+let itemTotal = (item.price + item.extras.reduce((s,e)=>s+e.price,0)) * item.quantity
+total+=itemTotal
+
 items.innerHTML+=`
 <div class="cart-item">
-<p>${i.name} - R$ ${i.price.toFixed(2)}</p>
+<div>
+<p><strong>${item.name}</strong></p>
+<small>${extrasText}</small>
+<p>Qtd: ${item.quantity}</p>
+</div>
+<p>R$ ${itemTotal.toFixed(2)}</p>
 <button onclick="removeItem(${index})">❌</button>
 </div>
 `
@@ -101,11 +126,88 @@ document.getElementById("total").innerText=total.toFixed(2)
 document.getElementById("cart-count").innerText=cart.length
 }
 
+function removeItem(index){
+cart.splice(index,1)
+updateCart()
+}
+
 function toggleCart(){
 document.getElementById("cart-panel").classList.toggle("active")
 }
 
-/* ================= CHECKOUT COM LOGIN OBRIGATÓRIO ================= */
+/* ================= LOGIN MODAL ================= */
+
+function openLogin(){
+document.getElementById("login-modal").style.display="flex"
+}
+
+function closeLogin(){
+document.getElementById("login-modal").style.display="none"
+}
+
+async function handleAuth(){
+const name=document.getElementById("auth-name").value
+const email=document.getElementById("auth-email").value
+const password=document.getElementById("auth-pass").value
+
+if(!email||!password)return alert("Preencha os campos")
+
+let res=await fetch(`${API_URL}/register`,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({name,email,password})
+})
+
+let user=await res.json()
+currentUser=user
+localStorage.setItem("user",JSON.stringify(user))
+
+document.getElementById("user-info").innerText="Olá, "+user.name
+closeLogin()
+}
+
+/* ================= ENDEREÇO COM CEP ================= */
+
+function openAddress(){
+document.getElementById("address-modal").style.display="flex"
+}
+
+function closeAddress(){
+document.getElementById("address-modal").style.display="none"
+}
+
+document.addEventListener("blur",async e=>{
+if(e.target.id==="cep"){
+let cep=e.target.value.replace(/\D/g,'')
+if(cep.length===8){
+let res=await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+let data=await res.json()
+document.getElementById("rua").value=data.logradouro
+document.getElementById("bairro").value=data.bairro
+document.getElementById("cidade").value=data.localidade
+}
+}
+},true)
+
+async function saveAddress(){
+if(!currentUser){
+alert("Faça login primeiro")
+return
+}
+
+currentUser.address={
+rua:rua.value,
+bairro:bairro.value,
+cidade:cidade.value,
+numero:numero.value
+}
+
+localStorage.setItem("user",JSON.stringify(currentUser))
+closeAddress()
+alert("Endereço salvo!")
+}
+
+/* ================= CHECKOUT ================= */
 
 async function checkout(){
 
@@ -114,53 +216,31 @@ alert("Carrinho vazio")
 return
 }
 
-/* 🔐 SE NÃO ESTIVER LOGADO */
 if(!currentUser){
-alert("Você precisa fazer login para finalizar o pedido.")
-document.getElementById("auth-screen").style.display="flex"
+openLogin()
 return
 }
 
 let total=0
-cart.forEach(i=> total+=i.price)
+cart.forEach(item=>{
+total+=(item.price+item.extras.reduce((s,e)=>s+e.price,0))*item.quantity
+})
 
 const order={
-userId: currentUser._id,
-items: cart,
-total: total,
-status:"Recebido"
+userId:currentUser._id,
+items:cart,
+total,
+status:"Recebido",
+address:currentUser.address
 }
 
-try{
-
-const response=await fetch(`${API_URL}/orders`,{
+await fetch(`${API_URL}/orders`,{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify(order)
 })
 
-if(!response.ok){
-throw new Error("Erro ao salvar")
-}
-
-/* WhatsApp opcional */
-let msg="🍔 Pedido Benis Burguer:%0A"
-cart.forEach(i=>{
-msg+=`${i.name} - R$ ${i.price.toFixed(2)}%0A`
-})
-msg+=`%0ATotal: R$ ${total.toFixed(2)}`
-window.open(`https://wa.me/${phone}?text=${msg}`)
-
-alert("Pedido enviado com sucesso!")
-
+alert("Pedido enviado!")
 cart=[]
 updateCart()
-
-}catch(error){
-console.error(error)
-alert("Erro ao enviar pedido")
 }
-
-}
-
-renderProducts()
