@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Benis Burguer</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;700&display=swap" rel="stylesheet">
 <script src="https://kit.fontawesome.com/4b8b59b6f0.js" crossorigin="anonymous"></script>
 
 <link rel="stylesheet" href="style.css">
@@ -13,16 +13,16 @@
 
 <body>
 
-<header>
-    <div class="header-left">
-        <img src="logo.png" class="logo">
+<header class="topbar">
+    <div class="logo-area">
+        <img src="logo.png">
         <div>
             <h1>Benis Burguer</h1>
-            <p>🍔 Somente Delivery • Terça a Domingo 19:00 às 23h59</p>
+            <p>🍔 Delivery • Terça a Domingo 19h às 23h59</p>
         </div>
     </div>
 
-    <div class="header-right">
+    <div class="social-icons">
         <a href="https://www.instagram.com/obenisburguer?igsh=MTBpaWl5NnY2bzBheA==" target="_blank">
             <i class="fab fa-instagram"></i>
         </a>
@@ -32,42 +32,43 @@
     </div>
 </header>
 
-<section class="hero">
+<section class="banner">
     🔥 Chapa quente, sabor único!
 </section>
 
+<nav class="categories">
+    <button onclick="filterCategory('lanches')">🍔 Lanches</button>
+    <button onclick="filterCategory('porcoes')">🍟 Porções</button>
+    <button onclick="filterCategory('bebidas')">🥤 Bebidas</button>
+</nav>
+
 <section class="menu">
-    <h2>Cardápio</h2>
     <div id="products"></div>
 </section>
 
-<!-- CARRINHO -->
-<div class="cart-button" onclick="toggleCart()">
-    <i class="fas fa-shopping-cart"></i>
+<!-- Carrinho -->
+<div class="cart-btn" onclick="toggleCart()">
+    <i class="fas fa-shopping-bag"></i>
     <span id="cart-count">0</span>
 </div>
 
-<div class="cart-modal" id="cart-modal">
-    <div class="cart-content">
-        <h3>Seu Pedido</h3>
-        <div id="cart-items"></div>
-        <p class="total">Total: R$ <span id="total">0.00</span></p>
-        <button onclick="checkout()">Finalizar Pedido</button>
-        <button class="close" onclick="toggleCart()">Fechar</button>
+<div class="cart-panel" id="cart-panel">
+    <h2>Seu Pedido</h2>
+    <div id="cart-items"></div>
+    <div class="cart-total">
+        Total: R$ <span id="total">0.00</span>
     </div>
+    <button onclick="checkout()">Finalizar no WhatsApp</button>
 </div>
 
-<!-- MAPA -->
-<section class="map-section">
-    <h2>📍 Nossa Localização</h2>
-    <iframe 
-        src="https://www.google.com/maps?q=R.+Paulo+Fortes,+6245+-+Aponiã,+Porto+Velho+-+RO&output=embed">
-    </iframe>
+<section class="map">
+    <h2>📍 Localização</h2>
+    <iframe src="https://www.google.com/maps?q=R.+Paulo+Fortes,+6245+-+Aponiã,+Porto+Velho+-+RO&output=embed"></iframe>
 </section>
 
 <footer>
-    <p>📍 R. Paulo Fortes, 6245 - Aponiã - Porto Velho/RO</p>
-    <p>📞 (69) 9 9366-8336</p>
+    <p>R. Paulo Fortes, 6245 - Aponiã - Porto Velho/RO</p>
+    <p>(69) 9 9366-8336</p>
 </footer>
 
 <script src="script.js"></script>
