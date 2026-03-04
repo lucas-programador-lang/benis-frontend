@@ -3,102 +3,73 @@ const phone = "5569993668336"
 
 let currentUser = JSON.parse(localStorage.getItem("user"))
 let cart = []
-let discount = 0
-let isLogin = true
-
-/* ================= SPLASH ================= */
-
-window.onload = () => {
-setTimeout(()=>{
-document.getElementById("splash").style.display="none"
-},2500)
-
-if(currentUser){
-document.getElementById("auth-screen").style.display="none"
-document.getElementById("app").style.display="block"
-loadHistory()
-}
-}
-
-/* ================= AUTH ================= */
-
-function toggleAuth(){
-isLogin = !isLogin
-
-document.getElementById("auth-title").innerText = isLogin ? "Login" : "Cadastro"
-document.getElementById("auth-btn").innerText = isLogin ? "Entrar" : "Cadastrar"
-document.getElementById("auth-name").style.display = isLogin ? "none" : "block"
-document.getElementById("toggle-auth").innerText = isLogin
-? "Não tem conta? Cadastre-se"
-: "Já tem conta? Faça login"
-}
-
-async function handleAuth(){
-
-const name = document.getElementById("auth-name").value
-const email = document.getElementById("auth-email").value
-const password = document.getElementById("auth-pass").value
-
-if(!email || !password) return alert("Preencha todos os campos")
-
-if(isLogin){
-
-const res = await fetch(`${API_URL}/login`,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({email,password})
-})
-
-const user = await res.json()
-if(user.error) return alert("Login inválido")
-
-currentUser = user
-localStorage.setItem("user",JSON.stringify(user))
-
-}else{
-
-if(!name) return alert("Digite seu nome")
-
-await fetch(`${API_URL}/register`,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({name,email,password})
-})
-
-alert("Cadastro realizado!")
-toggleAuth()
-return
-}
-
-document.getElementById("auth-screen").style.display="none"
-document.getElementById("app").style.display="block"
-loadHistory()
-}
 
 /* ================= PRODUTOS ================= */
 
 const products = [
-{category:"lanches",name:"X-Burger",price:13,description:"Clássico tradicional"},
-{category:"lanches",name:"X-Tudo",price:23,description:"Completo especial"},
-{category:"lanches",name:"X-Benis",price:26,description:"Nosso lanche premium"},
+
+/* ================= LANCHES ================= */
+
+{category:"lanches",name:"Misto Quente",price:7,description:"Pão, queijo e presunto"},
+{category:"lanches",name:"X-Bauru",price:8,description:"Pão, queijo, presunto, alface e tomate"},
+{category:"lanches",name:"X-Burger",price:13,description:"Hambúrguer tradicional completo"},
+{category:"lanches",name:"X-Salada",price:14,description:"Hambúrguer com ovo e salada"},
+{category:"lanches",name:"X-Salada Especial",price:17,description:"Especial com salsicha e banana"},
+{category:"lanches",name:"X-Calabresa",price:18,description:"Hambúrguer com calabresa"},
+{category:"lanches",name:"X-Bacon",price:19,description:"Hambúrguer com bacon crocante"},
+{category:"lanches",name:"X-Frango",price:18,description:"Filé de frango completo"},
+{category:"lanches",name:"X-Turbinado",price:20,description:"Duplo hambúrguer"},
+{category:"lanches",name:"X-Bagunça",price:20,description:"Mistura especial da casa"},
+{category:"lanches",name:"X-Tudo",price:23,description:"Completo com tudo"},
+{category:"lanches",name:"X-Havaiano",price:19,description:"Com banana e abacaxi"},
+{category:"lanches",name:"X-Benis",price:26,description:"O lanche premium da casa"},
+
+/* ================= PORÇÕES ================= */
+
 {category:"porcoes",name:"Batata Frita",price:15,description:"Porção crocante"},
-{category:"bebidas",name:"Coca Cola 2L",price:15,description:"Refrigerante 2L"}
+{category:"porcoes",name:"Batata + Cheddar + Bacon",price:25,description:"Batata especial completa"},
+
+/* ================= BEBIDAS ================= */
+
+{category:"bebidas",name:"Coca Cola 2L",price:15,description:"Refrigerante 2L"},
+{category:"bebidas",name:"Coca Cola 1L",price:10,description:"Refrigerante 1L"},
+{category:"bebidas",name:"Tuchaua 2L",price:9,description:"Refrigerante 2L"},
+{category:"bebidas",name:"Dydyo 2L",price:9,description:"Refrigerante 2L"},
+{category:"bebidas",name:"Coca Cola Lata",price:7,description:"Refrigerante lata 350ml"}
 ]
+
+/* ================= RENDER ================= */
 
 const container = document.getElementById("products")
 
 function renderProducts(){
-container.innerHTML=""
-products.forEach(p=>{
-container.innerHTML+=`
+
+container.innerHTML = ""
+
+const categorias = ["lanches","porcoes","bebidas"]
+
+categorias.forEach(cat=>{
+
+const itens = products.filter(p=>p.category===cat)
+
+container.innerHTML += `<h2 style="margin-top:40px;text-transform:uppercase">${cat}</h2>`
+
+itens.forEach(p=>{
+container.innerHTML += `
 <div class="card">
 <h3>${p.name}</h3>
 <small>${p.description}</small>
 <p>R$ ${p.price.toFixed(2)}</p>
 <button onclick="addToCart('${p.name}',${p.price})">Adicionar</button>
-</div>`
+</div>
+`
 })
+
+})
+
 }
+
+/* ================= CARRINHO ================= */
 
 function addToCart(name,price){
 cart.push({name,price})
@@ -110,24 +81,8 @@ cart.splice(index,1)
 updateCart()
 }
 
-/* ================= CUPOM ================= */
-
-function applyCoupon(){
-const code=document.getElementById("coupon").value.toUpperCase()
-
-if(code==="BENIS10"){
-discount=0.10
-alert("Cupom aplicado! 10% OFF")
-}else{
-discount=0
-alert("Cupom inválido")
-}
-updateCart()
-}
-
-/* ================= CARRINHO ================= */
-
 function updateCart(){
+
 const items=document.getElementById("cart-items")
 items.innerHTML=""
 let total=0
@@ -142,19 +97,15 @@ items.innerHTML+=`
 `
 })
 
-if(discount>0){
-total = total - (total * discount)
-}
-
-document.getElementById("total").innerText = total.toFixed(2)
-document.getElementById("cart-count").innerText = cart.length
+document.getElementById("total").innerText=total.toFixed(2)
+document.getElementById("cart-count").innerText=cart.length
 }
 
 function toggleCart(){
 document.getElementById("cart-panel").classList.toggle("active")
 }
 
-/* ================= CHECKOUT ================= */
+/* ================= CHECKOUT COM LOGIN OBRIGATÓRIO ================= */
 
 async function checkout(){
 
@@ -163,52 +114,53 @@ alert("Carrinho vazio")
 return
 }
 
+/* 🔐 SE NÃO ESTIVER LOGADO */
+if(!currentUser){
+alert("Você precisa fazer login para finalizar o pedido.")
+document.getElementById("auth-screen").style.display="flex"
+return
+}
+
 let total=0
 cart.forEach(i=> total+=i.price)
 
-if(discount>0){
-total = total - (total * discount)
-}
-
-const order = {
+const order={
 userId: currentUser._id,
 items: cart,
 total: total,
 status:"Recebido"
 }
 
-await fetch(`${API_URL}/orders`,{
+try{
+
+const response=await fetch(`${API_URL}/orders`,{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify(order)
 })
 
-alert("Pedido enviado!")
+if(!response.ok){
+throw new Error("Erro ao salvar")
+}
+
+/* WhatsApp opcional */
+let msg="🍔 Pedido Benis Burguer:%0A"
+cart.forEach(i=>{
+msg+=`${i.name} - R$ ${i.price.toFixed(2)}%0A`
+})
+msg+=`%0ATotal: R$ ${total.toFixed(2)}`
+window.open(`https://wa.me/${phone}?text=${msg}`)
+
+alert("Pedido enviado com sucesso!")
 
 cart=[]
 updateCart()
-loadHistory()
 
+}catch(error){
+console.error(error)
+alert("Erro ao enviar pedido")
 }
 
-/* ================= HISTÓRICO ================= */
-
-async function loadHistory(){
-
-const res = await fetch(`${API_URL}/orders/user/${currentUser._id}`)
-const orders = await res.json()
-
-const historyDiv = document.getElementById("history")
-historyDiv.innerHTML=""
-
-orders.forEach(o=>{
-historyDiv.innerHTML+=`
-<p>
-R$ ${o.total.toFixed(2)} -
-${o.status}
-</p>
-`
-})
 }
 
 renderProducts()
