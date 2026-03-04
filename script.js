@@ -2,8 +2,6 @@ const API_URL = "https://benis-backend.onrender.com"
 
 const phone="5569993668336"
 
-const phone = "5569993668336"
-
 const products = [
 
 /* ================= LANCHES ================= */
