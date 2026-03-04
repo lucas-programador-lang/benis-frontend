@@ -9,22 +9,34 @@
 <script src="https://kit.fontawesome.com/4b8b59b6f0.js" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<!-- SPLASH SCREEN -->
+<!-- SPLASH -->
 <div id="splash">
     <img src="logo.png">
 </div>
 
-<!-- LOGIN -->
-<div id="login-screen">
+<!-- LOGIN / CADASTRO -->
+<div id="auth-screen">
     <div class="login-box">
-        <h2>Entrar</h2>
-        <input type="text" id="username" placeholder="Seu nome">
-        <button onclick="login()">Entrar</button>
+
+        <h2 id="auth-title">Login</h2>
+
+        <input type="text" id="auth-name" placeholder="Seu nome" style="display:none;">
+        <input type="email" id="auth-email" placeholder="Seu email">
+        <input type="password" id="auth-pass" placeholder="Senha">
+
+        <button onclick="handleAuth()" id="auth-btn">Entrar</button>
+
+        <p id="toggle-auth" onclick="toggleAuth()">
+            Não tem conta? Cadastre-se
+        </p>
+
     </div>
 </div>
 
+<!-- APP -->
 <div id="app" style="display:none">
 
 <header class="topbar">
@@ -47,7 +59,7 @@
 </header>
 
 <section class="banner">
-    🔥 Chapa quente, sabor único!
+🔥 Chapa quente, sabor único!
 </section>
 
 <section class="menu">
@@ -66,10 +78,17 @@
 <button onclick="applyCoupon()">Aplicar Cupom</button>
 
 <div id="cart-items"></div>
+
 <div class="cart-total">
 Total: R$ <span id="total">0.00</span>
 </div>
+
 <button onclick="checkout()">Finalizar Pedido</button>
+
+<hr>
+<h3>📜 Histórico de Pedidos</h3>
+<div id="history"></div>
+
 </div>
 
 <a href="https://wa.me/5569993668336" class="whatsapp-float" target="_blank">
@@ -77,6 +96,7 @@ Total: R$ <span id="total">0.00</span>
 </a>
 
 <script src="script.js"></script>
+
 </div>
 
 </body>
