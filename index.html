@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 <script src="https://kit.fontawesome.com/4b8b59b6f0.js" crossorigin="anonymous"></script>
+
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -14,48 +16,57 @@
 
 <!-- SPLASH -->
 <div id="splash">
-    <img src="logo.png">
+<img src="logo.png">
 </div>
 
-<!-- LOGIN / CADASTRO (COMEÇA ESCONDIDO) -->
+<!-- LOGIN / CADASTRO -->
 <div id="auth-screen" style="display:none;">
-    <div class="login-box">
+<div class="login-box">
 
-        <h2 id="auth-title">Login</h2>
+<h2 id="auth-title">Entrar</h2>
 
-        <input type="text" id="auth-name" placeholder="Seu nome" style="display:none;">
-        <input type="email" id="auth-email" placeholder="Seu email">
-        <input type="password" id="auth-pass" placeholder="Senha">
+<input type="text" id="auth-name" placeholder="Seu nome" style="display:none;">
+<input type="email" id="auth-email" placeholder="Seu email">
+<input type="password" id="auth-pass" placeholder="Senha">
 
-        <button onclick="handleAuth()" id="auth-btn">Entrar</button>
+<button onclick="handleAuth()" id="auth-btn">Entrar</button>
 
-        <p id="toggle-auth" onclick="toggleAuth()">
-            Não tem conta? Cadastre-se
-        </p>
+<p id="toggle-auth" onclick="toggleAuth()">
+Não tem conta? Cadastre-se
+</p>
 
-    </div>
+</div>
 </div>
 
-<!-- APP (AGORA SEM display:none) -->
+<!-- APP -->
 <div id="app">
 
 <header class="topbar">
-    <div class="logo-area">
-        <img src="logo.png" class="logo">
-        <div>
-            <h1>Benis Burguer</h1>
-            <p>🍔 Delivery • Terça a Domingo 19h às 23h59</p>
-        </div>
-    </div>
 
-    <div class="social-icons">
-        <a href="https://www.instagram.com/obenisburguer?igsh=MTBpaWl5NnY2bzBheA==" target="_blank">
-            <i class="fab fa-instagram"></i>
-        </a>
-        <a href="https://wa.me/5569993668336" target="_blank">
-            <i class="fab fa-whatsapp"></i>
-        </a>
-    </div>
+<div class="logo-area">
+<img src="logo.png" class="logo">
+
+<div>
+<h1>Benis Burguer</h1>
+<p>🍔 Delivery • Terça a Domingo 19h às 23h59</p>
+</div>
+
+</div>
+
+<div id="user-info"></div>
+
+<div class="social-icons">
+
+<a href="https://www.instagram.com/obenisburguer?igsh=MTBpaWl5NnY2bzBheA==" target="_blank">
+<i class="fab fa-instagram"></i>
+</a>
+
+<a href="https://wa.me/5569993668336" target="_blank">
+<i class="fab fa-whatsapp"></i>
+</a>
+
+</div>
+
 </header>
 
 <section class="banner">
@@ -63,33 +74,41 @@
 </section>
 
 <section class="menu">
-    <div id="products"></div>
+<div id="products"></div>
 </section>
+
+<!-- BOTÃO CARRINHO -->
 
 <div class="cart-btn" onclick="toggleCart()">
 <i class="fas fa-shopping-cart"></i>
 <span id="cart-count">0</span>
 </div>
 
+<!-- PAINEL CARRINHO -->
+
 <div class="cart-panel" id="cart-panel">
+
 <h2>Seu Pedido</h2>
 
-<input type="text" id="coupon" placeholder="Cupom de desconto">
+<input type="text" id="cupom" placeholder="Cupom de desconto">
 <button onclick="applyCoupon()">Aplicar Cupom</button>
 
 <div id="cart-items"></div>
 
 <div class="cart-total">
-Total: R$ <span id="total">0.00</span>
+Total: R$ <span id="total">0,00</span>
 </div>
 
-<button onclick="checkout()">Finalizar Pedido</button>
+<button onclick="checkout()">Finalizar pedido</button>
 
 <hr>
+
 <h3>📜 Histórico de Pedidos</h3>
 <div id="history"></div>
 
 </div>
+
+<!-- WHATSAPP FLUTUANTE -->
 
 <a href="https://wa.me/5569993668336" class="whatsapp-float" target="_blank">
 <i class="fab fa-whatsapp"></i>
