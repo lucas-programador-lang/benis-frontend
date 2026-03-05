@@ -9,10 +9,10 @@ margin:0;
 font-family:'Poppins',sans-serif;
 background:#0f0f0f;
 color:white;
-padding-top:90px;
+padding-top:80px;
 }
 
-/* ================= TOPO ================= */
+/* ================= HEADER ================= */
 
 .topbar{
 position:fixed;
@@ -22,46 +22,47 @@ width:100%;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:12px 35px;
+padding:10px 30px;
 background:#181818;
-box-shadow:0 4px 25px rgba(0,0,0,0.6);
+box-shadow:0 4px 20px rgba(0,0,0,0.6);
 z-index:1000;
 }
 
 .logo-area{
 display:flex;
 align-items:center;
-gap:12px;
+gap:10px;
 }
 
 .logo{
-width:42px;
-height:42px;
+width:36px;
+height:36px;
 object-fit:contain;
 }
 
 .store-info h1{
 margin:0;
-font-size:20px;
+font-size:18px;
+font-weight:600;
 }
 
 .store-info p{
 margin:0;
-font-size:13px;
+font-size:12px;
 color:#aaa;
 }
 
-/* ================= ÍCONES ================= */
+/* ================= SOCIAL ICONS ================= */
 
 .social-icons a{
 color:#ff6a00;
-font-size:20px;
-margin-left:18px;
-transition:0.3s;
+font-size:18px;
+margin-left:15px;
+transition:0.25s;
 }
 
 .social-icons a:hover{
-transform:scale(1.2);
+transform:scale(1.15);
 color:white;
 }
 
@@ -69,41 +70,40 @@ color:white;
 
 .banner{
 text-align:center;
-padding:35px 20px;
-font-weight:600;
+padding:30px 15px;
 background:linear-gradient(45deg,#ff4d00,#ff8c00);
-margin-bottom:30px;
+margin-bottom:25px;
 }
 
 .banner h2{
 margin:0;
-font-size:26px;
+font-size:24px;
 }
 
 .banner p{
-margin-top:6px;
+margin-top:5px;
 opacity:0.9;
 }
 
 /* ================= CARDÁPIO ================= */
 
 .menu{
-padding:30px;
+padding:20px;
 }
 
 .menu-title{
 text-align:center;
 margin-bottom:25px;
-font-size:26px;
+font-size:24px;
 }
 
-/* GRID PRODUTOS */
+/* GRID */
 
 #products{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:22px;
-max-width:1200px;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:18px;
+max-width:1100px;
 margin:auto;
 }
 
@@ -111,51 +111,52 @@ margin:auto;
 
 .card{
 background:#1a1a1a;
-padding:20px;
-border-radius:14px;
-box-shadow:0 8px 25px rgba(0,0,0,0.6);
-transition:0.3s;
+padding:18px;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.5);
+transition:0.25s;
 display:flex;
 flex-direction:column;
 justify-content:space-between;
 }
 
 .card:hover{
-transform:translateY(-6px);
-box-shadow:0 8px 35px rgba(255,100,0,0.4);
+transform:translateY(-5px);
+box-shadow:0 8px 28px rgba(255,100,0,0.35);
 }
 
 .card h3{
-margin:0 0 6px 0;
+margin:0 0 5px 0;
+font-size:18px;
 }
 
 .card small{
-color:#999;
-margin-bottom:12px;
+color:#aaa;
+margin-bottom:10px;
+font-size:13px;
 }
 
 .card p{
-font-size:18px;
+font-size:17px;
 font-weight:600;
-margin-bottom:12px;
+margin-bottom:10px;
 color:#ff8c00;
 }
 
 .card button{
 width:100%;
-padding:11px;
+padding:10px;
 background:#ff4d00;
 border:none;
-border-radius:10px;
+border-radius:8px;
 color:white;
 cursor:pointer;
 font-weight:600;
-transition:0.3s;
+transition:0.25s;
 }
 
 .card button:hover{
 background:#ff6a00;
-transform:scale(1.04);
 }
 
 /* ================= BOTÃO CARRINHO ================= */
@@ -165,16 +166,16 @@ position:fixed;
 bottom:25px;
 right:25px;
 background:#ff4d00;
-width:65px;
-height:65px;
+width:60px;
+height:60px;
 border-radius:50%;
 display:flex;
 justify-content:center;
 align-items:center;
-font-size:22px;
+font-size:20px;
 cursor:pointer;
-box-shadow:0 6px 25px rgba(0,0,0,0.6);
-transition:0.3s;
+box-shadow:0 6px 20px rgba(0,0,0,0.6);
+transition:0.25s;
 z-index:999;
 }
 
@@ -184,27 +185,27 @@ transform:scale(1.1);
 
 .cart-btn span{
 position:absolute;
-top:-4px;
-right:-4px;
+top:-3px;
+right:-3px;
 background:red;
 border-radius:50%;
-padding:5px 8px;
-font-size:12px;
+padding:4px 7px;
+font-size:11px;
 }
 
 /* ================= PAINEL CARRINHO ================= */
 
 .cart-panel{
 position:fixed;
-right:-420px;
+right:-400px;
 top:0;
-width:380px;
+width:350px;
 height:100%;
 background:#151515;
-padding:25px;
-transition:0.35s;
+padding:22px;
+transition:0.3s;
 overflow:auto;
-box-shadow:-8px 0 40px rgba(0,0,0,0.7);
+box-shadow:-6px 0 30px rgba(0,0,0,0.7);
 z-index:1200;
 }
 
@@ -214,13 +215,14 @@ right:0;
 
 .cart-panel h2{
 margin-top:0;
+font-size:20px;
 }
 
 .cart-item{
 background:#242424;
-padding:12px;
-border-radius:10px;
-margin-bottom:12px;
+padding:10px;
+border-radius:8px;
+margin-bottom:10px;
 display:flex;
 justify-content:space-between;
 align-items:center;
@@ -228,21 +230,21 @@ font-size:14px;
 }
 
 .cart-total{
-font-size:20px;
-margin:25px 0;
+font-size:18px;
+margin:20px 0;
 font-weight:600;
 color:#ff8c00;
 }
 
 .checkout-btn{
 width:100%;
-padding:14px;
+padding:12px;
 background:#ff4d00;
 border:none;
-border-radius:10px;
+border-radius:8px;
 font-weight:600;
 cursor:pointer;
-font-size:16px;
+font-size:15px;
 }
 
 .checkout-btn:hover{
@@ -267,9 +269,9 @@ animation:fadeIn 0.3s ease;
 
 .modal{
 background:#1e1e1e;
-padding:30px;
-border-radius:15px;
-width:320px;
+padding:25px;
+border-radius:12px;
+width:300px;
 box-shadow:0 10px 40px rgba(0,0,0,0.8);
 animation:scaleUp 0.3s ease;
 }
@@ -277,9 +279,9 @@ animation:scaleUp 0.3s ease;
 .modal input{
 width:100%;
 padding:10px;
-margin-bottom:12px;
+margin-bottom:10px;
 border:none;
-border-radius:8px;
+border-radius:6px;
 background:#2a2a2a;
 color:white;
 }
@@ -288,16 +290,18 @@ color:white;
 width:100%;
 padding:10px;
 border:none;
-border-radius:8px;
+border-radius:6px;
 background:#ff4d00;
 color:white;
 cursor:pointer;
-margin-top:5px;
+margin-top:4px;
 }
 
 .modal .close{
 background:#555;
 }
+
+/* ================= ANIMAÇÕES ================= */
 
 @keyframes fadeIn{
 from{opacity:0}
@@ -305,7 +309,7 @@ to{opacity:1}
 }
 
 @keyframes scaleUp{
-from{transform:scale(0.8)}
+from{transform:scale(0.85)}
 to{transform:scale(1)}
 }
 
@@ -313,24 +317,24 @@ to{transform:scale(1)}
 
 .whatsapp-float{
 position:fixed;
-bottom:100px;
+bottom:95px;
 right:25px;
 background:#25D366;
-width:58px;
-height:58px;
+width:55px;
+height:55px;
 border-radius:50%;
 display:flex;
 justify-content:center;
 align-items:center;
-font-size:26px;
+font-size:24px;
 color:white;
-box-shadow:0 5px 20px rgba(0,0,0,0.6);
-transition:0.3s;
+box-shadow:0 4px 18px rgba(0,0,0,0.6);
+transition:0.25s;
 z-index:999;
 }
 
 .whatsapp-float:hover{
-transform:scale(1.15);
+transform:scale(1.1);
 }
 
 /* ================= RESPONSIVO ================= */
@@ -338,15 +342,15 @@ transform:scale(1.15);
 @media(max-width:768px){
 
 .topbar{
-padding:10px 20px;
+padding:10px 15px;
 }
 
 .store-info h1{
-font-size:17px;
+font-size:16px;
 }
 
 .store-info p{
-font-size:12px;
+font-size:11px;
 }
 
 .cart-panel{
