@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>Benis Burguer</title>
 
 <link rel="stylesheet" href="style.css">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 
@@ -17,13 +20,15 @@
 
 <h1>🍔 Benis Burguer</h1>
 
-<div class="social">
+<div class="icons">
 
-<a href="https://www.instagram.com/obenisburguer?igsh=MWJjYnBobzYya2hlcw==" target="_blank">
+<a target="_blank"
+href="https://www.instagram.com/obenisburguer?igsh=MWJjYnBobzYya2hlcw==">
 <i class="fab fa-instagram"></i>
 </a>
 
-<a href="https://wa.me/556993668336" target="_blank">
+<a target="_blank"
+href="https://wa.me/556993668336">
 <i class="fab fa-whatsapp"></i>
 </a>
 
@@ -33,9 +38,8 @@
 
 <section class="status">
 
-<h2 id="status">Verificando horário...</h2>
-
-<div id="contador"></div>
+<h2 id="status"></h2>
+<p id="timer"></p>
 
 </section>
 
@@ -45,115 +49,91 @@
 
 <div class="grid">
 
-<div class="item">
-<h3>Misto Quente</h3>
-<p>Pão, queijo e presunto</p>
-<span>R$7</span>
-<button onclick="add('Misto Quente',7)">Adicionar</button>
-</div>
+<div class="card">
 
-<div class="item">
-<h3>X-Bauru</h3>
-<p>Pão, queijo, presunto, alface e tomate</p>
-<span>R$8</span>
-<button onclick="add('X-Bauru',8)">Adicionar</button>
-</div>
+<img src="images/xburguer.jpg">
 
-<div class="item">
 <h3>X-Burguer</h3>
-<p>Pão, hambúrguer, queijo, presunto, alface, tomate, milho e batata</p>
+
+<p>Hambúrguer, queijo, presunto, alface, tomate</p>
+
 <span>R$13</span>
-<button onclick="add('X-Burguer',13)">Adicionar</button>
+
+<button onclick="add('X-Burguer',13)">
+Adicionar
+</button>
+
 </div>
 
-<div class="item">
+
+<div class="card">
+
+<img src="images/xsalada.jpg">
+
 <h3>X-Salada</h3>
-<p>Pão, hambúrguer, ovo, queijo, presunto, alface, tomate, milho e batata</p>
+
 <span>R$14</span>
-<button onclick="add('X-Salada',14)">Adicionar</button>
+
+<button onclick="add('X-Salada',14)">
+Adicionar
+</button>
+
 </div>
 
-<div class="item">
-<h3>X-Salada Especial</h3>
-<span>R$17</span>
-<button onclick="add('X-Salada Especial',17)">Adicionar</button>
-</div>
 
-<div class="item">
-<h3>X-Calabresa</h3>
-<span>R$18</span>
-<button onclick="add('X-Calabresa',18)">Adicionar</button>
-</div>
+<div class="card">
 
-<div class="item">
-<h3>X-Bacon</h3>
-<span>R$19</span>
-<button onclick="add('X-Bacon',19)">Adicionar</button>
-</div>
+<img src="images/xtudo.jpg">
 
-<div class="item">
-<h3>X-Frango</h3>
-<span>R$18</span>
-<button onclick="add('X-Frango',18)">Adicionar</button>
-</div>
-
-<div class="item">
-<h3>X-Turbinado</h3>
-<span>R$20</span>
-<button onclick="add('X-Turbinado',20)">Adicionar</button>
-</div>
-
-<div class="item">
-<h3>X-Bagunça</h3>
-<span>R$20</span>
-<button onclick="add('X-Bagunca',20)">Adicionar</button>
-</div>
-
-<div class="item">
 <h3>X-Tudo</h3>
+
 <span>R$23</span>
-<button onclick="add('X-Tudo',23)">Adicionar</button>
+
+<button onclick="add('X-Tudo',23)">
+Adicionar
+</button>
+
 </div>
 
-<div class="item">
-<h3>X-Havaíno</h3>
-<span>R$19</span>
-<button onclick="add('X-Havaino',19)">Adicionar</button>
-</div>
 
-<div class="item">
-<h3>X-Benis</h3>
-<span>R$26</span>
-<button onclick="add('X-Benis',26)">Adicionar</button>
-</div>
+<div class="card">
 
-<div class="item">
+<img src="images/batata.jpg">
+
 <h3>Batata Frita</h3>
-<span>R$15</span>
-<button onclick="add('Batata Frita',15)">Adicionar</button>
-</div>
 
-<div class="item">
-<h3>Batata + Cheddar + Bacon</h3>
-<span>R$25</span>
-<button onclick="add('Batata Especial',25)">Adicionar</button>
+<span>R$15</span>
+
+<button onclick="add('Batata',15)">
+Adicionar
+</button>
+
 </div>
 
 </div>
 
 </section>
 
-<section class="cart">
+<div class="cart-btn" onclick="toggleCart()">
 
-<h2>Carrinho</h2>
+🛒
+<span id="cart-count">0</span>
 
-<ul id="cart"></ul>
+</div>
+
+<div class="cart" id="cart">
+
+<h2>Seu Pedido</h2>
+
+<ul id="cart-items"></ul>
 
 <h3>Total: R$ <span id="total">0</span></h3>
 
-<button id="finalizar" onclick="pedido()">Finalizar Pedido</button>
+<button onclick="pix()">
+Pagar com Pix
+</button>
 
-</section>
+</div>
 
 <section class="map">
 
@@ -161,15 +141,31 @@
 
 <p>R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO</p>
 
-<iframe 
+<iframe
 src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes%206245%20Porto%20Velho&t=&z=15&ie=UTF8&iwloc=&output=embed">
 </iframe>
 
 </section>
 
+<section class="reviews">
+
+<h2>Avaliações</h2>
+
+<input id="name" placeholder="Seu nome">
+
+<textarea id="msg"
+placeholder="Seu comentário">
+</textarea>
+
+<button onclick="review()">Enviar</button>
+
+<div id="reviews"></div>
+
+</section>
+
 <footer>
 
-<p>© 2026 Benis Burguer</p>
+© Benis Burguer
 
 </footer>
 
