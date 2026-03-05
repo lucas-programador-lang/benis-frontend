@@ -1,80 +1,91 @@
-let carrinho=[]
+let cart=[]
 let total=0
 
-function add(nome,preco){
+function add(name,price){
 
-carrinho.push({nome,preco})
+cart.push({name,price})
 
-total+=preco
+total+=price
 
-render()
+update()
 
 }
 
-function render(){
+function update(){
 
-let lista=document.getElementById("cart")
+let items=document.getElementById("cart-items")
 
-lista.innerHTML=""
+items.innerHTML=""
 
-carrinho.forEach(i=>{
+cart.forEach(i=>{
 
 let li=document.createElement("li")
 
-li.innerText=i.nome+" - R$"+i.preco
+li.innerText=i.name+" R$"+i.price
 
-lista.appendChild(li)
+items.appendChild(li)
 
 })
 
 document.getElementById("total").innerText=total
 
-}
-
-function pedido(){
-
-let aberto=verificarHorario()
-
-if(!aberto){
-
-alert("Restaurante fechado")
-
-return
+document.getElementById("cart-count").innerText=cart.length
 
 }
 
-let texto="Pedido:%0A"
+function toggleCart(){
 
-carrinho.forEach(i=>{
+document.getElementById("cart").classList.toggle("open")
 
-texto+=i.nome+" R$"+i.preco+"%0A"
+}
+
+function pix(){
+
+let txt="Pedido Benis Burguer%0A"
+
+cart.forEach(i=>{
+
+txt+=i.name+" R$"+i.price+"%0A"
 
 })
 
-texto+="Total: R$"+total
+txt+="Total:"+total
 
-window.open("https://wa.me/556993668336?text="+texto)
-
-}
-
-function verificarHorario(){
-
-let agora=new Date()
-
-let hora=agora.getHours()
-
-if(hora>=19 && hora<=23){
-
-document.getElementById("status").innerText="🟢 Aberto"
-
-return true
+window.open("https://wa.me/556993668336?text="+txt)
 
 }
 
-document.getElementById("status").innerText="🔴 Fechado"
+function review(){
 
-return false
+let name=document.getElementById("name").value
+let msg=document.getElementById("msg").value
+
+let div=document.createElement("div")
+
+div.innerHTML="<b>"+name+"</b><p>"+msg+"</p>"
+
+document.getElementById("reviews").appendChild(div)
 
 }
 
-verificarHorario()
+function horario(){
+
+let now=new Date()
+
+let h=now.getHours()
+
+let status=document.getElementById("status")
+
+if(h>=19 && h<24){
+
+status.innerText="🟢 Aberto"
+
+}else{
+
+status.innerText="🔴 Fechado"
+
+}
+
+}
+
+horario()
