@@ -4,6 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Benis Burguer</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
@@ -16,7 +17,7 @@
 
 <!-- SPLASH -->
 <div id="splash">
-<img src="logo.png">
+<img src="logo.png" alt="Benis Burguer">
 </div>
 
 <!-- LOGIN / CADASTRO -->
@@ -41,14 +42,16 @@ Não tem conta? Cadastre-se
 <!-- APP -->
 <div id="app">
 
+<!-- HEADER -->
 <header class="topbar">
 
 <div class="logo-area">
-<img src="logo.png" class="logo">
 
-<div>
+<img src="logo.png" class="logo" alt="logo">
+
+<div class="store-info">
 <h1>Benis Burguer</h1>
-<p>🍔 Delivery • Terça a Domingo 19h às 23h59</p>
+<p>🍔 Delivery • Terça a Domingo • 19h às 23h59</p>
 </div>
 
 </div>
@@ -69,23 +72,34 @@ Não tem conta? Cadastre-se
 
 </header>
 
+<!-- BANNER -->
 <section class="banner">
-🔥 Chapa quente, sabor único!
+
+<div class="banner-content">
+
+<h2>🔥 Chapa quente, sabor único</h2>
+<p>Hambúrguer artesanal feito na hora</p>
+
+</div>
+
 </section>
 
+<!-- CARDÁPIO -->
 <section class="menu">
+
+<h2 class="menu-title">🍔 Cardápio</h2>
+
 <div id="products"></div>
+
 </section>
 
 <!-- BOTÃO CARRINHO -->
-
 <div class="cart-btn" onclick="toggleCart()">
 <i class="fas fa-shopping-cart"></i>
 <span id="cart-count">0</span>
 </div>
 
-<!-- PAINEL CARRINHO -->
-
+<!-- PAINEL DO CARRINHO -->
 <div class="cart-panel" id="cart-panel">
 
 <h2>Seu Pedido</h2>
@@ -99,7 +113,7 @@ Não tem conta? Cadastre-se
 Total: R$ <span id="total">0,00</span>
 </div>
 
-<button onclick="checkout()">Finalizar pedido</button>
+<button class="checkout-btn" onclick="checkout()">Finalizar pedido</button>
 
 <hr>
 
@@ -109,7 +123,6 @@ Total: R$ <span id="total">0,00</span>
 </div>
 
 <!-- WHATSAPP FLUTUANTE -->
-
 <a href="https://wa.me/5569993668336" class="whatsapp-float" target="_blank">
 <i class="fab fa-whatsapp"></i>
 </a>
