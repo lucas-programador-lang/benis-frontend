@@ -5,14 +5,22 @@ let currentUser = JSON.parse(localStorage.getItem("user"))
 let cart = []
 let currentProduct = null
 
+document.addEventListener("DOMContentLoaded", () => {
+    renderProducts()
+    updateTopUser()
+    loadHistory()
+})
+
 /* ================= ATUALIZA TOPO ================= */
 
-if(currentUser){
-document.getElementById("user-info").innerText =
-"Olá, " + currentUser.name
+function updateTopUser(){
+    const userInfo = document.getElementById("user-info")
+    if(userInfo && currentUser){
+        userInfo.innerText = "Olá, " + currentUser.name
+    }
 }
 
-/* ================= PRODUTOS (CARDÁPIO COMPLETO) ================= */
+/* ================= PRODUTOS ================= */
 
 const products = [
 {category:"lanches",name:"Misto Quente",price:7,description:"Queijo e presunto"},
@@ -39,6 +47,8 @@ const adicionais = [
 const container = document.getElementById("products")
 
 function renderProducts(){
+if(!container) return
+
 container.innerHTML=""
 
 products.forEach(p=>{
@@ -54,17 +64,7 @@ Personalizar
 })
 }
 
-renderProducts()
-
 /* ================= LOGIN ================= */
-
-function openLogin(){
-document.getElementById("login-modal").style.display="flex"
-}
-
-function closeLogin(){
-document.getElementById("login-modal").style.display="none"
-}
 
 async function handleAuth(){
 
@@ -75,6 +75,8 @@ if(!email || !password){
 alert("Preencha email e senha")
 return
 }
+
+try{
 
 const response = await fetch(`${API_URL}/login`,{
 method:"POST",
@@ -95,16 +97,23 @@ currentUser = data.user
 localStorage.setItem("token",token)
 localStorage.setItem("user",JSON.stringify(currentUser))
 
-document.getElementById("user-info").innerText =
-"Olá, " + currentUser.name
+updateTopUser()
 
-closeLogin()
 alert("Login realizado!")
+loadHistory()
+
+}catch(err){
+alert("Erro ao conectar com servidor")
 }
 
-/* ================= CARRINHO ================= */
+}
+
+/* ================= MODAL PRODUTO ================= */
 
 function openProduct(name,price){
+
+if(document.getElementById("product-modal")) return
+
 currentProduct = {name,price}
 
 let extrasHTML = adicionais.map(a=>`
@@ -131,10 +140,12 @@ ${extrasHTML}
 }
 
 function closeProduct(){
-document.getElementById("product-modal").remove()
+const modal = document.getElementById("product-modal")
+if(modal) modal.remove()
 }
 
 function addProductToCart(){
+
 let qty = parseInt(document.getElementById("qty").value)
 let selected = document.querySelectorAll("#product-modal input:checked")
 
@@ -154,14 +165,21 @@ closeProduct()
 updateCart()
 }
 
+/* ================= CARRINHO ================= */
+
 function updateCart(){
+
 const items=document.getElementById("cart-items")
+if(!items) return
+
 items.innerHTML=""
 let total=0
 
 cart.forEach((item,index)=>{
+
 let extraTotal = item.extras.reduce((s,e)=>s+e.price,0)
 let itemTotal = (item.price + extraTotal) * item.quantity
+
 total+=itemTotal
 
 items.innerHTML+=`
@@ -171,6 +189,7 @@ items.innerHTML+=`
 <button onclick="removeItem(${index})">❌</button>
 </div>
 `
+
 })
 
 document.getElementById("total").innerText=total.toFixed(2)
@@ -186,7 +205,7 @@ function toggleCart(){
 document.getElementById("cart-panel").classList.toggle("active")
 }
 
-/* ================= CHECKOUT JWT ================= */
+/* ================= CHECKOUT ================= */
 
 async function checkout(){
 
@@ -196,11 +215,12 @@ return
 }
 
 if(!token){
-openLogin()
+alert("Faça login antes de finalizar")
 return
 }
 
 let total=0
+
 cart.forEach(item=>{
 let extraTotal=item.extras.reduce((s,e)=>s+e.price,0)
 total+=(item.price+extraTotal)*item.quantity
@@ -209,8 +229,10 @@ total+=(item.price+extraTotal)*item.quantity
 const order={
 items:cart,
 total,
-address:currentUser.address
+address:currentUser?.address
 }
+
+try{
 
 const response = await fetch(`${API_URL}/orders`,{
 method:"POST",
@@ -224,19 +246,29 @@ body:JSON.stringify(order)
 if(response.status===401){
 alert("Sessão expirada. Faça login novamente.")
 localStorage.clear()
+location.reload()
 return
 }
 
 alert("Pedido enviado com sucesso!")
+
 cart=[]
 updateCart()
+loadHistory()
+
+}catch(err){
+alert("Erro ao enviar pedido")
 }
 
-/* ================= HISTÓRICO PROTEGIDO ================= */
+}
+
+/* ================= HISTÓRICO ================= */
 
 async function loadHistory(){
 
 if(!token) return
+
+try{
 
 const response = await fetch(`${API_URL}/orders/user`,{
 headers:{ "Authorization":token }
@@ -245,5 +277,23 @@ headers:{ "Authorization":token }
 if(response.status!==200) return
 
 const orders = await response.json()
-console.log("Histórico:",orders)
+
+const history = document.getElementById("history")
+if(!history) return
+
+history.innerHTML=""
+
+orders.forEach(o=>{
+history.innerHTML+=`
+<div class="cart-item">
+Pedido: R$ ${o.total.toFixed(2)} <br>
+Status: ${o.status}
+</div>
+`
+})
+
+}catch(err){
+console.log("Erro histórico",err)
+}
+
 }
