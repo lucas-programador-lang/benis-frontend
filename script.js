@@ -6,47 +6,105 @@ let cart = []
 let currentProduct = null
 
 document.addEventListener("DOMContentLoaded", () => {
+
 renderProducts()
 updateTopUser()
+updateCart()
 loadHistory()
+
 })
 
 /* ================= USUÁRIO ================= */
 
 function updateTopUser(){
+
 const userInfo = document.getElementById("user-info")
 
 if(userInfo && currentUser){
 userInfo.innerText = "Olá, " + currentUser.name
 }
+
 }
 
 /* ================= PRODUTOS ================= */
 
 const products = [
 
-/* LANCHES */
+{
+category:"🍔 Lanches",
+name:"X-Burger",
+price:13,
+description:"Clássico tradicional",
+image:"https://images.unsplash.com/photo-1550547660-d9450f859349"
+},
 
-{category:"🍔 Lanches",name:"Misto Quente",price:7,description:"Queijo e presunto"},
-{category:"🍔 Lanches",name:"X-Bauru",price:8,description:"Queijo e salada"},
-{category:"🍔 Lanches",name:"X-Burger",price:13,description:"Clássico tradicional"},
-{category:"🍔 Lanches",name:"X-Salada",price:14,description:"Com ovo"},
-{category:"🍔 Lanches",name:"X-Calabresa",price:18,description:"Calabresa especial"},
-{category:"🍔 Lanches",name:"X-Bacon",price:19,description:"Muito bacon"},
-{category:"🍔 Lanches",name:"X-Tudo",price:23,description:"Completo"},
-{category:"🍔 Lanches",name:"X-Benis",price:26,description:"Especial da casa"},
+{
+category:"🍔 Lanches",
+name:"X-Salada",
+price:14,
+description:"Com ovo",
+image:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
+},
 
-/* PORÇÕES */
+{
+category:"🍔 Lanches",
+name:"X-Bacon",
+price:19,
+description:"Muito bacon",
+image:"https://images.unsplash.com/photo-1553979459-d2229ba7433b"
+},
 
-{category:"🍟 Porções",name:"Batata Frita",price:15,description:"Crocante"},
-{category:"🍟 Porções",name:"Batata Cheddar Bacon",price:25,description:"Cheddar + bacon"},
+{
+category:"🍔 Lanches",
+name:"X-Tudo",
+price:23,
+description:"Completo",
+image:"https://images.unsplash.com/photo-1551782450-a2132b4ba21d"
+},
 
-/* BEBIDAS */
+{
+category:"🍔 Lanches",
+name:"X-Benis",
+price:26,
+description:"Especial da casa",
+image:"https://images.unsplash.com/photo-1606755962773-d324e0a13086"
+},
 
-{category:"🥤 Bebidas",name:"Coca 2L",price:15,description:"2 litros"},
-{category:"🥤 Bebidas",name:"Coca Lata",price:7,description:"350ml"}
+{
+category:"🍟 Porções",
+name:"Batata Frita",
+price:15,
+description:"Crocante",
+image:"https://images.unsplash.com/photo-1541599540903-216a46ca1dc0"
+},
+
+{
+category:"🍟 Porções",
+name:"Batata Cheddar Bacon",
+price:25,
+description:"Cheddar + Bacon",
+image:"https://images.unsplash.com/photo-1604908176997-43142b47d5c9"
+},
+
+{
+category:"🥤 Bebidas",
+name:"Coca Cola 2L",
+price:15,
+description:"Refrigerante 2 Litros",
+image:"https://images.unsplash.com/photo-1581091870622-6c4b1c3c6c52"
+},
+
+{
+category:"🥤 Bebidas",
+name:"Coca Lata",
+price:7,
+description:"350ml",
+image:"https://images.unsplash.com/photo-1600271886742-f049cd451bba"
+}
 
 ]
+
+/* ================= ADICIONAIS ================= */
 
 const adicionais = [
 
@@ -81,15 +139,26 @@ container.innerHTML += `
 
 <div class="card">
 
+<img src="${p.image}" class="food-img">
+
 <h3>${p.name}</h3>
 
 <small>${p.description}</small>
 
+<div class="price-row">
+
 <p>R$ ${p.price.toFixed(2)}</p>
 
-<button onclick="openProduct('${p.name}',${p.price})">
-Adicionar
+<button class="order-btn"
+onclick="openProduct('${p.name}',${p.price})">
+Pedir
 </button>
+
+</div>
+
+<div class="rating">
+⭐⭐⭐⭐⭐
+</div>
 
 </div>
 
@@ -109,8 +178,11 @@ const email = document.getElementById("auth-email").value
 const password = document.getElementById("auth-pass").value
 
 if(!email || !password){
+
 alert("Preencha email e senha")
+
 return
+
 }
 
 try{
@@ -126,8 +198,11 @@ body:JSON.stringify({email,password})
 const data = await response.json()
 
 if(data.error){
+
 alert(data.error)
+
 return
+
 }
 
 token = data.token
@@ -142,7 +217,7 @@ alert("Login realizado!")
 
 loadHistory()
 
-}catch(err){
+}catch{
 
 alert("Erro ao conectar com servidor")
 
@@ -162,7 +237,9 @@ let extrasHTML = adicionais.map(a=>`
 
 <label>
 
-<input type="checkbox" value="${a.name}" data-price="${a.price}">
+<input type="checkbox"
+value="${a.name}"
+data-price="${a.price}">
 
 ${a.name} (+R$ ${a.price})
 
@@ -172,7 +249,9 @@ ${a.name} (+R$ ${a.price})
 
 document.body.insertAdjacentHTML("beforeend",`
 
-<div class="modal-bg" id="product-modal" style="display:flex">
+<div class="modal-bg"
+id="product-modal"
+style="display:flex">
 
 <div class="modal">
 
@@ -182,15 +261,28 @@ document.body.insertAdjacentHTML("beforeend",`
 
 ${extrasHTML}
 
-<label>Quantidade:
+<label>
 
-<input type="number" id="qty" value="1" min="1">
+Quantidade
+
+<input
+type="number"
+id="qty"
+value="1"
+min="1">
 
 </label>
 
-<button onclick="addProductToCart()">Adicionar ao carrinho</button>
+<button
+onclick="addProductToCart()">
+Adicionar ao carrinho
+</button>
 
-<button class="close" onclick="closeProduct()">Cancelar</button>
+<button
+class="close"
+onclick="closeProduct()">
+Cancelar
+</button>
 
 </div>
 
@@ -244,7 +336,7 @@ updateCart()
 
 }
 
-/* ================= ATUALIZA CARRINHO ================= */
+/* ================= CARRINHO ================= */
 
 function updateCart(){
 
@@ -282,7 +374,11 @@ ${item.quantity}x
 
 R$ ${itemTotal.toFixed(2)}
 
-<button onclick="removeItem(${index})">❌</button>
+<button onclick="removeItem(${index})">
+
+🗑
+
+</button>
 
 </div>
 
@@ -369,7 +465,7 @@ body:JSON.stringify(order)
 
 if(response.status===401){
 
-alert("Sessão expirada. Faça login novamente.")
+alert("Sessão expirada")
 
 localStorage.clear()
 
@@ -379,7 +475,7 @@ return
 
 }
 
-alert("Pedido enviado com sucesso!")
+alert("Pedido enviado!")
 
 cart=[]
 
@@ -387,7 +483,7 @@ updateCart()
 
 loadHistory()
 
-}catch(err){
+}catch{
 
 alert("Erro ao enviar pedido")
 
@@ -429,7 +525,8 @@ Pedido: R$ ${o.total.toFixed(2)}
 
 <br>
 
-Status: ${o.status}
+Status:
+<span class="status">${o.status}</span>
 
 </div>
 
