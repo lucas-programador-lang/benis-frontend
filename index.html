@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Benis Burguer</title>
 
 <link rel="stylesheet" href="style.css">
+
+<link rel="manifest" href="manifest.json">
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -21,7 +22,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <h1>🍔 Benis Burguer</h1>
 
-<div class="social">
+<div class="icons">
 
 <a href="https://www.instagram.com/obenisburguer?igsh=MWJjYnBobzYya2hlcw==" target="_blank">
 <i class="fab fa-instagram"></i>
@@ -40,44 +41,34 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <h2 id="status"></h2>
 
-<div id="contador"></div>
+<p id="contador"></p>
 
 </section>
 
 
-<section class="menu">
-
-<h2>Cardápio</h2>
-
-<div id="produtos"></div>
-
-</section>
+<section id="menu"></section>
 
 
 <section class="cart">
 
 <h2>Carrinho</h2>
 
-<ul id="cartItems"></ul>
+<ul id="cart"></ul>
 
-<h3>Total: R$ <span id="total">0</span></h3>
+<h3>Total R$ <span id="total">0</span></h3>
 
-<button id="checkout">Finalizar Pedido</button>
+<input id="cupom" placeholder="Cupom de desconto">
+
+<button onclick="finalizar()">Finalizar Pedido</button>
 
 </section>
 
 
-<section class="info">
+<section class="map">
 
 <h2>Localização</h2>
 
-<p>
-
-📍 R. Paulo Fortes, 6245 - Aponiã  
-Porto Velho - RO  
-76824-046 Brasil
-
-</p>
+<p>R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO</p>
 
 <iframe
 src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes%206245%20Porto%20Velho&t=&z=15&ie=UTF8&iwloc=&output=embed">
@@ -86,14 +77,7 @@ src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes%206245%20Porto%20Velho&t
 </section>
 
 
-<footer>
-
-<p>Delivery: (69) 9 9366-8336</p>
-
-</footer>
-
-<script src="script.js"></script>
+<script src="app.js"></script>
 
 </body>
-
 </html>
