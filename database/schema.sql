@@ -1,0 +1,29 @@
+CREATE TABLE clientes (
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+nome TEXT,
+telefone TEXT,
+pontos INTEGER DEFAULT 0
+
+);
+
+CREATE TABLE pedidos (
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+cliente TEXT,
+telefone TEXT,
+endereco TEXT,
+itens TEXT,
+total REAL,
+status TEXT,
+data DATETIME DEFAULT CURRENT_TIMESTAMP
+
+);
+
+CREATE TABLE cupons (
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+codigo TEXT,
+desconto INTEGER
+
+);
