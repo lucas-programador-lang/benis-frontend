@@ -1,36 +1,76 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Benis Burguer</title>
 
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 
 <body>
 
-<h1>🍔 Benis Burguer</h1>
+<header>
+  <h1>🍔 Benis Burguer</h1>
 
-<!-- CARDÁPIO -->
-<h2>Cardápio</h2>
-<div id="menu"></div>
+  <div class="social">
+    <a href="https://www.instagram.com/obenisburguer?igsh=MWJjYnBobzYya2hlcw==" target="_blank">
+      <i class="fab fa-instagram"></i>
+    </a>
+  </div>
+</header>
 
-<!-- CARRINHO -->
-<h2>Carrinho</h2>
+
+<section class="hero">
+  <h2>Cardápio</h2>
+  <p>Delivery em Porto Velho</p>
+</section>
+
+
+<section id="menu" class="menu"></section>
+
+
+<section class="mapa">
+
+<h2>📍 Localização</h2>
+
+<p>R. Paulo Fortes, 6245 - Aponiã - Porto Velho</p>
+
+<iframe
+src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes%206245%20Porto%20Velho&t=&z=15&ie=UTF8&iwloc=&output=embed">
+</iframe>
+
+</section>
+
+
+<div class="cart-float">
+
+<h3>Carrinho</h3>
 
 <ul id="cart"></ul>
 
-<h3>Total: R$ <span id="total">0</span></h3>
+<h4>Total R$ <span id="total">0</span></h4>
+
+<input id="cupom" placeholder="Cupom de desconto">
 
 <button onclick="checkout()">Finalizar Pedido</button>
+
+</div>
+
+
+<a class="whatsapp"
+href="https://wa.me/556993668336"
+target="_blank">
+
+<i class="fab fa-whatsapp"></i>
+
+</a>
+
 
 <script src="app.js"></script>
 
 </body>
-
 </html>
