@@ -1,113 +1,123 @@
+
 const produtos = [
 
+{name:"Misto Quente",preco:7},
+{name:"X-Bauru",preco:8},
 {name:"X-Burguer",preco:13},
 {name:"X-Salada",preco:14},
+{name:"X-Salada Especial",preco:17},
 {name:"X-Calabresa",preco:18},
 {name:"X-Bacon",preco:19},
+{name:"X-Franbacon",preco:20},
+{name:"X-Franbesa",preco:20},
 {name:"X-Frango",preco:18},
+{name:"X-Turbinado",preco:20},
+{name:"X-Bagunça",preco:20},
 {name:"X-Tudo",preco:23},
-{name:"X-Havaíno",preco:19},
+{name:"X-Havaino",preco:19},
 {name:"X-Benis",preco:26},
+{name:"Batata Frita",preco:15},
+{name:"Batata + Cheddar + Bacon",preco:25},
+{name:"Coca Cola 2L",preco:15},
+{name:"Coca Cola 1L",preco:10},
+{name:"Tuchaua 2L",preco:9},
+{name:"Dydyo 2L",preco:9},
+{name:"Coca Lata",preco:7}
 
-]
+];
 
-let carrinho=[]
-let total=0
+let carrinho=[];
 
-const container=document.getElementById("produtos")
+const produtosDiv=document.getElementById("produtos");
 
-produtos.forEach(p=>{
+produtos.forEach((p,i)=>{
 
-const div=document.createElement("div")
+const div=document.createElement("div");
 
-div.className="produto"
+div.className="produto";
 
 div.innerHTML=`
 
-<h3>${p.name}</h3>
+<span>${p.name} - R$${p.preco}</span>
 
-<p>R$ ${p.preco}</p>
+<button onclick="add(${i})">Adicionar</button>
 
-<button onclick="add('${p.name}',${p.preco})">
+`;
 
-Adicionar
+produtosDiv.appendChild(div);
 
-</button>
+});
 
-`
+function add(i){
 
-container.appendChild(div)
+carrinho.push(produtos[i]);
 
-})
-
-function add(nome,preco){
-
-carrinho.push({nome,preco})
-
-total+=preco
-
-renderCart()
+renderCart();
 
 }
 
 function renderCart(){
 
-const ul=document.getElementById("cartItems")
+const cart=document.getElementById("cartItems");
 
-ul.innerHTML=""
+cart.innerHTML="";
 
-carrinho.forEach(i=>{
+let total=0;
 
-const li=document.createElement("li")
+carrinho.forEach(p=>{
 
-li.innerText=i.nome
+const li=document.createElement("li");
 
-ul.appendChild(li)
+li.innerText=p.name+" - R$"+p.preco;
 
-})
+cart.appendChild(li);
 
-document.getElementById("total").innerText=total
+total+=p.preco;
 
-}
+});
 
-function lojaAberta(){
-
-const agora=new Date()
-
-const hora=agora.getHours()
-
-return hora>=19 && hora<=23
+document.getElementById("total").innerText=total;
 
 }
 
-function atualizarStatus(){
+function aberto(){
 
-const status=document.getElementById("statusLoja")
+const agora=new Date();
 
-if(lojaAberta()){
+const hora=agora.getHours();
 
-status.innerText="🟢 Aberto"
+const dia=agora.getDay();
 
-}else{
+if(dia==1) return false;
 
-status.innerText="🔴 Fechado"
-
-}
+return hora>=19 && hora<=23;
 
 }
 
-setInterval(atualizarStatus,1000)
+document.getElementById("checkout").onclick=()=>{
 
-document.getElementById("finalizar").onclick=()=>{
+if(!aberto()){
 
-if(!lojaAberta()){
+alert("Restaurante fechado!");
 
-alert("A loja está fechada!")
-
-return
+return;
 
 }
 
-window.open("https://wa.me/556993668336")
+alert("Pedido enviado!");
 
 }
+
+function status(){
+
+const abertoAgora=aberto();
+
+document.getElementById("status").innerText=
+
+abertoAgora ? "🟢 Aberto agora" : "🔴 Fechado";
+
+}
+
+setInterval(status,1000);
+
+status();
