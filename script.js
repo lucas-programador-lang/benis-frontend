@@ -1,82 +1,90 @@
-let cart=[]
+const produtos = [
+
+{name:"X-Burguer",preco:13},
+{name:"X-Salada",preco:14},
+{name:"X-Calabresa",preco:18},
+{name:"X-Bacon",preco:19},
+{name:"X-Frango",preco:18},
+{name:"X-Tudo",preco:23},
+{name:"X-Havaíno",preco:19},
+{name:"X-Benis",preco:26},
+
+]
+
+let carrinho=[]
 let total=0
 
-function add(name,price){
+const container=document.getElementById("produtos")
 
-cart.push({name,price})
+produtos.forEach(p=>{
 
-total+=price
+const div=document.createElement("div")
 
-update()
+div.className="produto"
+
+div.innerHTML=`
+
+<h3>${p.name}</h3>
+
+<p>R$ ${p.preco}</p>
+
+<button onclick="add('${p.name}',${p.preco})">
+
+Adicionar
+
+</button>
+
+`
+
+container.appendChild(div)
+
+})
+
+function add(nome,preco){
+
+carrinho.push({nome,preco})
+
+total+=preco
+
+renderCart()
 
 }
 
-function update(){
+function renderCart(){
 
-let items=document.getElementById("cart-items")
+const ul=document.getElementById("cartItems")
 
-items.innerHTML=""
+ul.innerHTML=""
 
-cart.forEach(i=>{
+carrinho.forEach(i=>{
 
-let li=document.createElement("li")
+const li=document.createElement("li")
 
-li.innerText=i.name+" R$"+i.price
+li.innerText=i.nome
 
-items.appendChild(li)
+ul.appendChild(li)
 
 })
 
 document.getElementById("total").innerText=total
 
-document.getElementById("cart-count").innerText=cart.length
+}
+
+function lojaAberta(){
+
+const agora=new Date()
+
+const hora=agora.getHours()
+
+return hora>=19 && hora<=23
 
 }
 
-function toggleCart(){
+function atualizarStatus(){
 
-document.getElementById("cart").classList.toggle("open")
+const status=document.getElementById("statusLoja")
 
-}
-
-function pix(){
-
-let txt="Pedido Benis Burguer%0A"
-
-cart.forEach(i=>{
-
-txt+=i.name+" R$"+i.price+"%0A"
-
-})
-
-txt+="Total:"+total
-
-window.open("https://wa.me/556993668336?text="+txt)
-
-}
-
-function review(){
-
-let name=document.getElementById("name").value
-let msg=document.getElementById("msg").value
-
-let div=document.createElement("div")
-
-div.innerHTML="<b>"+name+"</b><p>"+msg+"</p>"
-
-document.getElementById("reviews").appendChild(div)
-
-}
-
-function horario(){
-
-let now=new Date()
-
-let h=now.getHours()
-
-let status=document.getElementById("status")
-
-if(h>=19 && h<24){
+if(lojaAberta()){
 
 status.innerText="🟢 Aberto"
 
@@ -88,4 +96,18 @@ status.innerText="🔴 Fechado"
 
 }
 
-horario()
+setInterval(atualizarStatus,1000)
+
+document.getElementById("finalizar").onclick=()=>{
+
+if(!lojaAberta()){
+
+alert("A loja está fechada!")
+
+return
+
+}
+
+window.open("https://wa.me/556993668336")
+
+}
