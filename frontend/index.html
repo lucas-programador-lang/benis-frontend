@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Benis Burguer</title>
 
@@ -13,13 +16,18 @@
 
 <h1>🍔 Benis Burguer</h1>
 
+<!-- CARDÁPIO -->
+<h2>Cardápio</h2>
 <div id="menu"></div>
 
+<!-- CARRINHO -->
 <h2>Carrinho</h2>
 
 <ul id="cart"></ul>
 
-<button onclick="checkout()">Finalizar pedido</button>
+<h3>Total: R$ <span id="total">0</span></h3>
+
+<button onclick="checkout()">Finalizar Pedido</button>
 
 <script src="app.js"></script>
 
