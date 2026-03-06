@@ -24,7 +24,9 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <header>
 
-<h1>🍔 Benis Burguer</h1>
+<div class="logo">
+<img src="logo.png" alt="Benis Burguer">
+</div>
 
 <div class="social">
 
@@ -53,8 +55,6 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </section>
 
 
-<!-- NAVEGAÇÃO DE CATEGORIAS -->
-
 <section class="categorias">
 
 <button onclick="mostrarCategoria('hamburguer')">🍔 Hambúrgueres</button>
@@ -75,7 +75,7 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <h2>📍 Localização da Hamburgueria</h2>
 
-<p>R. Paulo Fortes, 6245 - Aponiã - Porto Velho</p>
+<p>R. Paulo Fortes, 6245 - Aponiã - Porto Velho - RO</p>
 
 <iframe
 src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes%206245%20Porto%20Velho&t=&z=15&ie=UTF8&iwloc=&output=embed">
@@ -88,7 +88,7 @@ src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes%206245%20Porto%20Velho&t
 
 <h2>🛵 Entregador em tempo real</h2>
 
-<div id="mapaEntrega" style="height:400px;"></div>
+<div id="mapaEntrega"></div>
 
 </section>
 
@@ -122,14 +122,13 @@ target="_blank">
 <script src="mapa.js"></script>
 <script src="app.js"></script>
 
+
 <script>
 
 if ("serviceWorker" in navigator) {
 
 navigator.serviceWorker.register("../service-worker.js")
-
 .then(() => console.log("Service Worker registrado"))
-
 .catch(err => console.log("Erro:", err));
 
 }
@@ -137,5 +136,4 @@ navigator.serviceWorker.register("../service-worker.js")
 </script>
 
 </body>
-
 </html>
