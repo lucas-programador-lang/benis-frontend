@@ -1,20 +1,41 @@
-const produtos=[
+// CARDÁPIO COMPLETO
 
-{name:"X-Burguer",preco:13,rating:4.7},
+const produtos = [
 
-{name:"X-Salada",preco:14,rating:4.5},
+{name:"Misto Quente",preco:7},
+{name:"X-Bauru",preco:8},
+{name:"X-Burguer",preco:13},
+{name:"X-Salada",preco:14},
+{name:"X-Salada Especial",preco:17},
+{name:"X-Calabresa",preco:18},
+{name:"X-Bacon",preco:19},
+{name:"X-Franbacon",preco:20},
+{name:"X-Franbesa",preco:20},
+{name:"X-Frango",preco:18},
+{name:"X-Turbinado",preco:20},
+{name:"X-Bagunça",preco:20},
+{name:"X-Tudo",preco:23},
+{name:"X-Havaiano",preco:19},
+{name:"X-Benis",preco:26},
 
-{name:"X-Bacon",preco:19,rating:4.8},
+{name:"Batata Frita",preco:15},
+{name:"Batata + Cheddar + Bacon",preco:25},
 
-{name:"X-Tudo",preco:23,rating:4.9},
-
-{name:"Batata",preco:15,rating:4.6}
+{name:"Coca Cola 2L",preco:15},
+{name:"Coca Cola 1L",preco:10},
+{name:"Tuchaua 2L",preco:9},
+{name:"Dydyo 2L",preco:9},
+{name:"Coca Cola Lata",preco:7}
 
 ]
+
+// CARRINHO
 
 let carrinho=[]
 
 const menu=document.getElementById("menu")
+
+// GERAR CARDÁPIO
 
 produtos.forEach((p,i)=>{
 
@@ -22,16 +43,21 @@ let card=document.createElement("div")
 
 card.className="card"
 
-card.innerHTML=
+card.innerHTML=`
 
-`<h3>${p.name}</h3>
-<div class="rating">⭐ ${p.rating}</div>
+<h3>${p.name}</h3>
+
 <p>R$ ${p.preco}</p>
-<button onclick="add(${i})">Adicionar</button>`
+
+<button onclick="add(${i})">Adicionar</button>
+
+`
 
 menu.appendChild(card)
 
 })
+
+// ADICIONAR ITEM
 
 function add(i){
 
@@ -43,6 +69,18 @@ recomendar()
 
 }
 
+// REMOVER ITEM
+
+function remover(index){
+
+carrinho.splice(index,1)
+
+render()
+
+}
+
+// ATUALIZAR CARRINHO
+
 function render(){
 
 const cart=document.getElementById("cart")
@@ -51,11 +89,14 @@ cart.innerHTML=""
 
 let total=0
 
-carrinho.forEach(p=>{
+carrinho.forEach((p,i)=>{
 
 let li=document.createElement("li")
 
-li.innerText=p.name+" R$"+p.preco
+li.innerHTML=
+
+`${p.name} - R$${p.preco}
+<button onclick="remover(${i})">❌</button>`
 
 cart.appendChild(li)
 
@@ -67,19 +108,23 @@ document.getElementById("total").innerText=total
 
 }
 
+// IA RECOMENDAÇÃO
+
 function recomendar(){
 
 if(carrinho.find(p=>p.name==="X-Burguer")){
 
 setTimeout(()=>{
 
-alert("🔥 Sugestão: adicione Batata!")
+alert("🔥 Combina muito com Batata Frita!")
 
 },500)
 
 }
 
 }
+
+// CUPOM
 
 function aplicarCupom(total){
 
@@ -95,7 +140,77 @@ return total
 
 }
 
+// HORÁRIO FUNCIONAMENTO
+
+function restauranteAberto(){
+
+const agora=new Date()
+
+const hora=agora.getHours()
+
+const dia=agora.getDay()
+
+if(dia===1) return false
+
+return hora>=19 && hora<24
+
+}
+
+// CRONÔMETRO
+
+function atualizarStatus(){
+
+const aberto=restauranteAberto()
+
+const status=document.getElementById("status")
+
+const contador=document.getElementById("contador")
+
+const agora=new Date()
+
+let alvo=new Date()
+
+if(aberto){
+
+status.innerText="🟢 Aberto"
+
+alvo.setHours(24,0,0)
+
+}else{
+
+status.innerText="🔴 Fechado"
+
+alvo.setHours(19,0,0)
+
+}
+
+const diff=alvo-agora
+
+const h=Math.floor(diff/1000/60/60)
+
+const m=Math.floor(diff/1000/60)%60
+
+const s=Math.floor(diff/1000)%60
+
+contador.innerText=`${h}h ${m}m ${s}s`
+
+}
+
+setInterval(atualizarStatus,1000)
+
+atualizarStatus()
+
+// FINALIZAR PEDIDO
+
 function checkout(){
+
+if(!restauranteAberto()){
+
+alert("Restaurante fechado")
+
+return
+
+}
 
 if(carrinho.length===0){
 
