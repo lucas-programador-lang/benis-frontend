@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -8,9 +9,8 @@
 
 <link rel="stylesheet" href="style.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 
@@ -20,56 +20,27 @@
 
 <h1>🍔 Benis Burguer</h1>
 
-<p>Sabor artesanal de verdade</p>
+<div class="social">
 
-<div class="status">
+<a href="https://www.instagram.com/obenisburguer?igsh=MWJjYnBobzYya2hlcw==" target="_blank">
+<i class="fab fa-instagram"></i>
+</a>
 
-<span id="statusLoja"></span>
-
-<span id="contador"></span>
+<a href="https://wa.me/556993668336" target="_blank">
+<i class="fab fa-whatsapp"></i>
+</a>
 
 </div>
 
 </header>
 
+<section class="status">
 
-<section class="info">
+<h2 id="status"></h2>
 
-<div>
-
-<i class="fa-solid fa-location-dot"></i>
-
-R. Paulo Fortes, 6245 - Aponiã  
-Porto Velho - RO
-
-</div>
-
-<div>
-
-<i class="fa-brands fa-instagram"></i>
-
-<a href="https://www.instagram.com/obenisburguer?igsh=MWJjYnBobzYya2hlcw==" target="_blank">
-
-Instagram
-
-</a>
-
-</div>
-
-<div>
-
-<i class="fa-brands fa-whatsapp"></i>
-
-<a href="https://wa.me/556993668336" target="_blank">
-
-WhatsApp
-
-</a>
-
-</div>
+<div id="contador"></div>
 
 </section>
-
 
 <section class="menu">
 
@@ -79,27 +50,37 @@ WhatsApp
 
 </section>
 
+<section class="cart">
 
-<div class="cart">
-
-<h3>🛒 Carrinho</h3>
+<h2>Carrinho</h2>
 
 <ul id="cartItems"></ul>
 
-<p>Total: R$ <span id="total">0</span></p>
+<h3>Total: R$ <span id="total">0</span></h3>
 
-<button id="finalizar">Finalizar Pedido</button>
+<button id="checkout">Finalizar Pedido</button>
 
-</div>
+</section>
 
+<section class="info">
 
-<section class="mapa">
+<h2>Localização</h2>
+
+<p>
+📍 R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO
+</p>
 
 <iframe
-src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes,%206245%20-%20Aponiã,%20Porto%20Velho&t=&z=15&ie=UTF8&iwloc=&output=embed">
+src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes%206245%20Porto%20Velho&t=&z=15&ie=UTF8&iwloc=&output=embed">
 </iframe>
 
 </section>
+
+<footer>
+
+<p>Delivery: (69) 9 9366-8336</p>
+
+</footer>
 
 <script src="script.js"></script>
 
