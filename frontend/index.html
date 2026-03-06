@@ -15,6 +15,9 @@
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
 </head>
 
 <body>
@@ -56,13 +59,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <section class="mapa">
 
-<h2>📍 Localização</h2>
+<h2>📍 Localização da Hamburgueria</h2>
 
 <p>R. Paulo Fortes, 6245 - Aponiã - Porto Velho</p>
 
 <iframe
 src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes%206245%20Porto%20Velho&t=&z=15&ie=UTF8&iwloc=&output=embed">
 </iframe>
+
+</section>
+
+
+<section class="entrega">
+
+<h2>🛵 Entregador em tempo real</h2>
+
+<div id="mapaEntrega" style="height:400px;"></div>
 
 </section>
 
@@ -91,7 +103,26 @@ target="_blank">
 </a>
 
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="mapa.js"></script>
+
 <script src="app.js"></script>
+
+
+<script>
+
+if ("serviceWorker" in navigator) {
+
+navigator.serviceWorker.register("../service-worker.js")
+
+.then(() => console.log("Service Worker registrado"))
+
+.catch(err => console.log("Erro:", err));
+
+}
+
+</script>
 
 </body>
 
