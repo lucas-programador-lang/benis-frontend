@@ -1,6 +1,8 @@
-// CARDÁPIO COMPLETO
+// CARDÁPIO POR CATEGORIA
 
-const produtos = [
+const cardapio = {
+
+hamburguer: [
 
 {name:"Misto Quente",preco:7},
 {name:"X-Bauru",preco:8},
@@ -16,10 +18,18 @@ const produtos = [
 {name:"X-Bagunça",preco:20},
 {name:"X-Tudo",preco:23},
 {name:"X-Havaiano",preco:19},
-{name:"X-Benis",preco:26},
+{name:"X-Benis",preco:26}
+
+],
+
+porcoes: [
 
 {name:"Batata Frita",preco:15},
-{name:"Batata + Cheddar + Bacon",preco:25},
+{name:"Batata + Cheddar + Bacon",preco:25}
+
+],
+
+bebidas: [
 
 {name:"Coca Cola 2L",preco:15},
 {name:"Coca Cola 1L",preco:10},
@@ -27,17 +37,39 @@ const produtos = [
 {name:"Dydyo 2L",preco:9},
 {name:"Coca Cola Lata",preco:7}
 
+],
+
+adicionais: [
+
+{name:"Hambúrguer extra",preco:5},
+{name:"Frango extra",preco:3},
+{name:"Ovo",preco:2},
+{name:"Bacon",preco:3},
+{name:"Calabresa",preco:3},
+{name:"Salsicha",preco:2},
+{name:"Banana",preco:2},
+{name:"Abacaxi",preco:3},
+{name:"Cheddar",preco:4},
+{name:"Catupiry",preco:4},
+{name:"Cebola caramelizada",preco:3}
+
 ]
+
+}
 
 // CARRINHO
 
-let carrinho=[]
+let carrinho = []
 
-const menu=document.getElementById("menu")
+const menu = document.getElementById("menu")
 
-// GERAR CARDÁPIO
+// MOSTRAR CATEGORIA
 
-produtos.forEach((p,i)=>{
+function mostrarCategoria(categoria){
+
+menu.innerHTML=""
+
+cardapio[categoria].forEach((p,i)=>{
 
 let card=document.createElement("div")
 
@@ -49,7 +81,7 @@ card.innerHTML=`
 
 <p>R$ ${p.preco}</p>
 
-<button onclick="add(${i})">Adicionar</button>
+<button onclick="add('${categoria}',${i})">Adicionar</button>
 
 `
 
@@ -57,11 +89,13 @@ menu.appendChild(card)
 
 })
 
+}
+
 // ADICIONAR ITEM
 
-function add(i){
+function add(cat,i){
 
-carrinho.push(produtos[i])
+carrinho.push(cardapio[cat][i])
 
 render()
 
@@ -79,7 +113,7 @@ render()
 
 }
 
-// ATUALIZAR CARRINHO
+// RENDER CARRINHO
 
 function render(){
 
@@ -93,10 +127,13 @@ carrinho.forEach((p,i)=>{
 
 let li=document.createElement("li")
 
-li.innerHTML=
+li.innerHTML=`
 
-`${p.name} - R$${p.preco}
-<button onclick="remover(${i})">❌</button>`
+${p.name} - R$${p.preco}
+
+<button onclick="remover(${i})">❌</button>
+
+`
 
 cart.appendChild(li)
 
@@ -140,7 +177,7 @@ return total
 
 }
 
-// HORÁRIO FUNCIONAMENTO
+// HORÁRIO RESTAURANTE
 
 function restauranteAberto(){
 
@@ -156,7 +193,7 @@ return hora>=19 && hora<24
 
 }
 
-// CRONÔMETRO
+// STATUS
 
 function atualizarStatus(){
 
@@ -243,3 +280,7 @@ window.open(
 )
 
 }
+
+// MOSTRAR HAMBURGUERES AO ABRIR
+
+mostrarCategoria("hamburguer")
