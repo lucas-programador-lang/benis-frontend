@@ -4,10 +4,10 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Poppins,Arial;
+font-family:Poppins,Arial,Helvetica,sans-serif;
 }
 
-/* FUNDO COM GRADIENT */
+/* FUNDO */
 
 body{
 background:linear-gradient(180deg,#050505,#0f0f0f,#050505);
@@ -28,9 +28,11 @@ backdrop-filter:blur(10px);
 border-bottom:1px solid rgba(255,255,255,0.05);
 }
 
-header h1{
-color:#ff8c00;
-font-size:26px;
+/* LOGO */
+
+.logo img{
+height:70px;
+object-fit:contain;
 }
 
 /* SOCIAL */
@@ -39,7 +41,7 @@ font-size:26px;
 color:white;
 font-size:22px;
 margin-left:15px;
-transition:.3s;
+transition:0.3s;
 }
 
 .social a:hover{
@@ -60,7 +62,20 @@ margin-bottom:10px;
 }
 
 .hero p{
-opacity:.7;
+opacity:0.7;
+}
+
+/* STATUS RESTAURANTE */
+
+#status{
+margin-top:10px;
+font-size:18px;
+font-weight:bold;
+}
+
+#contador{
+opacity:0.7;
+margin-top:5px;
 }
 
 /* CATEGORIAS */
@@ -71,6 +86,7 @@ justify-content:center;
 gap:15px;
 margin-bottom:30px;
 flex-wrap:wrap;
+padding:10px;
 }
 
 .categorias button{
@@ -80,7 +96,7 @@ color:white;
 padding:10px 18px;
 border-radius:20px;
 cursor:pointer;
-transition:.3s;
+transition:0.3s;
 font-size:14px;
 }
 
@@ -104,7 +120,7 @@ gap:25px;
 background:linear-gradient(180deg,#1a1a1a,#121212);
 padding:20px;
 border-radius:15px;
-transition:.3s;
+transition:0.3s;
 box-shadow:0 5px 20px rgba(0,0,0,0.6);
 position:relative;
 overflow:hidden;
@@ -115,7 +131,7 @@ transform:translateY(-6px);
 box-shadow:0 10px 30px rgba(0,0,0,0.9);
 }
 
-/* TITULO */
+/* TITULO DO LANCHE */
 
 .card h3{
 font-size:18px;
@@ -126,7 +142,7 @@ margin-bottom:10px;
 
 .card p{
 font-size:16px;
-opacity:.8;
+opacity:0.8;
 }
 
 /* BOTÃO */
@@ -140,7 +156,7 @@ border-radius:8px;
 cursor:pointer;
 color:white;
 font-weight:bold;
-transition:.3s;
+transition:0.3s;
 }
 
 .card button:hover{
@@ -154,12 +170,13 @@ transform:scale(1.05);
 position:fixed;
 right:20px;
 bottom:20px;
-background:rgba(20,20,20,0.9);
+background:rgba(20,20,20,0.95);
 backdrop-filter:blur(15px);
 padding:20px;
 width:260px;
 border-radius:15px;
 box-shadow:0 10px 40px rgba(0,0,0,0.7);
+z-index:100;
 }
 
 .cart-float h3{
@@ -173,6 +190,7 @@ margin-bottom:10px;
 
 .cart-float li{
 margin-bottom:6px;
+font-size:14px;
 }
 
 .cart-float button{
@@ -183,7 +201,7 @@ border-radius:8px;
 width:100%;
 margin-top:10px;
 cursor:pointer;
-transition:.3s;
+transition:0.3s;
 }
 
 .cart-float button:hover{
@@ -202,7 +220,7 @@ background:#1f1f1f;
 color:white;
 }
 
-/* WHATSAPP */
+/* WHATSAPP FLOAT */
 
 .whatsapp{
 position:fixed;
@@ -214,14 +232,15 @@ font-size:26px;
 padding:16px;
 border-radius:50%;
 box-shadow:0 5px 20px rgba(0,0,0,0.6);
-transition:.3s;
+transition:0.3s;
+z-index:100;
 }
 
 .whatsapp:hover{
 transform:scale(1.1);
 }
 
-/* MAPA */
+/* MAPA GOOGLE */
 
 iframe{
 width:100%;
@@ -237,19 +256,7 @@ margin-top:15px;
 margin-top:15px;
 border-radius:10px;
 overflow:hidden;
-}
-
-/* STATUS RESTAURANTE */
-
-#status{
-margin-top:10px;
-font-size:18px;
-font-weight:bold;
-}
-
-#contador{
-opacity:.7;
-margin-top:5px;
+height:400px;
 }
 
 /* PARTÍCULAS */
@@ -272,4 +279,29 @@ z-index:-1;
 @keyframes particlesMove{
 from{transform:translateY(0)}
 to{transform:translateY(-2000px)}
+}
+
+/* RESPONSIVO */
+
+@media(max-width:768px){
+
+header{
+padding:15px;
+}
+
+.logo img{
+height:55px;
+}
+
+.menu{
+padding:20px;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+}
+
+.cart-float{
+width:90%;
+left:5%;
+right:5%;
+}
+
 }
