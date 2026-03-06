@@ -1,37 +1,38 @@
-// PRODUTOS DO CARDÁPIO
-const produtos = [
+const produtos=[
 
-{name:"X-Burguer", preco:13},
-{name:"X-Salada", preco:14},
-{name:"X-Bacon", preco:19},
-{name:"X-Tudo", preco:23},
-{name:"Batata", preco:15}
+{name:"X-Burguer",preco:13,rating:4.7},
+
+{name:"X-Salada",preco:14,rating:4.5},
+
+{name:"X-Bacon",preco:19,rating:4.8},
+
+{name:"X-Tudo",preco:23,rating:4.9},
+
+{name:"Batata",preco:15,rating:4.6}
 
 ]
 
-// CARRINHO
-let carrinho = []
+let carrinho=[]
 
-// MENU
-const menu = document.getElementById("menu")
+const menu=document.getElementById("menu")
 
-// LISTAR PRODUTOS
 produtos.forEach((p,i)=>{
 
-let div = document.createElement("div")
+let card=document.createElement("div")
 
-div.className = "item"
+card.className="card"
 
-div.innerHTML = `
-${p.name} - R$ ${p.preco}
-<button onclick="add(${i})">Adicionar</button>
-`
+card.innerHTML=
 
-menu.appendChild(div)
+`<h3>${p.name}</h3>
+<div class="rating">⭐ ${p.rating}</div>
+<p>R$ ${p.preco}</p>
+<button onclick="add(${i})">Adicionar</button>`
+
+menu.appendChild(card)
 
 })
 
-// ADICIONAR AO CARRINHO
 function add(i){
 
 carrinho.push(produtos[i])
@@ -42,52 +43,37 @@ recomendar()
 
 }
 
-// RENDERIZAR CARRINHO
 function render(){
 
-const cart = document.getElementById("cart")
+const cart=document.getElementById("cart")
 
-cart.innerHTML = ""
+cart.innerHTML=""
 
-let total = 0
+let total=0
 
 carrinho.forEach(p=>{
 
-let li = document.createElement("li")
+let li=document.createElement("li")
 
-li.innerText = `${p.name} - R$ ${p.preco}`
+li.innerText=p.name+" R$"+p.preco
 
 cart.appendChild(li)
 
-total += p.preco
+total+=p.preco
 
 })
 
-// atualizar total
-document.getElementById("total").innerText = total
+document.getElementById("total").innerText=total
 
 }
 
-// IA DE RECOMENDAÇÃO
 function recomendar(){
 
-// se tiver batata
-if(carrinho.find(p => p.name === "Batata")){
+if(carrinho.find(p=>p.name==="X-Burguer")){
 
 setTimeout(()=>{
 
-alert("🔥 Sugestão: Adicione Cheddar + Bacon na Batata!")
-
-},500)
-
-}
-
-// se tiver X-Burguer
-if(carrinho.find(p => p.name === "X-Burguer")){
-
-setTimeout(()=>{
-
-alert("🍟 Combina muito com Batata Frita!")
+alert("🔥 Sugestão: adicione Batata!")
 
 },500)
 
@@ -95,53 +81,50 @@ alert("🍟 Combina muito com Batata Frita!")
 
 }
 
-// FINALIZAR PEDIDO
-async function checkout(){
+function aplicarCupom(total){
 
-if(carrinho.length === 0){
+const cupom=document.getElementById("cupom").value
 
-alert("Seu carrinho está vazio!")
+if(cupom==="BENIS10"){
+
+return total*0.9
+
+}
+
+return total
+
+}
+
+function checkout(){
+
+if(carrinho.length===0){
+
+alert("Carrinho vazio")
 
 return
 
 }
 
-let total = 0
+let total=0
 
-carrinho.forEach(p=> total += p.preco)
+carrinho.forEach(p=> total+=p.preco)
 
-try{
+total=aplicarCupom(total)
 
-await fetch("/api",{
+let msg="Pedido Benis Burguer:%0A"
 
-method:"POST",
+carrinho.forEach(p=>{
 
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-cliente:"Cliente",
-telefone:"000",
-endereco:"Porto Velho",
-itens:carrinho,
-total:total
+msg+=p.name+"%0A"
 
 })
 
-})
+msg+="Total: R$"+total
 
-alert("✅ Pedido enviado com sucesso!")
+window.open(
 
-carrinho = []
+"https://wa.me/556993668336?text="+msg
 
-render()
-
-}catch(e){
-
-alert("Erro ao enviar pedido")
-
-}
+)
 
 }
