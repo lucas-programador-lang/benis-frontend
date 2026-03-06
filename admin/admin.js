@@ -1,26 +1,61 @@
 async function carregar(){
 
+try{
+
 const res = await fetch("/api")
 
-const pedidos = await res.json()
+const data = await res.json()
 
-const tabela=document.getElementById("pedidos")
+const pedidos = data.results || data
 
-pedidos.results.forEach(p=>{
+const tabela = document.getElementById("pedidos")
 
-let tr=document.createElement("tr")
+tabela.innerHTML=""
 
-tr.innerHTML=
+let totalPedidos = 0
+let faturamento = 0
 
-`<td>${p.id}</td>
+pedidos.forEach(p=>{
+
+let tr = document.createElement("tr")
+
+tr.innerHTML = `
+<td>${p.id}</td>
 <td>${p.cliente}</td>
-<td>${p.total}</td>
-<td>${p.status}</td>`
+<td>R$ ${p.total}</td>
+<td>${p.status}</td>
+<td>
+<button onclick="alterarStatus(${p.id})">
+Atualizar
+</button>
+</td>
+`
 
 tabela.appendChild(tr)
 
+totalPedidos++
+faturamento += Number(p.total)
+
 })
+
+document.getElementById("totalPedidos").innerText = totalPedidos
+document.getElementById("faturamento").innerText = "R$ " + faturamento
+
+}catch(e){
+
+console.log("Erro ao carregar pedidos", e)
+
+}
+
+}
+
+function alterarStatus(id){
+
+alert("Status atualizado para pedido "+id)
 
 }
 
 carregar()
+
+// atualiza automaticamente a cada 5 segundos
+setInterval(carregar,5000)
