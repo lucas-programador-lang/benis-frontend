@@ -1,9 +1,9 @@
 body{
 
 font-family:Arial;
-background:#0b0b0b;
-color:white;
 margin:0;
+background:#0c0c0c;
+color:white;
 
 }
 
@@ -13,35 +13,27 @@ background:#111;
 padding:20px;
 display:flex;
 justify-content:space-between;
-align-items:center;
 
 }
 
-h1{
-
-color:#ff8c00;
-
-}
-
-.social i{
+.icons i{
 
 font-size:25px;
 margin-left:15px;
-color:white;
 
 }
 
-.menu{
+#menu{
 
 padding:20px;
 
 }
 
-.produto{
+.item{
 
 background:#1c1c1c;
-margin:10px 0;
 padding:15px;
+margin:10px 0;
 border-radius:10px;
 display:flex;
 justify-content:space-between;
@@ -50,7 +42,7 @@ justify-content:space-between;
 
 button{
 
-background:#ff8c00;
+background:#ff9800;
 border:none;
 padding:10px;
 border-radius:8px;
@@ -69,7 +61,7 @@ iframe{
 
 width:100%;
 height:300px;
-border:none;
+border:0;
 border-radius:10px;
 
 }
