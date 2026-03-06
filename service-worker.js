@@ -1,21 +1,49 @@
-self.addEventListener("install",e=>{
+const CACHE_NAME = "benis-burguer-v1";
 
-e.waitUntil(
-
-caches.open("benis")
-
-.then(cache=>cache.addAll([
+const urlsToCache = [
 
 "/",
+"/frontend/index.html",
+"/frontend/style.css",
+"/frontend/app.js",
+"/manifest.json"
 
-"/index.html",
+];
 
-"/style.css",
+self.addEventListener("install", event => {
 
-"/app.js"
+event.waitUntil(
 
-]))
+caches.open(CACHE_NAME)
 
-)
+.then(cache => {
+
+return cache.addAll(urlsToCache);
 
 })
+
+);
+
+});
+
+self.addEventListener("fetch", event => {
+
+event.respondWith(
+
+caches.match(event.request)
+
+.then(response => {
+
+if(response){
+
+return response;
+
+}
+
+return fetch(event.request);
+
+})
+
+);
+
+});
