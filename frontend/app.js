@@ -99,6 +99,18 @@ carrinho.push(cardapio[cat][i])
 
 render()
 
+// animação carrinho
+
+const box=document.querySelector(".cart-float")
+
+if(box){
+box.classList.add("animar")
+
+setTimeout(()=>{
+box.classList.remove("animar")
+},300)
+}
+
 recomendar()
 
 }
@@ -129,9 +141,19 @@ let li=document.createElement("li")
 
 li.innerHTML=`
 
-${p.name} - R$${p.preco}
+<div class="cart-info">
 
-<button onclick="remover(${i})">❌</button>
+<span class="cart-nome">${p.name}</span>
+
+<span class="cart-preco">R$ ${p.preco}</span>
+
+</div>
+
+<button class="remover-btn" onclick="remover(${i})">
+
+🗑
+
+</button>
 
 `
 
@@ -193,7 +215,7 @@ return hora>=19 && hora<24
 
 }
 
-// STATUS
+// STATUS RESTAURANTE
 
 function atualizarStatus(){
 
