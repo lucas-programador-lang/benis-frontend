@@ -65,7 +65,7 @@ margin-bottom:10px;
 opacity:.7;
 }
 
-/* STATUS RESTAURANTE */
+/* STATUS */
 
 #status{
 margin-top:10px;
@@ -122,8 +122,6 @@ padding:20px;
 border-radius:15px;
 transition:.3s;
 box-shadow:0 5px 20px rgba(0,0,0,0.6);
-position:relative;
-overflow:hidden;
 }
 
 .card:hover{
@@ -158,28 +156,65 @@ background:#ffa733;
 transform:scale(1.05);
 }
 
-/* CARRINHO PREMIUM */
+/* BOTÃO CARRINHO */
 
-.cart-float{
+.cart-button{
 position:fixed;
 right:20px;
 bottom:20px;
-background:rgba(20,20,20,0.95);
-backdrop-filter:blur(15px);
-padding:20px;
-width:270px;
-border-radius:15px;
-box-shadow:0 10px 40px rgba(0,0,0,0.7);
-z-index:100;
+background:#ff8c00;
+color:white;
+font-size:20px;
+padding:15px;
+border-radius:50px;
+cursor:pointer;
+box-shadow:0 10px 30px rgba(0,0,0,0.6);
+z-index:200;
+display:flex;
+align-items:center;
+gap:8px;
 transition:.3s;
 }
 
-/* LISTA DO CARRINHO */
+.cart-button:hover{
+transform:scale(1.05);
+}
 
-.cart-float ul{
+/* CONTADOR */
+
+#cart-count{
+background:white;
+color:black;
+border-radius:50%;
+padding:3px 7px;
+font-size:12px;
+}
+
+/* PAINEL LATERAL */
+
+.cart-panel{
+position:fixed;
+top:0;
+right:-350px;
+width:320px;
+height:100vh;
+background:#111;
+padding:20px;
+transition:.4s;
+z-index:300;
+box-shadow:-5px 0 30px rgba(0,0,0,0.7);
+overflow-y:auto;
+}
+
+.cart-panel.open{
+right:0;
+}
+
+/* LISTA CARRINHO */
+
+.cart-panel ul{
 list-style:none;
-padding:0;
-margin-bottom:10px;
+margin-top:15px;
 display:flex;
 flex-direction:column;
 gap:10px;
@@ -187,18 +222,13 @@ gap:10px;
 
 /* ITEM */
 
-.cart-float li{
+.cart-panel li{
 display:flex;
 justify-content:space-between;
 align-items:center;
 background:#1b1b1b;
 padding:10px;
 border-radius:10px;
-transition:.2s;
-}
-
-.cart-float li:hover{
-background:#252525;
 }
 
 /* INFO */
@@ -210,7 +240,6 @@ flex-direction:column;
 
 .cart-nome{
 font-weight:bold;
-font-size:14px;
 }
 
 .cart-preco{
@@ -218,7 +247,7 @@ font-size:13px;
 opacity:.7;
 }
 
-/* BOTÃO REMOVER */
+/* REMOVER */
 
 .remover-btn{
 background:#2a2a2a;
@@ -231,7 +260,6 @@ cursor:pointer;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:14px;
 transition:.2s;
 }
 
@@ -243,7 +271,7 @@ transform:scale(1.1);
 
 /* BOTÃO FINALIZAR */
 
-.cart-float button{
+.cart-panel button{
 background:#ff8c00;
 border:none;
 padding:10px;
@@ -254,7 +282,7 @@ cursor:pointer;
 transition:.3s;
 }
 
-.cart-float button:hover{
+.cart-panel button:hover{
 background:#ffa733;
 }
 
@@ -270,7 +298,7 @@ background:#1f1f1f;
 color:white;
 }
 
-/* WHATSAPP FLOAT */
+/* WHATSAPP */
 
 .whatsapp{
 position:fixed;
@@ -290,7 +318,7 @@ z-index:100;
 transform:scale(1.1);
 }
 
-/* MAPA GOOGLE */
+/* MAPA */
 
 iframe{
 width:100%;
@@ -299,8 +327,6 @@ border:0;
 border-radius:10px;
 margin-top:15px;
 }
-
-/* MAPA ENTREGADOR */
 
 #mapaEntrega{
 margin-top:15px;
@@ -348,10 +374,8 @@ padding:20px;
 grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
 }
 
-.cart-float{
+.cart-panel{
 width:90%;
-left:5%;
-right:5%;
 }
 
 }
