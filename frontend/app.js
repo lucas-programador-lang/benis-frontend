@@ -63,6 +63,16 @@ let carrinho = []
 
 const menu = document.getElementById("menu")
 
+// ABRIR / FECHAR CARRINHO
+
+function toggleCarrinho(){
+
+const panel = document.getElementById("cartPanel")
+
+panel.classList.toggle("open")
+
+}
+
 // MOSTRAR CATEGORIA
 
 function mostrarCategoria(categoria){
@@ -99,16 +109,20 @@ carrinho.push(cardapio[cat][i])
 
 render()
 
-// animação carrinho
+// animação botão carrinho
 
-const box=document.querySelector(".cart-float")
+const botao=document.querySelector(".cart-button")
 
-if(box){
-box.classList.add("animar")
+if(botao){
+
+botao.style.transform="scale(1.2)"
 
 setTimeout(()=>{
-box.classList.remove("animar")
-},300)
+
+botao.style.transform="scale(1)"
+
+},200)
+
 }
 
 recomendar()
@@ -149,11 +163,7 @@ li.innerHTML=`
 
 </div>
 
-<button class="remover-btn" onclick="remover(${i})">
-
-🗑
-
-</button>
+<button class="remover-btn" onclick="remover(${i})">🗑</button>
 
 `
 
@@ -164,6 +174,16 @@ total+=p.preco
 })
 
 document.getElementById("total").innerText=total
+
+// CONTADOR CARRINHO
+
+const contador=document.getElementById("cart-count")
+
+if(contador){
+
+contador.innerText=carrinho.length
+
+}
 
 }
 
