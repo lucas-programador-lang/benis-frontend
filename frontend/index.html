@@ -9,7 +9,6 @@
 <title>Benis Burguer</title>
 
 <link rel="stylesheet" href="style.css">
-
 <link rel="manifest" href="../manifest.json">
 
 <link rel="stylesheet"
@@ -58,11 +57,8 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <section class="categorias">
 
 <button onclick="mostrarCategoria('hamburguer')">🍔 Hambúrgueres</button>
-
 <button onclick="mostrarCategoria('porcoes')">🍟 Porções</button>
-
 <button onclick="mostrarCategoria('adicionais')">🥓 Adicionais</button>
-
 <button onclick="mostrarCategoria('bebidas')">🥤 Bebidas</button>
 
 </section>
@@ -93,7 +89,18 @@ src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes%206245%20Porto%20Velho&t
 </section>
 
 
-<div class="cart-float">
+<!-- BOTÃO CARRINHO -->
+
+<div class="cart-button" onclick="toggleCarrinho()">
+
+🛒 <span id="cart-count">0</span>
+
+</div>
+
+
+<!-- CARRINHO LATERAL -->
+
+<div class="cart-panel" id="cartPanel">
 
 <h3>🛒 Carrinho</h3>
 
