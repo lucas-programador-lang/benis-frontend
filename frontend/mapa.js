@@ -1,39 +1,71 @@
-let mapa
-let marcador
+/**
+ * MINDSET ELITE - GeoEngine v4.0
+ * Módulo: Localização e Rastreio em Tempo Real
+ */
 
-function iniciarMapa(){
+let mapa;
+let marcadorUsuario;
+let marcadorLoja;
 
-mapa = L.map('mapaEntrega').setView([-8.76077,-63.8999],13)
+// Coordenadas da Benis Burguer (Aponiã, Porto Velho)
+const COORDS_LOJA = [-8.7402, -63.8750]; 
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-attribution:'© OpenStreetMap'
-}).addTo(mapa)
+function iniciarMapa() {
+    // Inicializa o mapa focado na loja
+    mapa = L.map('mapaEntrega', {
+        zoomControl: false, // Removemos para um visual mais limpo
+        scrollWheelZoom: false // Evita zoom acidental ao rolar a página
+    }).setView(COORDS_LOJA, 15);
 
-if(navigator.geolocation){
+    // Camada de Mapa com Filtro Dark (via CSS inline)
+    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        className: 'map-tiles-dark' // Classe para aplicar o filtro no CSS
+    }).addTo(mapa);
 
-navigator.geolocation.watchPosition(posicao => {
+    // Ícone Personalizado para a Loja
+    const iconLoja = L.divIcon({
+        className: 'custom-div-icon',
+        html: "<div style='background-color:#ff8c00; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px #ff8c00;'></div>",
+        iconSize: [15, 15],
+        iconAnchor: [7, 7]
+    });
 
-const lat = posicao.coords.latitude
-const lng = posicao.coords.longitude
+    // Marcador da Loja (Fixo)
+    marcadorLoja = L.marker(COORDS_LOJA, { icon: iconLoja })
+        .addTo(mapa)
+        .bindPopup("<b>Benis Burguer</b><br>O melhor de PVH!")
+        .openPopup();
 
-if(!marcador){
+    // Rastreio de Localização (Cliente ou Entregador)
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(
+            (posicao) => {
+                const { latitude, longitude } = posicao.coords;
+                const novasCoords = [latitude, longitude];
 
-marcador = L.marker([lat,lng]).addTo(mapa)
-.setPopup("Entregador aqui")
-.openPopup()
+                if (!marcadorUsuario) {
+                    marcadorUsuario = L.marker(novasCoords).addTo(mapa)
+                        .bindPopup("Você está aqui");
+                } else {
+                    marcadorUsuario.setLatLng(novasCoords);
+                }
 
-}else{
-
-marcador.setLatLng([lat,lng])
-
+                // Ajusta a visão para mostrar ambos (Loja e Usuário)
+                const bounds = L.latLngBounds([COORDS_LOJA, novasCoords]);
+                mapa.fitBounds(bounds, { padding: [50, 50] });
+            },
+            (erro) => console.warn("Erro ao obter localização:", erro.message),
+            { enableHighAccuracy: true }
+        );
+    }
 }
 
-mapa.setView([lat,lng],15)
-
-})
-
+// Adicione este pequeno ajuste de CSS no seu style.css para o Dark Mode do Mapa
+/*
+.map-tiles-dark {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }
+*/
 
-}
-
-document.addEventListener("DOMContentLoaded", iniciarMapa)
+document.addEventListener("DOMContentLoaded", iniciarMapa);
