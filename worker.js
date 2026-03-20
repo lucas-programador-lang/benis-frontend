@@ -1,17 +1,17 @@
 /**
- * MINDSET ELITE - Cloudflare Worker v4.0
- * Módulo: API Central de Pedidos & Status
+ * BENIS BURGUER - Cloudflare Worker v4.1
+ * Módulo: API Central de Pedidos & Banco de Dados D1
  */
 
 export default {
   async fetch(request, env) {
     const corsHeaders = {
-      "Access-Control-Allow-Origin": "*", // Em produção, você pode colocar seu domínio aqui
+      "Access-Control-Allow-Origin": "*", // Em produção, mude para seu domínio
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     };
 
-    // Responde a requisições de pré-verificação (CORS)
+    // Responde ao Preflight do CORS
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: corsHeaders });
     }
@@ -19,46 +19,46 @@ export default {
     const url = new URL(request.url);
 
     try {
-      // --- ROTA: ATUALIZAR STATUS DO PEDIDO ---
-      if (request.method === "POST" && url.pathname.includes("/status")) {
+      // --- ROTA: ATUALIZAR STATUS (POST /api/status) ---
+      if (request.method === "POST" && url.pathname.endsWith("/status")) {
         const { id, status } = await request.json();
         
         await env.DB.prepare("UPDATE pedidos SET status = ? WHERE id = ?")
           .bind(status, id)
           .run();
 
-        return new Response(JSON.stringify({ success: true }), {
+        return new Response(JSON.stringify({ success: true, statusAtualizado: status }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
 
-      // --- ROTA: CRIAR NOVO PEDIDO ---
+      // --- ROTA: CRIAR NOVO PEDIDO (POST /api) ---
       if (request.method === "POST") {
-        const pedido = await request.json();
+        const p = await request.json();
 
-        // Inserção profissional com Timestamp
+        // Inserção com tratamento para valores nulos
         await env.DB.prepare(
-          "INSERT INTO pedidos (cliente, telefone, endereco, itens, total, status) VALUES (?, ?, ?, ?, ?, ?)"
+          "INSERT INTO pedidos (cliente, telefone, endereco, itens, total, status, data) VALUES (?, ?, ?, ?, ?, ?, DATETIME('now', 'localtime'))"
         )
         .bind(
-          pedido.cliente,
-          pedido.telefone,
-          pedido.endereco || "Retirada",
-          JSON.stringify(pedido.itens),
-          pedido.total,
+          p.cliente || "Cliente Balcão",
+          p.telefone || "",
+          p.endereco || "Porto Velho",
+          p.itens || "[]",
+          p.total || 0,
           "novo"
         )
         .run();
 
-        return new Response(JSON.stringify({ ok: true, msg: "Pedido recebido!" }), {
+        return new Response(JSON.stringify({ ok: true, msg: "Pedido Gravado no D1!" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
 
-      // --- ROTA: LISTAR PEDIDOS (PARA O ADMIN) ---
+      // --- ROTA: LISTAR PEDIDOS (GET /api) ---
       if (request.method === "GET") {
         const { results } = await env.DB.prepare(
-          "SELECT * FROM pedidos ORDER BY id DESC LIMIT 100"
+          "SELECT * FROM pedidos ORDER BY id DESC LIMIT 50"
         ).all();
 
         return new Response(JSON.stringify(results), {
@@ -73,6 +73,6 @@ export default {
       });
     }
 
-    return new Response("Rota não encontrada", { status: 404, headers: corsHeaders });
+    return new Response("Rota Inválida", { status: 404, headers: corsHeaders });
   }
 }
