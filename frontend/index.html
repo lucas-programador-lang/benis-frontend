@@ -1,146 +1,99 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Benis Burguer</title>
-
-<link rel="stylesheet" href="style.css">
-<link rel="manifest" href="../manifest.json">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Benis Burguer | Elite Delivery</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="../manifest.json">
 </head>
-
 <body>
 
-<header>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Benis Burguer">
+        </div>
+        <div class="social">
+            <a href="https://www.instagram.com/obenisburguer" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/556993668336" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        </div>
+    </header>
 
-<div class="logo">
-<img src="logo.png" alt="Benis Burguer">
-</div>
+    <main>
+        <section class="hero">
+            <h2>O melhor de Porto Velho</h2>
+            <div class="status-container">
+                <span id="statusLabel" class="status-offline">● Verificando status...</span>
+                <p id="statusTimer" class="description">Carregando horários...</p>
+            </div>
+        </section>
 
-<div class="social">
+        <nav class="categorias">
+            <button class="tab-btn active" onclick="mostrarCategoria('hamburguer')">🍔 Burguers</button>
+            <button class="tab-btn" onclick="mostrarCategoria('porcoes')">🍟 Porções</button>
+            <button class="tab-btn" onclick="mostrarCategoria('adicionais')">🥓 Extras</button>
+            <button class="tab-btn" onclick="mostrarCategoria('bebidas')">🥤 Bebidas</button>
+        </nav>
 
-<a href="https://www.instagram.com/obenisburguer?igsh=MWJjYnBobzYya2hlcw==" target="_blank">
-<i class="fab fa-instagram"></i>
-</a>
+        <section id="menu" class="menu"></section>
 
-<a href="https://wa.me/556993668336" target="_blank">
-<i class="fab fa-whatsapp"></i>
-</a>
+        <section class="mapa-section" style="padding: 20px 5%;">
+            <h2 style="margin-bottom: 15px; text-align: center;">📍 Onde estamos</h2>
+            <div class="card-item" style="opacity: 1; transform: none; padding: 15px;">
+                <p style="margin-bottom: 10px; font-size: 14px; text-align: center;">R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO</p>
+                <div id="mapaEntrega" style="height: 300px; border-radius: 15px; overflow: hidden; border: 1px solid var(--glass-border);"></div>
+            </div>
+        </section>
+    </main>
 
-</div>
+    <div class="cart-icon-wrapper" onclick="toggleCarrinho()">
+        <i class="fas fa-shopping-basket" style="font-size: 24px; color: white;"></i>
+        <span id="cartCount">0</span>
+    </div>
 
-</header>
+    <aside class="cart-panel" id="cartPanel">
+        <div class="cart-header">
+            <h3>Seu Pedido</h3>
+            <button onclick="toggleCarrinho()" style="background:none; border:none; color:white; font-size: 20px; cursor:pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
 
+        <ul id="cartItems" class="cart-list">
+            </ul>
 
-<section class="hero">
+        <div class="cart-footer" style="margin-top: 30px; border-top: 1px solid var(--glass-border); padding-top: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <span style="font-weight: 600;">Total:</span>
+                <span id="totalValue" style="color: var(--primary); font-weight: 700; font-size: 20px;">R$ 0,00</span>
+            </div>
+            
+            <input type="text" id="cupom" placeholder="🏷️ Tem um cupom?" style="margin-bottom: 15px;">
+            
+            <button class="add-btn" onclick="checkout()" style="width: 100%; font-size: 18px;">
+                <i class="fab fa-whatsapp"></i> Enviar Pedido
+            </button>
+        </div>
+    </aside>
 
-<h2>Cardápio</h2>
-
-<p>Delivery em Porto Velho</p>
-
-<div id="status"></div>
-<div id="contador"></div>
-
-</section>
-
-
-<section class="categorias">
-
-<button onclick="mostrarCategoria('hamburguer')">🍔 Hambúrgueres</button>
-<button onclick="mostrarCategoria('porcoes')">🍟 Porções</button>
-<button onclick="mostrarCategoria('adicionais')">🥓 Adicionais</button>
-<button onclick="mostrarCategoria('bebidas')">🥤 Bebidas</button>
-
-</section>
-
-
-<section id="menu" class="menu"></section>
-
-
-<section class="mapa">
-
-<h2>📍 Localização da Hamburgueria</h2>
-
-<p>R. Paulo Fortes, 6245 - Aponiã - Porto Velho - RO</p>
-
-<iframe
-src="https://maps.google.com/maps?q=R.%20Paulo%20Fortes%206245%20Porto%20Velho&t=&z=15&ie=UTF8&iwloc=&output=embed">
-</iframe>
-
-</section>
-
-
-<section class="entrega">
-
-<h2>🛵 Entregador em tempo real</h2>
-
-<div id="mapaEntrega"></div>
-
-</section>
-
-
-<!-- BOTÃO CARRINHO -->
-
-<div class="cart-button" onclick="toggleCarrinho()">
-
-🛒 <span id="cart-count">0</span>
-
-</div>
-
-
-<!-- CARRINHO LATERAL -->
-
-<div class="cart-panel" id="cartPanel">
-
-<h3>🛒 Carrinho</h3>
-
-<ul id="cart"></ul>
-
-<h4>Total R$ <span id="total">0</span></h4>
-
-<input id="cupom" placeholder="Cupom de desconto">
-
-<button onclick="checkout()">Finalizar Pedido</button>
-
-</div>
-
-
-<a class="whatsapp"
-href="https://wa.me/556993668336"
-target="_blank">
-
-<i class="fab fa-whatsapp"></i>
-
-</a>
-
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script src="mapa.js"></script>
-<script src="app.js"></script>
-
-
-<script>
-
-if ("serviceWorker" in navigator) {
-
-navigator.serviceWorker.register("../service-worker.js")
-.then(() => console.log("Service Worker registrado"))
-.catch(err => console.log("Erro:", err));
-
-}
-
-</script>
-
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+    
+    <script>
+        // Registro do Service Worker para PWA
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("../service-worker.js")
+                .then(reg => console.log("PWA Ativo!", reg.scope))
+                .catch(err => console.error("Erro PWA:", err));
+            });
+        }
+    </script>
 </body>
 </html>
