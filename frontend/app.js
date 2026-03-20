@@ -1,6 +1,6 @@
 /**
- * BENIS BURGUER - Elite Logic Engine v4.1
- * Módulo: UI Dinâmica, Sincronização de Navbar & Checkout WhatsApp
+ * BENIS BURGUER - Elite Logic Engine v4.2
+ * Módulo: UI Dinâmica, Sistema de Cupons & Checkout WhatsApp
  */
 
 const cardapio = {
@@ -34,41 +34,49 @@ const cardapio = {
     ]
 };
 
+// --- VARIÁVEIS DE ESTADO ---
 let carrinho = JSON.parse(localStorage.getItem('benis_cart')) || [];
-const menuContainer = document.getElementById("menu");
+let descontoPercentual = 0;
+let cupomAtivo = "";
+
+const CUPONS_VALIDOS = {
+    "PRIMEIRACOMPRA": 10,
+    "BENIS15": 15,
+    "PORTOWEST": 5
+};
 
 const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-// --- GERENCIAMENTO DE UI ---
+// --- INTERFACE E NAVEGAÇÃO ---
 
 function toggleCarrinho() {
     const panel = document.getElementById("cartPanel");
+    const overlay = document.getElementById("cartOverlay");
     panel.classList.toggle("open");
+    if (overlay) overlay.classList.toggle("active");
 }
 
 function mostrarCategoria(categoria) {
+    const menuContainer = document.getElementById("menu");
     if (!menuContainer) return;
     
     menuContainer.innerHTML = "";
     
-    // Sincroniza os botões da nova navbar (.tab-btn)
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
-        // Checa tanto data-cat quanto data-category para evitar erros de versão
         const catAttr = btn.getAttribute('data-cat') || btn.getAttribute('data-category');
         if(catAttr === categoria) btn.classList.add('active');
     });
 
-    // Renderiza os itens
     cardapio[categoria].forEach((item, index) => {
         const card = document.createElement("div");
         card.className = "card-item";
-        card.style.animationDelay = `${index * 0.05}s`; // Animação mais rápida
+        card.style.animationDelay = `${index * 0.05}s`;
         
         card.innerHTML = `
             <div class="card-info">
                 <h3>${item.name}</h3>
-                <p class="description">${item.desc || "Adicional para seu Benis"}</p>
+                <p class="description">${item.desc || "O melhor de Porto Velho"}</p>
                 <span class="price">${formatarMoeda(item.preco)}</span>
             </div>
             <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index})">
@@ -83,12 +91,11 @@ function mostrarCategoria(categoria) {
 
 function adicionarAoCarrinho(cat, index) {
     const item = cardapio[cat][index];
-    // Adiciona um ID único para cada item no carrinho para permitir remover duplicatas individualmente
     carrinho.push({ ...item, cartId: Date.now() + Math.random() });
     
     atualizarInterface();
     salvarDados();
-    mostrarToast(`${item.name} adicionado!`);
+    mostrarToast(`${item.name} no carrinho!`);
 }
 
 function removerDoCarrinho(cartId) {
@@ -97,17 +104,38 @@ function removerDoCarrinho(cartId) {
     salvarDados();
 }
 
+function aplicarCupom() {
+    const input = document.getElementById('cupom');
+    const btn = document.querySelector('.apply-btn');
+    const codigo = input.value.toUpperCase().trim();
+
+    if (CUPONS_VALIDOS[codigo]) {
+        descontoPercentual = CUPONS_VALIDOS[codigo];
+        cupomAtivo = codigo;
+        
+        btn.innerHTML = "✅ Ativo";
+        btn.style.background = "#25d366";
+        input.disabled = true;
+        
+        atualizarInterface();
+        mostrarToast(`Cupom ${codigo} aplicado!`);
+    } else {
+        mostrarToast("Cupom inválido! ❌");
+        input.value = "";
+    }
+}
+
 function atualizarInterface() {
     const cartList = document.getElementById("cartItems");
-    const totalElement = document.getElementById("totalValue");
     const subtotalElement = document.getElementById("subtotalValue");
+    const totalElement = document.getElementById("totalValue");
     const countElement = document.getElementById("cartCount");
     const fabLabel = document.getElementById("cartFabTotal");
 
     if (!cartList) return;
 
     cartList.innerHTML = "";
-    let total = 0;
+    let subtotal = 0;
 
     carrinho.forEach(item => {
         const div = document.createElement("div");
@@ -117,42 +145,45 @@ function atualizarInterface() {
                 <p class="name">${item.name}</p>
                 <p class="price-sm">${formatarMoeda(item.preco)}</p>
             </div>
-            <button class="del-btn" onclick="removerDoCarrinho(${item.cartId})" style="background:none; border:none; color:#ff4d4d; cursor:pointer; padding: 10px;">
+            <button onclick="removerDoCarrinho(${item.cartId})" style="background:none; border:none; color:#ff4d4d; cursor:pointer;">
                 <i class="fas fa-trash"></i>
             </button>
         `;
         cartList.appendChild(div);
-        total += item.preco;
+        subtotal += item.preco;
     });
 
-    // Atualiza badges e labels
+    const valorDesconto = (subtotal * descontoPercentual) / 100;
+    const totalFinal = subtotal - valorDesconto;
+
     if (countElement) countElement.innerText = carrinho.length;
-    if (totalElement) totalElement.innerText = formatarMoeda(total);
-    if (subtotalElement) subtotalElement.innerText = formatarMoeda(total);
-    if (fabLabel) fabLabel.innerText = formatarMoeda(total);
+    if (subtotalElement) subtotalElement.innerText = formatarMoeda(subtotal);
+    if (totalElement) totalElement.innerText = formatarMoeda(totalFinal);
+    if (fabLabel) fabLabel.innerText = formatarMoeda(totalFinal);
 }
 
 function salvarDados() {
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
 }
 
-// --- FEEDBACK E STATUS ---
+// --- STATUS E FEEDBACK ---
 
 function mostrarToast(msg) {
     const toast = document.createElement("div");
+    toast.className = "toast-elite";
     toast.style.cssText = `
         position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-        background: rgba(255, 140, 0, 0.9); color: white; padding: 12px 25px;
-        border-radius: 50px; z-index: 3000; font-weight: 600; font-size: 14px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px);
-        animation: slideUp 0.3s ease;
+        background: var(--gradient-glow); color: white; padding: 12px 25px;
+        border-radius: 50px; z-index: 4000; font-weight: 600; font-size: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+        animation: fadeInUp 0.3s ease;
     `;
-    toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+    toast.innerHTML = `<i class="fas fa-hamburger"></i> ${msg}`;
     document.body.appendChild(toast);
     setTimeout(() => {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
-    }, 2000);
+    }, 2500);
 }
 
 function gerenciarStatus() {
@@ -164,26 +195,29 @@ function gerenciarStatus() {
     const hora = agora.getHours();
     const dia = agora.getDay();
     
-    // Aberto Terça (2) a Domingo (0), das 18h às 00h (Porto Velho Time)
+    // Aberto Terça (2) a Domingo (0), das 18h às 00h (PVH)
     const estaAberto = (dia !== 1 && hora >= 18 && hora < 24);
     
     if (dot && text) {
         dot.className = estaAberto ? "status-dot online" : "status-dot offline";
         text.innerText = estaAberto ? "Aberto Agora" : "Fechado no momento";
-        if (timer) timer.innerText = estaAberto ? "Peça agora seu brabo!" : "Abrimos às 18:00";
+        if (timer) timer.innerText = estaAberto ? "Peça o seu agora!" : "Abrimos às 18:00";
     }
 }
 
-// --- CHECKOUT ---
+// --- CHECKOUT WHATSAPP ---
 
 function checkout() {
     if (carrinho.length === 0) {
-        mostrarToast("O carrinho está vazio!");
+        mostrarToast("Seu carrinho está vazio!");
         return;
     }
 
-    let total = carrinho.reduce((acc, item) => acc + item.preco, 0);
-    let msg = "*NOVO PEDIDO - BENIS BURGUER*%0A";
+    let subtotal = carrinho.reduce((acc, item) => acc + item.preco, 0);
+    let valorDesconto = (subtotal * descontoPercentual) / 100;
+    let totalFinal = subtotal - valorDesconto;
+
+    let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*%0A";
     msg += "------------------------------%0A";
     
     carrinho.forEach(item => {
@@ -191,17 +225,18 @@ function checkout() {
     });
     
     msg += "------------------------------%0A";
-    msg += `*TOTAL: ${formatarMoeda(total)}*%0A%0A`;
-    msg += "📍 _Por favor, envie sua localização abaixo._";
+    msg += `*Subtotal:* ${formatarMoeda(subtotal)}%0A`;
+    if(cupomAtivo) msg += `*Cupom:* ${cupomAtivo} (-${descontoPercentual}%)%0A`;
+    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A`;
+    msg += "📍 _Vou enviar minha localização a seguir..._";
 
-    // Número do Benis Burguer em Porto Velho
     window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
 }
 
 // --- INICIALIZAÇÃO ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Configura eventos de clique na Navbar
+    // Evento de clique na Navbar
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const categoria = btn.getAttribute('data-cat') || btn.getAttribute('data-category');
@@ -209,12 +244,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Inicia o app
+    // Evento do botão de Cupom
+    const btnCupom = document.querySelector('.apply-btn');
+    if(btnCupom) btnCupom.onclick = aplicarCupom;
+
     mostrarCategoria("hamburguer");
     atualizarInterface();
     gerenciarStatus();
     
-    // Remove o Loader
+    // Timer para o Loader
     setTimeout(() => {
         const loader = document.getElementById('loader');
         if (loader) {
