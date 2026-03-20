@@ -11,87 +11,116 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/icon-192.png">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#ff8c00">
 </head>
 <body>
 
-    <header>
-        <div class="logo">
-            <img src="logo.png" alt="Benis Burguer">
+    <div id="loader" class="loader-wrapper">
+        <div class="loader-content">
+            <img src="logo.png" alt="Carregando..." class="loader-logo">
+            <div class="progress-bar"></div>
         </div>
-        <div class="social">
-            <a href="https://www.instagram.com/obenisburguer" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="https://wa.me/556993668336" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    </div>
+
+    <header class="glass-header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="logo.png" alt="Benis Burguer" class="glow-effect">
+            </div>
+            <div class="social-links">
+                <a href="https://www.instagram.com/obenisburguer" target="_blank" class="glass-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/556993668336" target="_blank" class="glass-icon"><i class="fab fa-whatsapp"></i></a>
+            </div>
         </div>
     </header>
 
-    <main>
-        <section class="hero">
-            <h2>O melhor de Porto Velho</h2>
-            <div class="status-container">
-                <span id="statusLabel" class="status-offline">● Verificando status...</span>
-                <p id="statusTimer" class="description">Carregando horários...</p>
+    <main class="container">
+        <section class="hero-elite">
+            <div class="hero-badge">A melhor de Porto Velho</div>
+            <h1>Sabor que vicia, <span class="text-gradient">qualidade que conquista.</span></h1>
+            
+            <div class="status-pill">
+                <span id="statusLabel" class="status-dot offline"></span>
+                <span id="statusText">Verificando status...</span>
+                <small id="statusTimer" class="timer-desc">Carregando...</small>
             </div>
         </section>
 
-        <nav class="categorias">
-            <button class="tab-btn active" onclick="mostrarCategoria('hamburguer')">🍔 Burguers</button>
-            <button class="tab-btn" onclick="mostrarCategoria('porcoes')">🍟 Porções</button>
-            <button class="tab-btn" onclick="mostrarCategoria('adicionais')">🥓 Extras</button>
-            <button class="tab-btn" onclick="mostrarCategoria('bebidas')">🥤 Bebidas</button>
+        <nav class="categorias-scroll">
+            <button class="tab-btn active" data-cat="hamburguer"><i class="fas fa-hamburger"></i> Burguers</button>
+            <button class="tab-btn" data-cat="porcoes"><i class="fas fa-cheese"></i> Porções</button>
+            <button class="tab-btn" data-cat="adicionais"><i class="fas fa-plus-circle"></i> Extras</button>
+            <button class="tab-btn" data-cat="bebidas"><i class="fas fa-wine-glass"></i> Bebidas</button>
         </nav>
 
-        <section id="menu" class="menu"></section>
+        <section id="menu" class="menu-grid"></section>
 
-        <section class="mapa-section" style="padding: 20px 5%;">
-            <h2 style="margin-bottom: 15px; text-align: center;">📍 Onde estamos</h2>
-            <div class="card-item" style="opacity: 1; transform: none; padding: 15px;">
-                <p style="margin-bottom: 10px; font-size: 14px; text-align: center;">R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO</p>
-                <div id="mapaEntrega" style="height: 300px; border-radius: 15px; overflow: hidden; border: 1px solid var(--glass-border);"></div>
+        <section class="location-section">
+            <div class="section-title">
+                <i class="fas fa-map-marker-alt"></i>
+                <h2>Onde estamos</h2>
+            </div>
+            <div class="map-card glass-effect">
+                <div id="mapaEntrega"></div>
+                <div class="map-info">
+                    <p>R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO</p>
+                    <a href="https://maps.app.goo.gl/..." target="_blank" class="btn-link">Como chegar <i class="fas fa-external-link-alt"></i></a>
+                </div>
             </div>
         </section>
     </main>
 
-    <div class="cart-icon-wrapper" onclick="toggleCarrinho()">
-        <i class="fas fa-shopping-basket" style="font-size: 24px; color: white;"></i>
-        <span id="cartCount">0</span>
+    <div class="cart-fab" id="cartToggle" onclick="toggleCarrinho()">
+        <div class="cart-fab-icon">
+            <i class="fas fa-shopping-basket"></i>
+            <span id="cartCount" class="count-badge">0</span>
+        </div>
+        <div class="cart-fab-label">R$ 0,00</div>
     </div>
 
-    <aside class="cart-panel" id="cartPanel">
-        <div class="cart-header">
-            <h3>Seu Pedido</h3>
-            <button onclick="toggleCarrinho()" style="background:none; border:none; color:white; font-size: 20px; cursor:pointer;">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <ul id="cartItems" class="cart-list">
-            </ul>
-
-        <div class="cart-footer" style="margin-top: 30px; border-top: 1px solid var(--glass-border); padding-top: 20px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                <span style="font-weight: 600;">Total:</span>
-                <span id="totalValue" style="color: var(--primary); font-weight: 700; font-size: 20px;">R$ 0,00</span>
+    <aside class="cart-panel-elite" id="cartPanel">
+        <div class="cart-inner">
+            <div class="cart-header-elite">
+                <h3>Seu Pedido</h3>
+                <button onclick="toggleCarrinho()" class="close-btn"><i class="fas fa-times"></i></button>
             </div>
-            
-            <input type="text" id="cupom" placeholder="🏷️ Tem um cupom?" style="margin-bottom: 15px;">
-            
-            <button class="add-btn" onclick="checkout()" style="width: 100%; font-size: 18px;">
-                <i class="fab fa-whatsapp"></i> Enviar Pedido
-            </button>
+
+            <div id="cartItems" class="cart-content-scroll">
+                </div>
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotalValue">R$ 0,00</span>
+                </div>
+                <div class="summary-row promo">
+                    <input type="text" id="cupom" placeholder="🏷️ Código do Cupom">
+                    <button class="apply-btn">Aplicar</button>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="totalValue">R$ 0,00</span>
+                </div>
+                <button class="checkout-btn" onclick="checkout()">
+                    <i class="fab fa-whatsapp"></i> Finalizar no WhatsApp
+                </button>
+            </div>
         </div>
     </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="app.js"></script>
+    <script src="mapa.js"></script>
     
     <script>
-        // Registro do Service Worker para PWA
+        // Registro do Service Worker Corrigido para Cloudflare Pages
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {
-                navigator.serviceWorker.register("../service-worker.js")
-                .then(reg => console.log("PWA Ativo!", reg.scope))
+                navigator.serviceWorker.register("service-worker.js")
+                .then(reg => console.log("Elite PWA Ativo!", reg.scope))
                 .catch(err => console.error("Erro PWA:", err));
             });
         }
