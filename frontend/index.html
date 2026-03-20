@@ -76,7 +76,7 @@
                 <div id="mapaEntrega"></div>
                 <div class="map-info">
                     <p>R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO</p>
-                    <a href="https://www.google.com/maps/dir//R.+Paulo+Fortes,+6245+-+Aponi%C3%A3,+Porto+Velho+-+RO" target="_blank" class="btn-link">
+                    <a href="https://www.google.com/maps/dir//Benis+Burguer" target="_blank" class="btn-link">
                         Como chegar <i class="fas fa-external-link-alt"></i>
                     </a>
                 </div>
@@ -112,7 +112,7 @@
                 
                 <div class="summary-row promo">
                     <input type="text" id="cupom" placeholder="🏷️ Código do Cupom">
-                    <button class="apply-btn">Aplicar</button>
+                    <button class="apply-btn" onclick="aplicarCupom()">Aplicar</button>
                 </div>
 
                 <div class="summary-row total">
@@ -134,7 +134,7 @@
     <script src="mapa.js"></script>
     
     <script>
-        // Registro do Service Worker para PWA
+        // Registro do Service Worker para PWA (Elite Experience)
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {
                 navigator.serviceWorker.register("service-worker.js")
