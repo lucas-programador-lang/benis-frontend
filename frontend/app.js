@@ -1,328 +1,174 @@
-// CARDÁPIO POR CATEGORIA
+/**
+ * MINDSET ELITE - Ultra Visual Engine v4.0
+ * Módulo: Gerenciamento de Pedidos & UI Dinâmica
+ */
 
 const cardapio = {
+    hamburguer: [
+        { id: 1, name: "Misto Quente", preco: 7.00, desc: "Pão de forma, presunto e queijo derretido." },
+        { id: 2, name: "X-Bauru", preco: 8.00, desc: "Hambúrguer, queijo e tomate suculento." },
+        { id: 3, name: "X-Burguer", preco: 13.00, desc: "Pão, blend especial e muito queijo." },
+        { id: 4, name: "X-Salada", preco: 14.00, desc: "Clássico com alface, tomate e maionese." },
+        { id: 13, name: "X-Tudo", preco: 23.00, desc: "O gigante: tudo que você tem direito!" },
+        { id: 15, name: "X-Benis", preco: 26.00, desc: "Especial da casa com molho secreto." }
+    ],
+    porcoes: [
+        { id: 101, name: "Batata Frita", preco: 15.00, desc: "Crocantes por fora, macias por dentro." },
+        { id: 102, name: "Batata + Cheddar + Bacon", preco: 25.00, desc: "A combinação perfeita e generosa." }
+    ],
+    bebidas: [
+        { id: 201, name: "Coca Cola 2L", preco: 15.00, desc: "Gelada tamanho família." },
+        { id: 205, name: "Coca Cola Lata", preco: 7.00, desc: "Refresco ideal para sua refeição." }
+    ],
+    adicionais: [
+        { id: 301, name: "Hambúrguer extra", preco: 5.00 },
+        { id: 309, name: "Cheddar", preco: 4.00 }
+    ]
+};
 
-hamburguer: [
+// Estado da Aplicação
+let carrinho = JSON.parse(localStorage.getItem('benis_cart')) || [];
+const menuContainer = document.getElementById("menu");
 
-{name:"Misto Quente",preco:7},
-{name:"X-Bauru",preco:8},
-{name:"X-Burguer",preco:13},
-{name:"X-Salada",preco:14},
-{name:"X-Salada Especial",preco:17},
-{name:"X-Calabresa",preco:18},
-{name:"X-Bacon",preco:19},
-{name:"X-Franbacon",preco:20},
-{name:"X-Franbesa",preco:20},
-{name:"X-Frango",preco:18},
-{name:"X-Turbinado",preco:20},
-{name:"X-Bagunça",preco:20},
-{name:"X-Tudo",preco:23},
-{name:"X-Havaiano",preco:19},
-{name:"X-Benis",preco:26}
+// Formatador de Moeda (Brasil)
+const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-],
-
-porcoes: [
-
-{name:"Batata Frita",preco:15},
-{name:"Batata + Cheddar + Bacon",preco:25}
-
-],
-
-bebidas: [
-
-{name:"Coca Cola 2L",preco:15},
-{name:"Coca Cola 1L",preco:10},
-{name:"Tuchaua 2L",preco:9},
-{name:"Dydyo 2L",preco:9},
-{name:"Coca Cola Lata",preco:7}
-
-],
-
-adicionais: [
-
-{name:"Hambúrguer extra",preco:5},
-{name:"Frango extra",preco:3},
-{name:"Ovo",preco:2},
-{name:"Bacon",preco:3},
-{name:"Calabresa",preco:3},
-{name:"Salsicha",preco:2},
-{name:"Banana",preco:2},
-{name:"Abacaxi",preco:3},
-{name:"Cheddar",preco:4},
-{name:"Catupiry",preco:4},
-{name:"Cebola caramelizada",preco:3}
-
-]
-
+// Alternar Painel do Carrinho
+function toggleCarrinho() {
+    const panel = document.getElementById("cartPanel");
+    panel.classList.toggle("open");
+    document.body.style.overflow = panel.classList.contains("open") ? "hidden" : "auto";
 }
 
-// CARRINHO
-
-let carrinho = []
-
-const menu = document.getElementById("menu")
-
-// ABRIR / FECHAR CARRINHO
-
-function toggleCarrinho(){
-
-const panel = document.getElementById("cartPanel")
-
-panel.classList.toggle("open")
-
+// Renderizar Menu com Animação de Entrada
+function mostrarCategoria(categoria) {
+    menuContainer.innerHTML = "";
+    
+    // Filtro visual de categoria ativa
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    cardapio[categoria].forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "card-item"; // Classe para CSS profissional
+        card.style.animationDelay = `${index * 0.05}s`; // Stagger effect
+        
+        card.innerHTML = `
+            <div class="card-info">
+                <h3>${item.name}</h3>
+                <p class="description">${item.desc || "Sabor incomparável Benis Burguer"}</p>
+                <span class="price">${formatarMoeda(item.preco)}</span>
+            </div>
+            <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index})">
+                <i class="fas fa-plus"></i> Adicionar
+            </button>
+        `;
+        menuContainer.appendChild(card);
+    });
 }
 
-// MOSTRAR CATEGORIA
-
-function mostrarCategoria(categoria){
-
-menu.innerHTML=""
-
-cardapio[categoria].forEach((p,i)=>{
-
-let card=document.createElement("div")
-
-card.className="card"
-
-card.innerHTML=`
-
-<h3>${p.name}</h3>
-
-<p>R$ ${p.preco}</p>
-
-<button onclick="add('${categoria}',${i})">Adicionar</button>
-
-`
-
-menu.appendChild(card)
-
-})
-
+// Lógica de Adição com Feedback Visual
+function adicionarAoCarrinho(cat, index) {
+    const item = cardapio[cat][index];
+    carrinho.push({ ...item, cartId: Date.now() });
+    
+    atualizarInterface();
+    salvarDados();
+    
+    // Notificação Toast (Substitui o alert)
+    mostrarToast(`${item.name} adicionado!`);
+    
+    // Feedback no ícone do carrinho
+    const cartIcon = document.querySelector(".cart-icon-wrapper");
+    cartIcon.classList.add("bump");
+    setTimeout(() => cartIcon.classList.remove("bump"), 300);
 }
 
-// ADICIONAR ITEM
-
-function add(cat,i){
-
-carrinho.push(cardapio[cat][i])
-
-render()
-
-// animação botão carrinho
-
-const botao=document.querySelector(".cart-button")
-
-if(botao){
-
-botao.style.transform="scale(1.2)"
-
-setTimeout(()=>{
-
-botao.style.transform="scale(1)"
-
-},200)
-
+function removerDoCarrinho(cartId) {
+    carrinho = carrinho.filter(item => item.cartId !== cartId);
+    atualizarInterface();
+    salvarDados();
 }
 
-recomendar()
+function atualizarInterface() {
+    const cartList = document.getElementById("cartItems");
+    const totalElement = document.getElementById("totalValue");
+    const countElement = document.getElementById("cartCount");
+    
+    cartList.innerHTML = "";
+    let total = 0;
 
+    carrinho.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "cart-item-row";
+        li.innerHTML = `
+            <div class="details">
+                <p class="name">${item.name}</p>
+                <p class="price-sm">${formatarMoeda(item.preco)}</p>
+            </div>
+            <button class="del-btn" onclick="removerDoCarrinho(${item.cartId})">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        `;
+        cartList.appendChild(li);
+        total += item.preco;
+    });
+
+    countElement.innerText = carrinho.length;
+    totalElement.innerText = formatarMoeda(total);
 }
 
-// REMOVER ITEM
-
-function remover(index){
-
-carrinho.splice(index,1)
-
-render()
-
+// Persistência
+function salvarDados() {
+    localStorage.setItem('benis_cart', JSON.stringify(carrinho));
 }
 
-// RENDER CARRINHO
-
-function render(){
-
-const cart=document.getElementById("cart")
-
-cart.innerHTML=""
-
-let total=0
-
-carrinho.forEach((p,i)=>{
-
-let li=document.createElement("li")
-
-li.innerHTML=`
-
-<div class="cart-info">
-
-<span class="cart-nome">${p.name}</span>
-
-<span class="cart-preco">R$ ${p.preco}</span>
-
-</div>
-
-<button class="remover-btn" onclick="remover(${i})">🗑</button>
-
-`
-
-cart.appendChild(li)
-
-total+=p.preco
-
-})
-
-document.getElementById("total").innerText=total
-
-// CONTADOR CARRINHO
-
-const contador=document.getElementById("cart-count")
-
-if(contador){
-
-contador.innerText=carrinho.length
-
+// Sistema de Notificação
+function mostrarToast(msg) {
+    const toast = document.createElement("div");
+    toast.className = "toast-msg";
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
 }
 
+// Horário e Status com Contagem Regressiva Otimizada
+function gerenciarStatus() {
+    const statusLabel = document.getElementById("statusLabel");
+    const timerLabel = document.getElementById("statusTimer");
+    
+    const agora = new Date();
+    const hora = agora.getHours();
+    const dia = agora.getDay();
+    
+    // Aberto Terça a Domingo, 19h às 00h
+    const estaAberto = (dia !== 1 && hora >= 19 && hora < 24);
+    
+    statusLabel.className = estaAberto ? "status-online" : "status-offline";
+    statusLabel.innerHTML = estaAberto ? "● Aberto Agora" : "● Fechado no momento";
 }
 
-// IA RECOMENDAÇÃO
+// Finalização via WhatsApp Profissional
+function checkout() {
+    if (carrinho.length === 0) return mostrarToast("Adicione itens primeiro!");
 
-function recomendar(){
+    let total = carrinho.reduce((acc, item) => acc + item.preco, 0);
+    let resumo = "*NOVO PEDIDO - BENIS BURGUER*%0A%0A";
+    
+    carrinho.forEach(item => {
+        resumo += `▪️ ${item.name} - ${formatarMoeda(item.preco)}%0A`;
+    });
+    
+    resumo += `%0A*Total: ${formatarMoeda(total)}*`;
+    resumo += `%0A%0A_Enviado via App Web Oficial_`;
 
-if(carrinho.find(p=>p.name==="X-Burguer")){
-
-setTimeout(()=>{
-
-alert("🔥 Combina muito com Batata Frita!")
-
-},500)
-
+    const fone = "556993668336";
+    window.open(`https://wa.me/${fone}?text=${resumo}`, "_blank");
 }
 
-}
-
-// CUPOM
-
-function aplicarCupom(total){
-
-const cupom=document.getElementById("cupom").value
-
-if(cupom==="BENIS10"){
-
-return total*0.9
-
-}
-
-return total
-
-}
-
-// HORÁRIO RESTAURANTE
-
-function restauranteAberto(){
-
-const agora=new Date()
-
-const hora=agora.getHours()
-
-const dia=agora.getDay()
-
-if(dia===1) return false
-
-return hora>=19 && hora<24
-
-}
-
-// STATUS RESTAURANTE
-
-function atualizarStatus(){
-
-const aberto=restauranteAberto()
-
-const status=document.getElementById("status")
-
-const contador=document.getElementById("contador")
-
-const agora=new Date()
-
-let alvo=new Date()
-
-if(aberto){
-
-status.innerText="🟢 Aberto"
-
-alvo.setHours(24,0,0)
-
-}else{
-
-status.innerText="🔴 Fechado"
-
-alvo.setHours(19,0,0)
-
-}
-
-const diff=alvo-agora
-
-const h=Math.floor(diff/1000/60/60)
-
-const m=Math.floor(diff/1000/60)%60
-
-const s=Math.floor(diff/1000)%60
-
-contador.innerText=`${h}h ${m}m ${s}s`
-
-}
-
-setInterval(atualizarStatus,1000)
-
-atualizarStatus()
-
-// FINALIZAR PEDIDO
-
-function checkout(){
-
-if(!restauranteAberto()){
-
-alert("Restaurante fechado")
-
-return
-
-}
-
-if(carrinho.length===0){
-
-alert("Carrinho vazio")
-
-return
-
-}
-
-let total=0
-
-carrinho.forEach(p=> total+=p.preco)
-
-total=aplicarCupom(total)
-
-let msg="Pedido Benis Burguer:%0A"
-
-carrinho.forEach(p=>{
-
-msg+=p.name+"%0A"
-
-})
-
-msg+="Total: R$"+total
-
-window.open(
-
-"https://wa.me/556993668336?text="+msg
-
-)
-
-}
-
-// MOSTRAR HAMBURGUERES AO ABRIR
-
-mostrarCategoria("hamburguer")
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+    mostrarCategoria("hamburguer");
+    atualizarInterface();
+    setInterval(gerenciarStatus, 1000 * 60); // Atualiza status a cada minuto
+    gerenciarStatus();
+});
