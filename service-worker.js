@@ -1,16 +1,20 @@
 /**
  * MINDSET ELITE - PWA Service Worker v4.0
  * Estratégia: Stale-While-Revalidate (Velocidade + Atualização)
+ * Local: Porto Velho - RO
  */
 
-const CACHE_NAME = "benis-burguer-v4.0"; // Mude a versão aqui ao atualizar o código
+const CACHE_NAME = "benis-burguer-v4.0"; 
+
+// Ajustamos os caminhos: removemos o prefixo "/frontend" pois o site já roda nela
 const ASSETS_TO_CACHE = [
     "/",
-    "/frontend/index.html",
-    "/frontend/style.css",
-    "/frontend/app.js",
-    "/frontend/mapa.js",
-    "/frontend/logo.png",
+    "/index.html",
+    "/style.css",
+    "/app.js",
+    "/mapa.js",
+    "/logo.png",
+    "/manifest.json",
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
     "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
 ];
@@ -19,14 +23,19 @@ const ASSETS_TO_CACHE = [
 self.addEventListener("install", (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log("Gerando cache de ativos...");
-            return cache.addAll(ASSETS_TO_CACHE);
+            console.log("Gerando cache de ativos Elite...");
+            // Usamos map para capturar erros individuais se um arquivo faltar
+            return Promise.all(
+                ASSETS_TO_CACHE.map(url => {
+                    return cache.add(url).catch(err => console.warn(`Falha ao cachear: ${url}`, err));
+                })
+            );
         })
     );
-    self.skipWaiting(); // Força o novo SW a assumir o controle imediatamente
+    self.skipWaiting();
 });
 
-// 2. ATIVAÇÃO: Limpa caches de versões antigas automaticamente
+// 2. ATIVAÇÃO: Limpa caches antigos
 self.addEventListener("activate", (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -45,13 +54,14 @@ self.addEventListener("activate", (event) => {
 
 // 3. FETCH: Estratégia Stale-While-Revalidate
 self.addEventListener("fetch", (event) => {
-    // Ignora requisições de mapas (Leaflet) para não quebrar o mapa online
-    if (event.request.url.includes("tile.openstreetmap.org")) return;
+    // Ignora requisições de mapas e da própria API de pedidos (deve ser sempre rede)
+    if (event.request.url.includes("tile.openstreetmap.org") || event.request.url.includes("/api")) {
+        return;
+    }
 
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
             const fetchPromise = fetch(event.request).then((networkResponse) => {
-                // Atualiza o cache com a resposta da rede
                 if (networkResponse && networkResponse.status === 200) {
                     const responseClone = networkResponse.clone();
                     caches.open(CACHE_NAME).then((cache) => {
@@ -60,10 +70,9 @@ self.addEventListener("fetch", (event) => {
                 }
                 return networkResponse;
             }).catch(() => {
-                // Se a rede falhar e não houver cache, você pode retornar uma página offline aqui
+                // Opcional: retornar uma página offline.html aqui se desejar
             });
 
-            // Retorna o cache IMEDIATAMENTE (se existir) ou espera a rede
             return cachedResponse || fetchPromise;
         })
     );
