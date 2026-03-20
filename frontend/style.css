@@ -1,4 +1,4 @@
-/* BENIS BURGUER - Gourmet Visual Engine v4.0
+/* BENIS BURGUER - Gourmet Visual Engine v4.1
    Design: Dark Mode Premium & Glassmorphism
    Local: Porto Velho - RO
 */
@@ -32,7 +32,7 @@ body {
     line-height: 1.6;
 }
 
-/* Background Animado Suave */
+/* Background Animado de Partículas */
 body::before {
     content: "";
     position: fixed;
@@ -50,6 +50,28 @@ body::before {
 @keyframes particlesMove {
     from { transform: translateY(0); }
     to { transform: translateY(-50%); }
+}
+
+/* --- LOADER --- */
+.loader-wrapper {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-dark);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+}
+
+.loader-logo {
+    height: 80px;
+    animation: pulseGlow 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(255,140,0,0.2)); transform: scale(1); }
+    50% { filter: drop-shadow(0 0 25px rgba(255,140,0,0.6)); transform: scale(1.05); }
 }
 
 /* --- HEADER --- */
@@ -75,7 +97,6 @@ body::before {
 .glow-effect {
     height: 55px;
     filter: drop-shadow(0 0 12px rgba(255, 140, 0, 0.45));
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .glass-icon {
@@ -95,109 +116,89 @@ body::before {
 .glass-icon:hover { 
     background: var(--primary); 
     transform: translateY(-4px);
-    box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
 }
 
 /* --- HERO SECTION --- */
 .hero-elite {
     text-align: center;
-    padding: 70px 6% 40px;
-    animation: fadeIn 0.8s ease;
+    padding: 60px 6% 30px;
 }
 
 .hero-badge {
-    background: rgba(255, 140, 0, 0.12);
+    background: rgba(255, 140, 0, 0.1);
     color: var(--primary);
-    padding: 7px 18px;
+    padding: 6px 16px;
     border-radius: 50px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    border: 1px solid rgba(255, 140, 0, 0.25);
+    letter-spacing: 1px;
+    border: 1px solid rgba(255, 140, 0, 0.2);
+    margin-bottom: 20px;
     display: inline-block;
-    margin-bottom: 25px;
 }
 
-.hero-elite h1 {
-    font-size: 2.8rem;
-    font-weight: 700;
-    margin-bottom: 30px;
-}
-
-.text-gradient {
-    background: linear-gradient(to right, #ff8c00, #ffb347);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+.hero-elite h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 20px; }
+.text-gradient { background: linear-gradient(to right, #ff8c00, #ffb347); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
 .status-pill {
     background: rgba(255,255,255,0.03);
     border: 1px solid var(--glass-border);
-    padding: 12px 24px;
+    padding: 10px 20px;
     border-radius: 50px;
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
-.status-dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
-.status-dot.online { background: #25d366; color: #25d366; }
-.status-dot.offline { background: #ff4d4d; color: #ff4d4d; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; }
+.status-dot.online { background: #25d366; box-shadow: 0 0 10px #25d366; }
+.status-dot.offline { background: #ff4d4d; box-shadow: 0 0 10px #ff4d4d; }
 
-/* --- NOVA NAVBAR CATEGORIAS GOURMET --- */
+/* --- NAVBAR CATEGORIAS --- */
 .nav-container-glass {
     position: sticky;
-    top: 85px; /* Fica abaixo do header principal */
-    background: rgba(10, 10, 10, 0.65);
+    top: 85px;
+    background: rgba(10, 10, 10, 0.7);
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--glass-border);
-    padding: 15px 6%;
+    padding: 12px 6%;
     z-index: 999;
 }
 
 .categorias-elite {
     display: flex;
-    justify-content: flex-start;
     gap: 12px;
     overflow-x: auto;
     scrollbar-width: none;
-    padding-bottom: 5px;
 }
 
 .categorias-elite::-webkit-scrollbar { display: none; }
 
-.categorias-elite .tab-btn {
+.tab-btn {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--glass-border);
     color: var(--text-dim);
-    padding: 12px 24px;
+    padding: 10px 22px;
     border-radius: 50px;
     cursor: pointer;
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
-    font-weight: 500;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    transition: 0.3s;
+    display: flex; align-items: center; gap: 8px;
 }
 
-.categorias-elite .tab-btn.active, 
-.categorias-elite .tab-btn:hover {
+.tab-btn.active {
     background: var(--primary);
     color: white;
     border-color: var(--primary);
-    box-shadow: 0 0 15px rgba(255, 140, 0, 0.3);
-    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
 }
 
 /* --- MENU GRID --- */
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 35px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
     padding: 40px 6%;
     max-width: 1400px;
     margin: 0 auto;
@@ -205,119 +206,124 @@ body::before {
 
 .card-item {
     background: var(--card-bg);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border);
-    border-radius: 30px;
-    padding: 30px;
-    transition: 0.4s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    animation: fadeInUp 0.9s ease forwards;
-    opacity: 0;
-}
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(35px); }
-    to { opacity: 1; transform: translateY(0); }
+    border-radius: 25px;
+    padding: 25px;
+    transition: 0.4s;
+    display: flex; flex-direction: column; justify-content: space-between;
 }
 
 .card-item:hover {
-    transform: translateY(-12px);
-    background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(255, 140, 0, 0.45);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    transform: translateY(-10px);
+    border-color: var(--primary);
 }
 
-.price { font-size: 1.6rem; font-weight: 700; color: var(--primary); margin-bottom: 15px; }
+.price { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin: 15px 0; }
 
 .add-btn {
     width: 100%;
     background: var(--gradient-glow);
-    color: white;
-    border: none;
-    padding: 16px;
-    border-radius: 18px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 4px 15px rgba(255, 69, 0, 0.35);
+    color: white; border: none;
+    padding: 14px; border-radius: 15px;
+    font-weight: 700; cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+/* --- CARRINHO PANEL (MODO DRAWER) --- */
+.cart-panel-elite {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 450px;
+    height: 100vh;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    z-index: 2500;
+    transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 1px solid var(--glass-border);
+    box-shadow: -15px 0 50px rgba(0,0,0,0.8);
+}
+
+.cart-panel-elite.open { right: 0; }
+
+.cart-inner { display: flex; flex-direction: column; height: 100%; padding: 30px; }
+
+.cart-header-elite {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);
+}
+
+.close-btn {
+    background: var(--card-bg); border: 1px solid var(--glass-border); color: white;
+    width: 40px; height: 40px; border-radius: 12px; cursor: pointer;
+}
+
+.cart-content-scroll { flex: 1; overflow-y: auto; padding-right: 5px; }
+
+/* Cards de itens no carrinho */
+.cart-item-row {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 15px;
+    margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+.cart-item-row .name { font-weight: 600; font-size: 14px; }
+.cart-item-row .price-sm { color: var(--primary); font-size: 13px; font-weight: 700; }
+
+/* Rodapé do Carrinho */
+.cart-summary { padding-top: 20px; border-top: 1px solid var(--glass-border); }
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.summary-row.total { font-size: 1.4rem; font-weight: 700; margin: 15px 0; color: white; }
+
+.promo { display: flex; gap: 8px; margin-bottom: 15px; }
+.promo input {
+    flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+    padding: 10px; border-radius: 10px; color: white; outline: none;
+}
+.apply-btn { background: var(--card-bg); border: 1px solid var(--glass-border); color: white; padding: 0 15px; border-radius: 10px; cursor: pointer; }
+
+.checkout-btn {
+    width: 100%; background: #25d366; color: white; border: none;
+    padding: 18px; border-radius: 18px; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.2);
 }
 
 /* --- CARRINHO FAB --- */
 .cart-fab {
     position: fixed;
-    bottom: 35px; right: 35px;
+    bottom: 30px; right: 30px;
     background: var(--gradient-glow);
-    padding: 12px 28px;
+    padding: 12px 25px;
     border-radius: 50px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: 0 10px 35px rgba(255, 69, 0, 0.5);
-    cursor: pointer;
-    z-index: 1100;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 10px 30px rgba(255, 69, 0, 0.4);
+    cursor: pointer; z-index: 1100;
+    transition: 0.3s;
 }
 
 .count-badge {
-    position: absolute;
-    top: -6px; left: 12px;
-    background: white;
-    color: #000;
-    font-size: 11px; font-weight: 800;
-    width: 22px; height: 22px;
-    border-radius: 50%;
+    position: absolute; top: -5px; left: 10px;
+    background: white; color: black; font-size: 11px; font-weight: 800;
+    width: 22px; height: 22px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
 }
 
-/* --- CARRINHO PANEL --- */
-.cart-panel-elite {
-    position: fixed;
-    top: 0; right: -110%;
-    width: 480px; height: 100vh;
-    background: rgba(10, 10, 10, 0.85);
-    backdrop-filter: blur(30px);
-    z-index: 2000;
-    transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1);
-    border-left: 1px solid var(--glass-border);
-}
-
-.cart-panel-elite.open { right: 0; }
-
-.cart-inner { padding: 40px; height: 100%; display: flex; flex-direction: column; }
-
-.checkout-btn {
-    width: 100%; background: #25d366; color: white; border: none;
-    padding: 18px; border-radius: 18px; font-weight: 700; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-}
-
-/* --- LOCALIZAÇÃO --- */
-.location-section { padding: 60px 6%; max-width: 1400px; margin: 0 auto; }
-
-.map-card {
-    background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
-    border-radius: 30px; overflow: hidden;
-}
-
-#mapaEntrega { height: 350px; width: 100%; }
+/* --- MAPA & LOCALIZAÇÃO --- */
+.location-section { padding: 50px 6%; max-width: 1400px; margin: 0 auto; }
+.map-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 25px; overflow: hidden; }
+#mapaEntrega { height: 300px; width: 100%; filter: grayscale(1) invert(1) contrast(1.2); }
+.map-info { padding: 20px; text-align: center; }
 
 /* --- RESPONSIVIDADE --- */
-@media (max-width: 1024px) {
-    .cart-panel-elite { width: 400px; }
-}
-
 @media (max-width: 768px) {
-    .hero-elite h1 { font-size: 2rem; }
-    .categorias-elite { justify-content: flex-start; }
     .cart-panel-elite { width: 100%; }
     .cart-fab-label { display: none; }
-    .cart-fab { width: 65px; height: 65px; border-radius: 50%; padding: 0; justify-content: center; }
-}
-
-@media (min-width: 1025px) {
-    .categorias-elite { justify-content: center; }
+    .cart-fab { width: 60px; height: 60px; border-radius: 50%; padding: 0; justify-content: center; }
+    .hero-elite h1 { font-size: 1.8rem; }
 }
