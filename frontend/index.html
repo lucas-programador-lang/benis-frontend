@@ -7,11 +7,9 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     
     <link rel="stylesheet" href="style.css">
-    
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="theme-color" content="#ff8c00">
@@ -49,12 +47,22 @@
             </div>
         </section>
 
-        <nav class="categorias-scroll">
-            <button class="tab-btn active" data-cat="hamburguer"><i class="fas fa-hamburger"></i> Burguers</button>
-            <button class="tab-btn" data-cat="porcoes"><i class="fas fa-cheese"></i> Porções</button>
-            <button class="tab-btn" data-cat="adicionais"><i class="fas fa-plus-circle"></i> Extras</button>
-            <button class="tab-btn" data-cat="bebidas"><i class="fas fa-wine-glass"></i> Bebidas</button>
-        </nav>
+        <div class="nav-container-glass">
+            <nav class="categorias-elite" id="categoryNav">
+                <button class="tab-btn active" onclick="mostrarCategoria('hamburguer')" data-category="hamburguer">
+                    <i class="fas fa-hamburger"></i> Burguers
+                </button>
+                <button class="tab-btn" onclick="mostrarCategoria('porcoes')" data-category="porcoes">
+                    <i class="fas fa-cheese"></i> Porções
+                </button>
+                <button class="tab-btn" onclick="mostrarCategoria('adicionais')" data-category="adicionais">
+                    <i class="fas fa-plus-circle"></i> Extras
+                </button>
+                <button class="tab-btn" onclick="mostrarCategoria('bebidas')" data-category="bebidas">
+                    <i class="fas fa-wine-glass"></i> Bebidas
+                </button>
+            </nav>
+        </div>
 
         <section id="menu" class="menu-grid"></section>
 
@@ -67,7 +75,7 @@
                 <div id="mapaEntrega"></div>
                 <div class="map-info">
                     <p>R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO</p>
-                    <a href="https://maps.app.goo.gl/..." target="_blank" class="btn-link">Como chegar <i class="fas fa-external-link-alt"></i></a>
+                    <a href="https://www.google.com/maps" target="_blank" class="btn-link">Como chegar <i class="fas fa-external-link-alt"></i></a>
                 </div>
             </div>
         </section>
@@ -78,7 +86,7 @@
             <i class="fas fa-shopping-basket"></i>
             <span id="cartCount" class="count-badge">0</span>
         </div>
-        <div class="cart-fab-label">R$ 0,00</div>
+        <div id="cartFabTotal" class="cart-fab-label">R$ 0,00</div>
     </div>
 
     <aside class="cart-panel-elite" id="cartPanel">
@@ -88,8 +96,7 @@
                 <button onclick="toggleCarrinho()" class="close-btn"><i class="fas fa-times"></i></button>
             </div>
 
-            <div id="cartItems" class="cart-content-scroll">
-                </div>
+            <div id="cartItems" class="cart-content-scroll"></div>
 
             <div class="cart-summary">
                 <div class="summary-row">
@@ -116,7 +123,6 @@
     <script src="mapa.js"></script>
     
     <script>
-        // Registro do Service Worker Corrigido para Cloudflare Pages
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {
                 navigator.serviceWorker.register("service-worker.js")
