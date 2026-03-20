@@ -1,9 +1,9 @@
 /**
- * MINDSET ELITE - Admin Engine v4.0
+ * MINDSET ELITE - Admin Engine v4.1
  * Módulo: Gestão de Pedidos & BI (Business Intelligence)
  */
 
-const API_URL = "/api"; // Ajuste para a rota real do seu Worker
+const API_URL = "/api"; // Rota do seu Cloudflare Worker
 
 async function carregar() {
     try {
@@ -12,48 +12,57 @@ async function carregar() {
 
         const data = await res.json();
         
-        // Garante compatibilidade com diferentes formatos de retorno do D1
+        // Suporta tanto array direto quanto objeto { results: [] } do Cloudflare D1
         const pedidos = data.results || data;
-        const tabela = document.getElementById("pedidosLista"); // ID atualizado conforme o HTML anterior
+        const tabela = document.getElementById("pedidosLista");
         
         if (!tabela) return;
         tabela.innerHTML = "";
 
-        let totalPedidos = 0;
-        let faturamento = 0;
+        let totalPedidosHoje = 0;
+        let faturamentoAcumulado = 0;
+        let totalClientesUnicos = new Set(); // BI: Conta clientes sem repetir
 
         pedidos.forEach(p => {
             const tr = document.createElement("tr");
             
-            // Lógica de cores para o Status
-            const statusClass = p.status === 'novo' ? 'badge-novo' : 'badge-entregue';
+            // Lógica dinâmica de Badges baseada no status
+            let statusStyle = "badge-novo";
+            if (p.status === 'entregue') statusStyle = "badge-entregue";
+            if (p.status === 'preparando' || p.status === 'saiu') statusStyle = "badge-novo"; // Laranja para atenção
 
             tr.innerHTML = `
                 <td>#${p.id}</td>
                 <td>
-                    <strong>${p.cliente}</strong><br>
-                    <small>${p.telefone || ''}</small>
+                    <strong>${p.cliente || 'Cliente Anônimo'}</strong><br>
+                    <small>${p.telefone || 'Sem contato'}</small>
+                </td>
+                <td style="font-size: 12px; max-width: 200px;">
+                    ${p.itens || 'Itens não especificados'}
                 </td>
                 <td style="font-weight:600; color:#ff9800">
                     ${Number(p.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </td>
-                <td><span class="badge ${statusClass}">${p.status.toUpperCase()}</span></td>
+                <td><span class="badge ${statusStyle}">${p.status.toUpperCase()}</span></td>
                 <td>
-                    <button class="btn-action" onclick="alterarStatus(${p.id}, '${p.status}')">
-                        <i class="fas fa-sync-alt"></i> Próximo Passo
+                    <button class="btn-action" onclick="alterarStatus(${p.id}, '${p.status}')" style="background: #ff9800; border:none; color:white; padding:5px 10px; border-radius:5px; cursor:pointer;">
+                        <i class="fas fa-sync-alt"></i> Próximo
                     </button>
                 </td>
             `;
 
             tabela.appendChild(tr);
 
-            totalPedidos++;
-            faturamento += Number(p.total);
+            // Cálculos do Dashboard
+            totalPedidosHoje++;
+            faturamentoAcumulado += Number(p.total);
+            if(p.cliente) totalClientesUnicos.add(p.cliente);
         });
 
-        // Atualiza os Cards do Dashboard com animação simples
-        document.getElementById("totalPedidos").innerText = totalPedidos;
-        document.getElementById("faturamento").innerText = faturamento.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        // Atualiza os Cards com os dados reais
+        document.getElementById("totalPedidos").innerText = totalPedidosHoje;
+        document.getElementById("faturamento").innerText = faturamentoAcumulado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        document.getElementById("totalClientes").innerText = totalClientesUnicos.size;
 
     } catch (e) {
         console.error("Erro ao carregar pedidos Elite:", e);
@@ -61,21 +70,21 @@ async function carregar() {
 }
 
 /**
- * Altera o status do pedido no Banco de Dados
- * @param {number} id - ID do pedido
- * @param {string} statusAtual - Status vindo do banco
+ * Altera o status do pedido com fluxo lógico
  */
 async function alterarStatus(id, statusAtual) {
-    let novoStatus = "preparando";
+    let novoStatus = "";
     
+    // Fluxo de trabalho da Benis Burguer
     if (statusAtual === "novo") novoStatus = "preparando";
     else if (statusAtual === "preparando") novoStatus = "saiu";
     else if (statusAtual === "saiu") novoStatus = "entregue";
-    else return alert("Este pedido já foi finalizado!");
+    else {
+        alert("Este pedido já foi finalizado! ✅");
+        return;
+    }
 
-    const confirmacao = confirm(`Deseja alterar o pedido #${id} para: ${novoStatus.toUpperCase()}?`);
-    
-    if (confirmacao) {
+    if (confirm(`Mudar pedido #${id} para ${novoStatus.toUpperCase()}?`)) {
         try {
             const res = await fetch(`${API_URL}/status`, {
                 method: "POST",
@@ -84,17 +93,18 @@ async function alterarStatus(id, statusAtual) {
             });
 
             if (res.ok) {
-                carregar(); // Recarrega a lista imediatamente
+                carregar(); // Atualiza a tela na hora
+            } else {
+                alert("Erro ao salvar no banco. Verifique o Worker.");
             }
         } catch (e) {
-            alert("Erro ao conectar com o servidor para atualizar status.");
+            alert("Erro de conexão com o servidor.");
         }
     }
 }
 
-// Inicialização
+// Inicialização e Auto-Refresh (10s)
 document.addEventListener("DOMContentLoaded", () => {
     carregar();
-    // 10 segundos é o ideal para não sobrecarregar o Worker (plano gratuito tem limites)
     setInterval(carregar, 10000); 
 });
