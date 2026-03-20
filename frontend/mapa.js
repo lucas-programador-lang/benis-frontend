@@ -1,71 +1,82 @@
 /**
  * MINDSET ELITE - GeoEngine v4.0
- * Módulo: Localização e Rastreio em Tempo Real
+ * Módulo: Localização e Experiência do Cliente
  */
 
 let mapa;
 let marcadorUsuario;
 let marcadorLoja;
 
-// Coordenadas da Benis Burguer (Aponiã, Porto Velho)
-const COORDS_LOJA = [-8.7402, -63.8750]; 
+// Coordenadas exatas da Benis Burguer (Aponiã, Porto Velho)
+const COORDS_LOJA = [-8.74015, -63.87498]; 
 
 function iniciarMapa() {
+    // Garante que o container existe antes de iniciar
+    const mapElement = document.getElementById('mapaEntrega');
+    if (!mapElement) return;
+
     // Inicializa o mapa focado na loja
     mapa = L.map('mapaEntrega', {
-        zoomControl: false, // Removemos para um visual mais limpo
-        scrollWheelZoom: false // Evita zoom acidental ao rolar a página
-    }).setView(COORDS_LOJA, 15);
+        zoomControl: false, 
+        scrollWheelZoom: false,
+        dragging: !L.Browser.mobile, // Melhora UX no celular para não travar o scroll
+        tap: !L.Browser.mobile
+    }).setView(COORDS_LOJA, 16);
 
-    // Camada de Mapa com Filtro Dark (via CSS inline)
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        className: 'map-tiles-dark' // Classe para aplicar o filtro no CSS
+    // Camada de Mapa com Filtro Dark
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap',
+        className: 'map-tiles-dark' 
     }).addTo(mapa);
 
-    // Ícone Personalizado para a Loja
+    // Ícone Customizado (Estilo Pin Neon)
     const iconLoja = L.divIcon({
         className: 'custom-div-icon',
-        html: "<div style='background-color:#ff8c00; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px #ff8c00;'></div>",
-        iconSize: [15, 15],
-        iconAnchor: [7, 7]
+        html: `
+            <div class="pin-container">
+                <div class="pin-pulse"></div>
+                <div class="pin-center"></div>
+            </div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
     });
 
-    // Marcador da Loja (Fixo)
+    // Marcador da Loja
     marcadorLoja = L.marker(COORDS_LOJA, { icon: iconLoja })
         .addTo(mapa)
-        .bindPopup("<b>Benis Burguer</b><br>O melhor de PVH!")
-        .openPopup();
+        .bindPopup(`
+            <div style="text-align:center; color:#000; font-family:'Poppins';">
+                <strong style="color:#ff8c00;">Benis Burguer</strong><br>
+                Aberto das 18h às 00h
+            </div>
+        `);
 
-    // Rastreio de Localização (Cliente ou Entregador)
+    // Rastreio de Localização (Otimizado)
     if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(
+        navigator.geolocation.getCurrentPosition(
             (posicao) => {
                 const { latitude, longitude } = posicao.coords;
-                const novasCoords = [latitude, longitude];
+                const coordsUser = [latitude, longitude];
 
                 if (!marcadorUsuario) {
-                    marcadorUsuario = L.marker(novasCoords).addTo(mapa)
-                        .bindPopup("Você está aqui");
-                } else {
-                    marcadorUsuario.setLatLng(novasCoords);
+                    marcadorUsuario = L.circleMarker(coordsUser, {
+                        radius: 8,
+                        fillColor: "#3388ff",
+                        color: "#fff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).addTo(mapa).bindPopup("Sua localização");
                 }
 
-                // Ajusta a visão para mostrar ambos (Loja e Usuário)
-                const bounds = L.latLngBounds([COORDS_LOJA, novasCoords]);
-                mapa.fitBounds(bounds, { padding: [50, 50] });
+                // Ajusta a visão para mostrar ambos com suavidade
+                const bounds = L.latLngBounds([COORDS_LOJA, coordsUser]);
+                mapa.fitBounds(bounds, { padding: [40, 40], animate: true });
             },
-            (erro) => console.warn("Erro ao obter localização:", erro.message),
-            { enableHighAccuracy: true }
+            (erro) => console.log("Localização desativada pelo usuário."),
+            { enableHighAccuracy: true, timeout: 5000 }
         );
     }
 }
-
-// Adicione este pequeno ajuste de CSS no seu style.css para o Dark Mode do Mapa
-/*
-.map-tiles-dark {
-    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-}
-*/
 
 document.addEventListener("DOMContentLoaded", iniciarMapa);
