@@ -11,7 +11,7 @@ let mapa;
 let marcadorUsuario;
 window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)"; 
 
-const COORDS_LOJA = [-8.74015, -63.87498]; // Porto Velho - Aponiã
+const COORDS_LOJA = [-8.73953, -63.86025]; // Coordenadas exatas R. Paulo Fortes, 6245
 const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
 // Inicialização segura do Carrinho via LocalStorage
@@ -84,11 +84,11 @@ function iniciarMapa() {
 
     L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa)
         .bindPopup(`
-            <div onclick="window.open('${GOOGLE_MAPS_URL}', '_blank')" style="cursor:pointer; text-align:center; padding: 5px;">
+            <div onclick="window.open('${GOOGLE_MAPS_URL}', '_blank')" style="cursor:pointer; text-align:center; padding: 5px; font-family: 'Poppins';">
                 <strong style="color:#ff8c00; font-size: 14px;">Benis Burguer</strong><br>
-                <span style="color:#eee;">Aponiã - Porto Velho</span><br>
-                <hr style="border: 0; border-top: 1px solid #444; margin: 5px 0;">
-                <small style="color:#3b82f6;">Clique para abrir no Maps ➔</small>
+                <span style="color:#333;">Aponiã - Porto Velho</span><br>
+                <hr style="border: 0; border-top: 1px solid #ddd; margin: 5px 0;">
+                <small style="color:#3b82f6; font-weight: 700;">➔ Abrir no Google Maps</small>
             </div>
         `).openPopup();
 
@@ -131,11 +131,17 @@ function adicionarAoCarrinho(cat, id, event) {
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
 
+    // Feedback visual no botão
     const btn = event.currentTarget;
-    const originalContent = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
-    btn.style.background = "#22c55e";
-    btn.style.color = "#fff";
+    const span = btn.querySelector('span');
+    const icon = btn.querySelector('i');
+    
+    const originalText = span.innerText;
+    const originalIcon = icon.className;
+
+    span.innerText = 'ADICIONADO';
+    icon.className = 'fas fa-check';
+    btn.classList.add('btn-success-anim'); // Opcional: adicionar classe CSS para cor verde
     
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
@@ -147,9 +153,9 @@ function adicionarAoCarrinho(cat, id, event) {
     salvarEAtualizar();
     
     setTimeout(() => { 
-        btn.innerHTML = originalContent;
-        btn.style.background = "";
-        btn.style.color = "";
+        span.innerText = originalText;
+        icon.className = originalIcon;
+        btn.classList.remove('btn-success-anim');
     }, 1000);
 }
 
@@ -219,10 +225,9 @@ function aplicarCupom() {
         if (discountRow) discountRow.style.display = "flex";
         const discVal = document.getElementById("discountValue");
         if (discVal) discVal.innerText = `- ${formatarMoeda(descontoAtivo)}`;
+        
         if(window.Swal) {
             Swal.fire({ title: 'Cupom Aplicado!', text: 'R$ 10,00 de desconto garantido.', icon: 'success', background: '#1a1a1a', color: '#fff' });
-        } else {
-            alert("Cupom BENIS10 aplicado!");
         }
     } else {
         alert("Cupom inválido ou expirado.");
@@ -261,7 +266,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP COM LIMPEZA E FEEDBACK ---
+// --- 6. CHECKOUT WHATSAPP ---
 function checkout() {
     if (!carrinho.length) return;
     
@@ -274,7 +279,7 @@ function checkout() {
     });
 
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
-    const totalFinal = subtotal - descontoAtivo;
+    const totalFinal = Math.max(0, subtotal - descontoAtivo);
     
     msg += "━━━━━━━━━━━━━━━━━━━━━━\n";
     if (descontoAtivo > 0) msg += `🎁 *DESCONTO:* - ${formatarMoeda(descontoAtivo)}\n`;
@@ -293,9 +298,7 @@ function checkout() {
     localStorage.removeItem('benis_cart');
     
     atualizarInterface();
-    
-    const panel = document.getElementById("cartPanel");
-    if (panel) panel.classList.remove("open");
+    toggleCarrinho();
 
     if (window.Swal) {
         Swal.fire({
@@ -327,7 +330,7 @@ function verificarStatusLoja() {
     const statusText = document.getElementById("statusText");
     const statusDot = document.getElementById("statusLabel");
 
-    if (diaSemana === 1) { 
+    if (diaSemana === 1) { // Segunda-feira fechado
         if (statusText) statusText.innerText = "Fechado • Abre Terça às 19:00";
         statusDot?.classList.remove("online");
     } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
@@ -346,6 +349,7 @@ window.addEventListener('DOMContentLoaded', () => {
     mostrarCategoria("hamburguer");
     iniciarMapa();
 
+    // Fecha o carrinho ao clicar fora dele
     document.addEventListener('click', (e) => {
         const panel = document.getElementById("cartPanel");
         const cartToggle = document.getElementById("cartToggle");
