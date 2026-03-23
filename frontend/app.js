@@ -9,10 +9,11 @@ let carrinho = [];
 let descontoAtivo = 0; 
 let mapa;
 let marcadorUsuario;
-// Variável global para capturar o endereço do mapa
 window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)"; 
 
 const COORDS_LOJA = [-8.74015, -63.87498]; // Porto Velho - Aponiã
+// Link oficial para o Google Maps
+const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
 // Inicialização segura do Carrinho via LocalStorage
 try {
@@ -82,8 +83,15 @@ function iniciarMapa() {
         iconSize: [40, 40], iconAnchor: [20, 20]
     });
 
+    // Marcador da Loja com link direto para o Google Maps
     L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa)
-        .bindPopup(`<strong style="color:#ff8c00;">Benis Burguer</strong><br>Aponiã - Porto Velho`).openPopup();
+        .bindPopup(`
+            <div onclick="window.open('${GOOGLE_MAPS_URL}', '_blank')" style="cursor:pointer; text-align:center;">
+                <strong style="color:#ff8c00;">Benis Burguer</strong><br>
+                Aponiã - Porto Velho<br>
+                <small style="color:#3b82f6;">Ver no Google Maps ➔</small>
+            </div>
+        `).openPopup();
 
     mapa.on('click', (e) => processarLocalizacao(e.latlng.lat, e.latlng.lng));
 
@@ -250,7 +258,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP ---
+// --- 6. CHECKOUT WHATSAPP E LIMPEZA ---
 function checkout() {
     if (!carrinho.length) return;
     
@@ -275,6 +283,18 @@ function checkout() {
 
     const fone = "556993668336"; 
     window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, "_blank");
+
+    // --- LIMPEZA PÓS-PEDIDO ---
+    carrinho = []; // Esvazia o carrinho local
+    descontoAtivo = 0; // Reseta o cupom se houver
+    localStorage.removeItem('benis_cart'); // Limpa o banco de dados local
+    
+    // Atualiza a interface visual para mostrar o carrinho vazio
+    atualizarInterface();
+    
+    // Fecha o painel do carrinho lateral
+    const panel = document.getElementById("cartPanel");
+    if (panel) panel.classList.remove("open");
 }
 
 function toggleCarrinho() { 
