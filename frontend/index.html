@@ -21,7 +21,7 @@
     <div id="loader" class="loader-wrapper">
         <div class="loader-content">
             <div class="loader-logo-container">
-                <img src="logo.png" alt="Benis Burguer" class="loader-logo">
+                <img src="logo.png" alt="Benis Burguer" class="loader-logo" onerror="this.style.display='none'">
             </div>
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
@@ -33,14 +33,14 @@
     <header class="glass-header">
         <div class="header-container">
             <div class="logo-area">
-                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img">
+                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/150?text=BENIS'">
             </div>
             <div class="header-actions">
                 <div class="social-links">
-                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="social-btn btn-instagram">
+                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="social-btn btn-instagram" aria-label="Instagram">
                         <i class="fab fa-instagram"></i>
                     </a>
-                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp">
+                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp" aria-label="WhatsApp">
                         <i class="fab fa-whatsapp"></i>
                     </a>
                 </div>
@@ -78,8 +78,10 @@
             <div class="map-card-wrapper">
                 <div id="mapaEntrega"></div>
                 <div class="map-overlay-info">
-                    <p><i class="fas fa-location-arrow"></i> R. Paulo Fortes, 6245 - Aponiã</p>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.74015,-63.87498" target="_blank" class="route-btn">Como chegar</a>
+                    <div class="address-text">
+                        <p><i class="fas fa-location-arrow"></i> R. Paulo Fortes, 6245 - Aponiã</p>
+                    </div>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7431,-63.8761" target="_blank" class="route-btn">Como chegar</a>
                 </div>
             </div>
         </section>
@@ -99,10 +101,11 @@
         <div class="cart-inner">
             <div class="cart-header-elite">
                 <h3><i class="fas fa-shopping-cart"></i> Seu Pedido</h3>
-                <button onclick="toggleCarrinho()" class="close-btn"><i class="fas fa-times"></i></button>
+                <button onclick="toggleCarrinho()" class="close-btn" aria-label="Fechar Carrinho"><i class="fas fa-times"></i></button>
             </div>
 
-            <div id="cartItems" class="cart-content-scroll"></div>
+            <div id="cartItems" class="cart-content-scroll">
+                </div>
 
             <div class="cart-footer-elite">
                 <div class="summary-details">
@@ -128,7 +131,7 @@
     <script src="app.js"></script>
     <script src="mapa.js"></script>
     <script>
-        // Lógica do Loader
+        // Gerenciamento do Loader e Inicialização
         window.addEventListener('load', () => {
             const bar = document.getElementById('progressBar');
             let width = 0;
@@ -137,16 +140,23 @@
                     clearInterval(interval);
                     setTimeout(() => {
                         document.getElementById('loader').classList.add('fade-out');
-                        // Força o mapa a carregar após o loader
-                        if(typeof iniciarMapa === 'function') iniciarMapa();
+                        // Garante que o mapa renderize após o loader sair da frente
+                        if(typeof iniciarMapa === 'function') {
+                            iniciarMapa();
+                        }
                     }, 500);
                 } else {
-                    width += Math.random() * 25;
+                    width += Math.random() * 20;
                     if(width > 100) width = 100;
                     bar.style.width = width + '%';
                 }
-            }, 100);
+            }, 80);
         });
+
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log("SW error:", err));
+        }
     </script>
 </body>
 </html>
