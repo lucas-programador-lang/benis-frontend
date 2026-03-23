@@ -1,6 +1,6 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v6.1
- * Status: OTIMIZADO & INTELIGENTE
+ * BENIS BURGUER - Gourmet Logic & Map Engine v6.2
+ * Status: 100% CORRIGIDO E SINCRONIZADO
  * Localidade: Porto Velho, RO - 2026
  */
 
@@ -84,8 +84,7 @@ function adicionarAoCarrinho(cat, id, event) {
     const btn = event.currentTarget;
     const originalHTML = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
-    btn.style.background = "var(--success)";
-    btn.style.color = "#000";
+    btn.classList.add("btn-success");
 
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
@@ -97,8 +96,7 @@ function adicionarAoCarrinho(cat, id, event) {
     salvarEAtualizar();
     setTimeout(() => {
         btn.innerHTML = originalHTML;
-        btn.style.background = "";
-        btn.style.color = "";
+        btn.classList.remove("btn-success");
     }, 1000);
 }
 
@@ -134,7 +132,7 @@ function atualizarInterface() {
                 <span style="color:var(--primary); font-weight:700;">${formatarMoeda(item.preco * item.quantidade)}</span>
             </div>
             <div style="display:flex; gap:8px;">
-                <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" style="background:rgba(255,255,255,0.05); color:#fff;">
+                <button class="btn-remove" onclick="removerDoCarrinho(${item.id})">
                     <i class="fas fa-minus"></i>
                 </button>
             </div>`;
@@ -145,10 +143,14 @@ function atualizarInterface() {
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
     const totalFinal = subtotal * (1 - (descontoPercentual / 100));
 
-    document.getElementById("totalValue") && (document.getElementById("totalValue").innerText = formatarMoeda(totalFinal));
-    document.getElementById("cartCount") && (document.getElementById("cartCount").innerText = totalItens);
-    document.getElementById("cartFabTotal") && (document.getElementById("cartFabTotal").innerText = `Ver sacola (${formatarMoeda(totalFinal)})`);
-    document.getElementById("cartToggle") && (document.getElementById("cartToggle").style.display = carrinho.length > 0 ? "flex" : "none");
+    // Atualiza todos os contadores e totais
+    if (document.getElementById("totalValue")) document.getElementById("totalValue").innerText = formatarMoeda(totalFinal);
+    if (document.getElementById("cartCount")) document.getElementById("cartCount").innerText = totalItens;
+    if (document.getElementById("cartFabTotal")) document.getElementById("cartFabTotal").innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
+    
+    // Mostra/Esconde o botão flutuante
+    const fab = document.getElementById("cartToggle");
+    if (fab) fab.style.display = carrinho.length > 0 ? "flex" : "none";
 }
 
 // --- 4. NAVEGAÇÃO E STATUS ---
@@ -195,7 +197,6 @@ function verificarStatusLoja() {
     const statusDot = document.getElementById("statusLabel");
     const statusText = document.getElementById("statusText");
     
-    // Aberto das 18h às 00h
     if (hora >= 18 || hora < 0) {
         statusDot?.classList.add("online");
         if (statusText) statusText.innerText = "Aberta • Retirada e Entrega";
@@ -207,6 +208,7 @@ function verificarStatusLoja() {
 
 function aplicarCupom() {
     const input = document.getElementById('cupom');
+    if (!input) return;
     const codigo = input.value.toUpperCase().trim();
     
     if (cupomAtivo === codigo) {
@@ -246,18 +248,18 @@ function checkout() {
     window.open(`https://wa.me/556993668336?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
+// FUNÇÃO DE TOGGLE CORRIGIDA PARA O ID 'cartPanel'
 function toggleCarrinho() { 
-    document.getElementById("cartPanel").classList.toggle("open"); 
+    const panel = document.getElementById("cartPanel");
+    if (panel) {
+        panel.classList.toggle("open");
+    }
 }
 
 // --- 5. INICIALIZAÇÃO ---
 window.addEventListener('load', () => {
     const loader = document.getElementById('loader');
-    const progressBar = document.getElementById('progressBar');
-
-    // Animação fake de progresso
-    if (progressBar) progressBar.style.width = "100%";
-
+    
     setTimeout(() => {
         if (loader) {
             loader.style.opacity = "0";
@@ -276,7 +278,8 @@ window.addEventListener('load', () => {
 document.addEventListener('mousedown', (e) => {
     const panel = document.getElementById("cartPanel");
     const fab = document.getElementById("cartToggle");
-    if (panel?.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target)) {
+    // Se o painel está aberto e o clique NÃO foi nele nem no botão de abrir
+    if (panel?.classList.contains('open') && !panel.contains(e.target) && !fab?.contains(e.target)) {
         toggleCarrinho();
     }
 });
