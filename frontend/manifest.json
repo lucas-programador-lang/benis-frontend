@@ -1,1 +1,32 @@
-
+{
+  "name": "Benis Burguer | Elite Delivery",
+  "short_name": "Benis Burguer",
+  "description": "O melhor hambúrguer artesanal de Porto Velho direto no seu celular.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#ff8c00",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["food", "shopping"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
