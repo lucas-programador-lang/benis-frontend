@@ -1,8 +1,7 @@
 /**
- * BENIS BURGUER - Gourmet Logic Engine v5.2
+ * BENIS BURGUER - Gourmet Logic Engine v5.2 (Revised)
  * Sincronizado com: style.css (Elite Edition)
  * Localidade: Porto Velho, RO
- * Ajuste: Busca por ID real (9 itens no menu de hambúrguer)
  */
 
 const cardapio = {
@@ -118,7 +117,7 @@ function atualizarInterface() {
     });
 
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
-    const totalFinal = subtotal - (subtotal * (descontoPercentual / 100));
+    const totalFinal = subtotal * (1 - (descontoPercentual / 100));
 
     if (cartCount) cartCount.innerText = carrinho.length;
     if (subtotalDisplay) subtotalDisplay.innerText = formatarMoeda(subtotal);
@@ -131,7 +130,6 @@ function atualizarInterface() {
 }
 
 function adicionarAoCarrinho(cat, id, event) {
-    // Busca o item pelo ID real dentro da categoria
     const item = cardapio[cat].find(p => p.id === id);
     if (!item) return;
 
@@ -230,22 +228,23 @@ function checkout() {
     if (!carrinho.length) return;
 
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
-    const totalFinal = subtotal - (subtotal * (descontoPercentual / 100));
+    const totalFinal = subtotal * (1 - (descontoPercentual / 100));
     
-    let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*%0A";
-    msg += "━━━━━━━━━━━━━━━━━━━━%0A";
+    let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*\n";
+    msg += "━━━━━━━━━━━━━━━━━━━━\n";
     
     carrinho.forEach((item, i) => {
-        msg += `*${i + 1}.* ${item.name} _(${formatarMoeda(item.preco)})_%0A`;
+        msg += `*${i + 1}.* ${item.name} _(${formatarMoeda(item.preco)})_\n`;
     });
 
-    msg += "━━━━━━━━━━━━━━━━━━━━%0A";
-    if (cupomAtivo) msg += `✅ *Cupom:* ${cupomAtivo} (-${descontoPercentual}%)%0A`;
-    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A`;
-    msg += "📍 *Endereço:* (Digite aqui)%0A";
+    msg += "━━━━━━━━━━━━━━━━━━━━\n";
+    if (cupomAtivo) msg += `✅ *Cupom:* ${cupomAtivo} (-${descontoPercentual}%)\n`;
+    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*\n\n`;
+    msg += "📍 *Endereço:* (Digite aqui)\n";
     msg += "💰 *Pagamento:* (Dinheiro/Pix/Cartão)";
 
-    window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
+    // EncodeURIComponent garante que emojis e quebras de linha funcionem no link
+    window.open(`https://wa.me/556993668336?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -254,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let width = 0;
         const interval = setInterval(() => {
             width += 15;
+            if (width > 100) width = 100;
             progressBar.style.width = width + '%';
             if (width >= 100) {
                 clearInterval(interval);
