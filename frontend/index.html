@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benis Burguer | Elite Delivery</title>
+    <title>Benis Burguer | Elite Delivery Porto Velho</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,12 +11,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    
     <link rel="stylesheet" href="style.css">
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="theme-color" content="#121212">
-    <meta name="description" content="O melhor hambúrguer artesanal de Porto Velho. Peça agora pelo nosso delivery elite.">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="description" content="O melhor hambúrguer artesanal do Bairro Aponiã em Porto Velho. Peça agora!">
 </head>
 <body>
 
@@ -53,13 +54,13 @@
     <main class="container">
         <section class="hero-elite">
             <div class="hero-content">
-                <span class="hero-badge"><i class="fas fa-crown"></i> A melhor de Porto Velho</span>
+                <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
                 <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
                 
                 <div class="status-pill" id="statusContainer">
                     <div class="status-indicator">
                         <span id="statusLabel" class="status-dot"></span>
-                        <span id="statusText">Verificando restaurante...</span>
+                        <span id="statusText">Verificando brasa...</span>
                     </div>
                     <small id="statusTimer" class="timer-desc"></small>
                 </div>
@@ -92,8 +93,8 @@
 
         <section class="location-section">
             <div class="section-header">
-                <span class="section-subtitle">Visite-nos</span>
-                <h2 class="section-title"><i class="fas fa-map-marked-alt"></i> Onde estamos</h2>
+                <span class="section-subtitle">Onde Estamos</span>
+                <h2 class="section-title"><i class="fas fa-map-marked-alt"></i> Bairro Aponiã</h2>
             </div>
             
             <div class="map-card-wrapper">
@@ -101,9 +102,9 @@
                 <div class="map-overlay-info">
                     <div class="info-content">
                         <i class="fas fa-location-arrow" style="color: var(--primary); margin-right: 10px;"></i>
-                        <p>R. Paulo Fortes, 6245 - Aponiã, Porto Velho</p>
+                        <p>R. Paulo Fortes, 6245 - Porto Velho, RO</p>
                     </div>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Benis+Burguer+Porto+Velho" target="_blank" class="btn-location">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.74015,-63.87498" target="_blank" class="btn-location">
                         Como chegar <i class="fas fa-external-link-alt"></i>
                     </a>
                 </div>
@@ -111,13 +112,13 @@
         </section>
     </main>
 
-    <div class="cart-fab" id="cartToggle" onclick="toggleCarrinho()" role="button" aria-label="Abrir Carrinho">
+    <div class="cart-fab" id="cartToggle" onclick="toggleCarrinho()" role="button">
         <div class="cart-fab-content">
             <div class="cart-fab-icon">
                 <i class="fas fa-shopping-bag"></i>
                 <span id="cartCount" class="count-badge">0</span>
             </div>
-            <div id="cartFabTotal" class="cart-fab-label">R$ 0,00</div>
+            <div id="cartFabTotal" class="cart-fab-label">Ver sacola (R$ 0,00)</div>
         </div>
     </div>
 
@@ -133,17 +134,12 @@
             <div id="cartItems" class="cart-content-scroll">
                 <div class="empty-cart-msg">
                     <i class="fas fa-box-open"></i>
-                    <p>Seu carrinho está vazio</p>
+                    <p>Sua sacola está vazia.</p>
                 </div>
             </div>
 
             <div class="cart-footer-elite">
                 <div class="summary-details">
-                    <div class="total-row">
-                        <span>Total</span>
-                        <span id="totalValue">R$ 0,00</span>
-                    </div>
-                    
                     <div class="coupon-area">
                         <div class="input-group-glass">
                             <i class="fas fa-tag"></i>
@@ -151,10 +147,14 @@
                             <button id="btnAplicarCupom" onclick="aplicarCupom()">Aplicar</button>
                         </div>
                     </div>
+                    <div class="total-row">
+                        <span>Total</span>
+                        <span id="totalValue">R$ 0,00</span>
+                    </div>
                 </div>
 
                 <button class="checkout-btn" onclick="checkout()">
-                    <span>Finalizar no WhatsApp</span>
+                    <span>Finalizar Pedido</span>
                     <i class="fab fa-whatsapp"></i>
                 </button>
             </div>
@@ -166,8 +166,8 @@
     <script src="mapa.js"></script>
     
     <script>
-        // Simulação do Loader Premium
-        window.addEventListener('DOMContentLoaded', () => {
+        // Lógica do Loader Premium
+        window.addEventListener('load', () => {
             const bar = document.getElementById('progressBar');
             let width = 0;
             const interval = setInterval(() => {
@@ -175,13 +175,13 @@
                     clearInterval(interval);
                     setTimeout(() => {
                         document.getElementById('loader').classList.add('fade-out');
-                    }, 400);
+                    }, 300);
                 } else {
-                    width += Math.random() * 15;
+                    width += Math.random() * 20;
                     if(width > 100) width = 100;
                     bar.style.width = width + '%';
                 }
-            }, 60);
+            }, 50);
         });
     </script>
 </body>
