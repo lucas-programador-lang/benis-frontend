@@ -133,6 +133,7 @@ body::before {
     top: 80px; 
     background: rgba(10, 10, 10, 0.95); 
     backdrop-filter: blur(20px); 
+    -webkit-backdrop-filter: blur(20px);
     z-index: 1000; 
     padding: 15px 0; 
     border-bottom: 1px solid var(--glass-border);
@@ -175,7 +176,7 @@ body::before {
     border-radius: 50px; border: 1px solid var(--glass-border);
 }
 
-.status-dot { width: 10px; height: 10px; border-radius: 50%; background: #555; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; background: #555; transition: 0.3s; }
 .status-dot.online { background: var(--success); box-shadow: 0 0 15px var(--success); }
 
 /* --- GRID & CARDS --- */
@@ -302,7 +303,7 @@ body::before {
     border-radius: 20px; 
     border: 1px solid var(--glass-border);
     transition: var(--transition-smooth);
-    animation: slideIn 0.3s ease-out;
+    animation: slideIn 0.3s ease-out forwards;
 }
 
 .cart-item-elite:hover {
@@ -380,6 +381,7 @@ body::before {
     padding: 25px;
     background: rgba(255, 255, 255, 0.01);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-top: 1px solid var(--glass-border);
 }
 
@@ -409,7 +411,7 @@ body::before {
 }
 
 /* --- MAPA & LOCALIZAÇÃO --- */
-.location-section { padding: 60px 6%; }
+.location-section { padding: 60px 6%; position: relative; z-index: 10; }
 
 .map-card-wrapper {
     height: 400px; 
@@ -419,16 +421,26 @@ body::before {
     overflow: hidden;
     border: 1px solid var(--glass-border);
     background: #111;
+    position: relative;
+    z-index: 1; /* Garante que pins do Leaflet não fujam do container */
 }
 
 #mapaEntrega { 
     height: 100%; 
     width: 100%; 
-    filter: brightness(0.8) contrast(1.2); 
-    z-index: 1;
+    filter: brightness(0.8) contrast(1.2) grayscale(0.5); 
 }
 
-.pin-center { width: 16px; height: 16px; background: var(--primary); border: 2px solid #fff; border-radius: 50%; position: relative; z-index: 2; }
+/* Custom Pin Styles para Leaflet */
+.custom-pin-container { display: flex; align-items: center; justify-content: center; }
+.pin-center { 
+    width: 16px; height: 16px; 
+    background: var(--primary); 
+    border: 2px solid #fff; 
+    border-radius: 50%; 
+    position: relative; 
+    z-index: 2; 
+}
 .pin-pulse { 
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     width: 40px; height: 40px; background: rgba(255, 140, 0, 0.3); 
@@ -463,9 +475,10 @@ footer p {
 /* --- MOBILE --- */
 @media (max-width: 768px) {
     .nav-container-glass { top: 70px; }
-    .categorias-elite { justify-content: flex-start; }
+    .categorias-elite { justify-content: flex-start; padding-bottom: 10px; }
     .hero-elite h1 { font-size: 2.4rem; }
-    .menu-grid { grid-template-columns: 1fr; }
+    .menu-grid { grid-template-columns: 1fr; gap: 20px; }
     .cart-panel-elite { max-width: 100%; }
     .map-card-wrapper { height: 300px; }
+    .cart-fab { width: 90%; bottom: 20px; padding: 14px 20px; font-size: 0.9rem; }
 }
