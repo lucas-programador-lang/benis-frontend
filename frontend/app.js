@@ -1,5 +1,5 @@
 /**
- * BENIS BURGUER - Elite Logic Engine v4.2.1
+ * BENIS BURGUER - Elite Logic Engine v4.5 (Ultimate)
  * Módulo: UI Dinâmica, Sistema de Cupons & Checkout WhatsApp
  * Local: Porto Velho - RO
  */
@@ -53,23 +53,22 @@ const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currenc
 
 function toggleCarrinho() {
     const panel = document.getElementById("cartPanel");
-    const overlay = document.getElementById("cartOverlay");
     if (panel) panel.classList.toggle("open");
-    if (overlay) overlay.classList.toggle("active");
 }
 
 function mostrarCategoria(categoria) {
     const menuContainer = document.getElementById("menu");
     if (!menuContainer) return;
 
+    // Efeito de transição suave
     menuContainer.style.opacity = "0";
+    menuContainer.style.transform = "translateY(10px)";
     
     setTimeout(() => {
         menuContainer.innerHTML = "";
         
         document.querySelectorAll('.tab-btn').forEach(btn => {
-            const catAttr = btn.getAttribute('data-cat');
-            btn.classList.toggle('active', catAttr === categoria);
+            btn.classList.toggle('active', btn.getAttribute('data-cat') === categoria);
         });
 
         cardapio[categoria].forEach((item, index) => {
@@ -85,15 +84,16 @@ function mostrarCategoria(categoria) {
                     <p>${item.desc}</p>
                     <div class="card-footer">
                         <span class="price-tag">${formatarMoeda(item.preco)}</span>
+                        <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index}, event)">
+                            <i class="fas fa-plus"></i> <span class="btn-text">Adicionar</span>
+                        </button>
                     </div>
                 </div>
-                <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index}, event)">
-                    <i class="fas fa-plus"></i> Adicionar
-                </button>
             `;
             menuContainer.appendChild(card);
         });
         menuContainer.style.opacity = "1";
+        menuContainer.style.transform = "translateY(0)";
     }, 200);
 }
 
@@ -102,28 +102,34 @@ function mostrarCategoria(categoria) {
 function adicionarAoCarrinho(cat, index, event) {
     const item = cardapio[cat][index];
     const btn = event.currentTarget;
-    const originalContent = btn.innerHTML;
+    const btnText = btn.querySelector('.btn-text');
+    const originalIcon = btn.querySelector('i').className;
     
-    btn.innerHTML = '<i class="fas fa-check"></i> Adicionado';
+    // Feedback Visual Premium
+    btn.querySelector('i').className = 'fas fa-check';
+    if(btnText) btnText.innerText = 'Adicionado';
     btn.style.background = "#25d366";
+    btn.style.color = "#fff";
     
     carrinho.push({ 
         ...item, 
-        cartId: Date.now() + Math.random(),
-        timestamp: new Date()
+        cartId: Date.now() + Math.random() // ID único para remoção precisa
     });
     
     atualizarInterface();
     salvarDados();
-    mostrarToast(`${item.name} adicionado!`);
+    mostrarToast(`${item.name} na sacola! 🍔`);
 
     setTimeout(() => {
-        btn.innerHTML = originalContent;
+        btn.querySelector('i').className = originalIcon;
+        if(btnText) btnText.innerText = 'Adicionar';
         btn.style.background = "";
+        btn.style.color = "";
     }, 1000);
 }
 
 function removerDoCarrinho(cartId) {
+    // A remoção usa o cartId único para não remover todos os itens iguais de uma vez
     carrinho = carrinho.filter(item => item.cartId !== cartId);
     atualizarInterface();
     salvarDados();
@@ -140,12 +146,12 @@ function aplicarCupom() {
         descontoPercentual = CUPONS_VALIDOS[codigo];
         cupomAtivo = codigo;
         
-        btn.innerHTML = `<i class="fas fa-check"></i> ${descontoPercentual}%`;
+        btn.innerHTML = `<i class="fas fa-check"></i> ${descontoPercentual}% OFF`;
         btn.style.background = "#22c55e";
         input.disabled = true;
         
         atualizarInterface();
-        mostrarToast(`Desconto de ${descontoPercentual}% aplicado! 🏷️`);
+        mostrarToast(`Cupom ${codigo} aplicado! 🏷️`);
     } else {
         input.classList.add('error-shake');
         mostrarToast("Cupom inválido! ❌");
@@ -158,6 +164,7 @@ function atualizarInterface() {
     const totalElement = document.getElementById("totalValue");
     const countElement = document.getElementById("cartCount");
     const fabTotal = document.getElementById("cartFabTotal");
+    const fab = document.getElementById("cartToggle");
 
     if (!cartList) return;
 
@@ -165,24 +172,26 @@ function atualizarInterface() {
         cartList.innerHTML = `
             <div class="empty-cart-msg">
                 <i class="fas fa-shopping-basket"></i>
-                <p>O que vamos comer hoje?</p>
+                <p>Sua sacola está vazia.</p>
             </div>`;
+        if (fab) fab.style.display = "none";
     } else {
         cartList.innerHTML = "";
         carrinho.forEach(item => {
             const div = document.createElement("div");
-            div.className = "cart-item-elite"; // Classe corrigida para bater com o CSS
+            div.className = "cart-item-elite";
             div.innerHTML = `
                 <div class="cart-item-info">
                     <strong>${item.name}</strong>
                     <span>${formatarMoeda(item.preco)}</span>
                 </div>
-                <button class="btn-remove-item" onclick="removerDoCarrinho(${item.cartId})" aria-label="Remover item">
+                <button class="btn-remove-item" onclick="removerDoCarrinho(${item.cartId})">
                     <i class="fas fa-trash"></i>
                 </button>
             `;
             cartList.appendChild(div);
         });
+        if (fab) fab.style.display = "flex";
     }
 
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
@@ -191,19 +200,14 @@ function atualizarInterface() {
 
     if (countElement) countElement.innerText = carrinho.length;
     if (totalElement) totalElement.innerText = formatarMoeda(totalFinal);
-    if (fabTotal) fabTotal.innerText = formatarMoeda(totalFinal);
-    
-    const fab = document.getElementById("cartToggle");
-    if (fab) {
-        if (carrinho.length > 0) fab.style.display = "flex";
-    }
+    if (fabTotal) fabTotal.innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
 }
 
 function salvarDados() {
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
 }
 
-// --- FEEDBACK E STATUS ---
+// --- FEEDBACK ---
 
 function mostrarToast(msg) {
     const existing = document.querySelector('.toast-elite');
@@ -211,20 +215,15 @@ function mostrarToast(msg) {
 
     const toast = document.createElement("div");
     toast.className = "toast-elite";
-    toast.style.position = "fixed";
-    toast.style.bottom = "120px";
-    toast.style.left = "50%";
-    toast.style.transform = "translateX(-50%)";
-    toast.style.background = "rgba(0,0,0,0.8)";
-    toast.style.backdropFilter = "blur(10px)";
-    toast.style.color = "white";
-    toast.style.padding = "12px 25px";
-    toast.style.borderRadius = "100px";
-    toast.style.zIndex = "3000";
-    toast.style.fontSize = "14px";
-    toast.style.border = "1px solid rgba(255,255,255,0.1)";
+    toast.style.cssText = `
+        position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+        background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); color: white;
+        padding: 12px 25px; border-radius: 50px; z-index: 5000; font-size: 14px;
+        border: 1px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        animation: fadeIn 0.3s ease;
+    `;
 
-    toast.innerHTML = `<i class="fas fa-fire" style="color: #ff8c00; margin-right: 8px;"></i> ${msg}`;
+    toast.innerHTML = `<i class="fas fa-fire" style="color: var(--primary); margin-right: 8px;"></i> ${msg}`;
     document.body.appendChild(toast);
     
     setTimeout(() => {
@@ -242,21 +241,21 @@ function verificarStatusLoja() {
     const hora = agora.getHours();
     const dia = agora.getDay();
     
-    // Aberto de Terça (2) a Domingo (0), 18h às 00h (Porto Velho Time)
+    // Aberto Terça a Domingo, 18h às 00h (Porto Velho)
     const estaAberto = (dia !== 1 && hora >= 18 && hora < 24);
     
     if (dot && text) {
         dot.className = estaAberto ? "status-dot online" : "status-dot offline";
-        text.innerText = estaAberto ? "Aceitando Pedidos" : "Restaurante Fechado";
-        if (timer) timer.innerText = estaAberto ? "Entrega estimada: 30-50 min" : "Abrimos às 18:00";
+        text.innerText = estaAberto ? "Aceitando Pedidos" : "Fechado no momento";
+        if (timer) timer.innerText = estaAberto ? "Entrega: 30-50 min" : "Abrimos hoje às 18:00";
     }
 }
 
-// --- CHECKOUT ---
+// --- CHECKOUT WHATSAPP ---
 
 function checkout() {
     if (carrinho.length === 0) {
-        mostrarToast("Adicione algo gostoso primeiro! 😋");
+        mostrarToast("Adicione um burguer primeiro! 😋");
         return;
     }
 
@@ -273,15 +272,17 @@ function checkout() {
     msg += "━━━━━━━━━━━━━━━━━━━━%0A";
     if (cupomAtivo) msg += `*Cupom:* ${cupomAtivo} (-${descontoPercentual}%)%0A`;
     msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A`;
-    msg += "📍 _Vou enviar meu endereço e forma de pagamento abaixo..._";
+    msg += "📍 *Endereço de Entrega:*%0A";
+    msg += "_Por favor, envie sua localização ou digite o endereço aqui..._";
 
     const fone = "556993668336";
     window.open(`https://wa.me/${fone}?text=${msg}`, "_blank");
 }
 
-// --- INIT ---
+// --- INITIALIZATION ---
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Setup listeners para as abas
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat));
     });
