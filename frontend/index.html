@@ -22,7 +22,7 @@
     <div id="loader" class="loader-wrapper">
         <img src="logo.png" class="loader-logo" alt="Carregando Benis Burguer" onerror="this.src='https://via.placeholder.com/120x120/ff8c00/ffffff?text=BENIS'">
         <div class="progress-container" style="width: 200px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-top: 20px;">
-            <div id="progressBar" style="width: 30%; height: 100%; background: var(--primary); transition: width 0.4s ease;"></div>
+            <div id="progressBar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.4s ease;"></div>
         </div>
     </div>
 
@@ -45,10 +45,10 @@
     <main>
         <section class="hero-elite">
             <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
-            <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
+            <h1>Sabor que vicia, <br><span style="color: var(--primary);">qualidade que conquista.</span></h1>
             <div class="status-indicator">
-                <span id="statusLabel" class="status-dot"></span>
-                <span id="statusText">Verificando braseiro...</span>
+                <span id="statusLabel" class="status-dot online"></span>
+                <span id="statusText">Braseiro no ponto! (Aberto)</span>
             </div>
         </section>
 
@@ -88,6 +88,7 @@
 
     <footer>
         <p>&copy; 2026 Benis Burguer - Porto Velho/RO</p>
+        <p class="footer-engine">Desenvolvido com foco em alta performance.</p>
     </footer>
 
     <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="display: none;">
@@ -125,7 +126,7 @@
                     <span>Subtotal</span>
                     <span id="subtotalValue">R$ 0,00</span>
                 </div>
-                <div id="discountRow" class="detail-row" style="display: none; color: var(--success);">
+                <div id="discountRow" class="detail-row" style="display: none; color: #25d366;">
                     <span>Desconto</span>
                     <span id="discountValue">- R$ 0,00</span>
                 </div>
@@ -143,8 +144,25 @@
     </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="js/mapa.js" defer></script>
-    <script src="app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="js/mapa.js" defer></script>
+    <script src="app.js" defer></script>
+
+    <script>
+        // Lógica simples para o Loader de Elite
+        window.addEventListener('load', () => {
+            const bar = document.getElementById('progressBar');
+            if(bar) bar.style.width = '100%';
+            
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                if(loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 800);
+                }
+            }, 500);
+        });
+    </script>
 </body>
 </html>
