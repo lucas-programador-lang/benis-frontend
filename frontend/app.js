@@ -1,7 +1,7 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v6.6 (Elite Edition)
+ * BENIS BURGUER - Gourmet Logic & Map Engine v6.7 (Elite Edition)
  * Localidade: Porto Velho, RO - 2026
- * Sincronizado: app.js + Cardápio Físico Atualizado
+ * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -38,20 +38,6 @@ const cardapio = {
     porcoes: [
         { id: 101, name: "Batata Frita", preco: 15.00, desc: "Porção de batata frita crocante.", img: "batata.png" },
         { id: 102, name: "Batata + Cheddar + Bacon", preco: 25.00, desc: "Batata frita com cobertura de cheddar e bacon.", img: "batatacompleta.png" }
-    ],
-    adicionais: [
-        { id: 301, name: "Hambúrguer", preco: 5.00, desc: "Adicional de carne.", img: "add.png" },
-        { id: 302, name: "Frango", preco: 3.00, desc: "Adicional de filé de frango.", img: "add.png" },
-        { id: 303, name: "Ovo", preco: 2.00, desc: "Adicional de ovo frito.", img: "add.png" },
-        { id: 304, name: "Bacon", preco: 3.00, desc: "Adicional de bacon crocante.", img: "add.png" },
-        { id: 305, name: "Calabresa", preco: 3.00, desc: "Adicional de calabresa.", img: "add.png" },
-        { id: 306, name: "Salsicha", preco: 2.00, desc: "Adicional de salsicha.", img: "add.png" },
-        { id: 307, name: "Banana", preco: 2.00, desc: "Adicional de banana.", img: "add.png" },
-        { id: 308, name: "Abacaxi", preco: 3.00, desc: "Adicional de abacaxi.", img: "add.png" },
-        { id: 309, name: "Cheddar", preco: 4.00, desc: "Adicional de queijo cheddar.", img: "add.png" },
-        { id: 310, name: "Catupiry", preco: 4.00, desc: "Adicional de catupiry original.", img: "add.png" },
-        { id: 311, name: "Cebola Caramelizada", preco: 3.00, desc: "Adicional de cebola.", img: "add.png" },
-        { id: 312, name: "Queijo e Presunto", preco: 2.00, desc: "Adicional de queijo e presunto.", img: "add.png" }
     ],
     bebidas: [
         { id: 201, name: "Coca Cola 2L", preco: 15.00, desc: "Refrigerante 2 Litros.", img: "coca2l.png" },
@@ -93,7 +79,7 @@ function adicionarAoCarrinho(cat, id, event) {
     const btn = event.currentTarget;
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
-    btn.style.background = "var(--success)";
+    btn.classList.add('btn-success');
 
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
@@ -105,7 +91,7 @@ function adicionarAoCarrinho(cat, id, event) {
     salvarEAtualizar();
     setTimeout(() => {
         btn.innerHTML = originalText;
-        btn.style.background = "";
+        btn.classList.remove('btn-success');
     }, 800);
 }
 
@@ -130,7 +116,7 @@ function atualizarInterface() {
     const list = document.getElementById("cartItems");
     if (!list) return;
 
-    list.innerHTML = carrinho.length ? "" : `<div style="text-align:center; padding:40px; opacity:0.5;"><i class="fas fa-shopping-basket" style="font-size:2rem;display:block;margin-bottom:10px;"></i>Sacola vazia.</div>`;
+    list.innerHTML = carrinho.length ? "" : `<div style="text-align:center; padding:40px; opacity:0.5;">Sua sacola está vazia.</div>`;
 
     carrinho.forEach(item => {
         const div = document.createElement("div");
@@ -172,7 +158,7 @@ function mostrarCategoria(categoria) {
         card.className = "card-item";
         card.innerHTML = `
             <div class="card-image-box">
-                <img src="img/${item.img}" onerror="this.src='https://via.placeholder.com/300x200?text=Benis+Burguer'">
+                <img src="img/${item.img}" onerror="this.src='https://via.placeholder.com/300x200?text=Burguer'">
             </div>
             <div class="card-info">
                 <h3>${item.name}</h3>
@@ -213,7 +199,33 @@ function toggleCarrinho() {
     document.getElementById("cartPanel")?.classList.toggle("open");
 }
 
-// --- 6. BOOTSTRAP ---
+// --- 6. CONTROLE DE HORÁRIO E BOOTSTRAP ---
+function verificarStatusLoja() {
+    const agora = new Date();
+    const diaSemana = agora.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+    const hora = agora.getHours();
+    const minutos = agora.getMinutes();
+    const tempoAtual = (hora * 60) + minutos;
+
+    const tempoAbertura = 19 * 60; // 19:00 em minutos
+    const tempoFechamento = (23 * 60) + 59; // 23:59 em minutos
+
+    const statusText = document.getElementById("statusText");
+    const statusLabel = document.getElementById("statusLabel");
+
+    // Lógica: Se for Segunda (1) está FECHADA. Nos outros dias, checa o horário.
+    if (diaSemana === 1) {
+        if (statusText) statusText.innerText = "Fechada • Abre Terça às 19:00";
+        statusLabel?.classList.remove("online");
+    } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
+        if (statusText) statusText.innerText = "Aberta • No Braseiro";
+        statusLabel?.classList.add("online");
+    } else {
+        if (statusText) statusText.innerText = `Fechada • Abre às 19:00`;
+        statusLabel?.classList.remove("online");
+    }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const loader = document.getElementById('loader');
     setTimeout(() => {
@@ -222,17 +234,7 @@ window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => loader.style.display = "none", 800);
         }
         
-        const hora = new Date().getHours();
-        const statusText = document.getElementById("statusText");
-        const statusLabel = document.getElementById("statusLabel");
-        
-        if (hora >= 18 || hora < 1) {
-            statusLabel?.classList.add("online");
-            if (statusText) statusText.innerText = "Aberta • No Braseiro";
-        } else {
-            if (statusText) statusText.innerText = "Fechada • Abre às 18:00";
-        }
-
+        verificarStatusLoja();
         atualizarInterface();
         mostrarCategoria("hamburguer");
         iniciarMapa();
