@@ -21,16 +21,15 @@ function iniciarMapa() {
 
     // 2. Inicialização do Leaflet (Configurações Premium)
     mapa = L.map('mapaEntrega', {
-        zoomControl: false, // Removido para manter o visual limpo
+        zoomControl: false, 
         scrollWheelZoom: false,
         dragging: true,
         tap: true,
         attributionControl: false
     }).setView(COORDS_LOJA, 16);
 
-    // 3. Camada de mapa (TileLayer)
-    // Aplicamos a classe 'map-tiles-dark' para o filtro CSS funcionar
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // 3. Camada de mapa (TileLayer) - Estilo Dark Mode via CartoDB
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
         className: 'map-tiles-dark' 
     }).addTo(mapa);
@@ -51,10 +50,10 @@ function iniciarMapa() {
     L.marker(COORDS_LOJA, { icon: iconLoja })
         .addTo(mapa)
         .bindPopup(`
-            <div class="map-popup-custom" style="text-align: center; padding: 5px;">
-                <strong style="color: #ff8c00; font-size: 1.1rem; display: block; margin-bottom: 5px;">Benis Burguer</strong>
-                <span style="color: #fff; font-size: 0.9rem;">📍 R. Paulo Fortes, 6245</span><br>
-                <small style="color: rgba(255,255,255,0.6);">Bairro Aponiã - Porto Velho</small>
+            <div class="map-popup-custom">
+                <strong style="color: #ff8c00; font-size: 1.1rem; display: block; margin-bottom: 2px;">Benis Burguer</strong>
+                <span style="color: #fff; font-size: 0.85rem;">📍 R. Paulo Fortes, 6245</span><br>
+                <small style="color: rgba(255,255,255,0.6);">Aponiã - Porto Velho</small>
             </div>
         `, {
             className: 'custom-leaflet-popup',
@@ -69,29 +68,26 @@ function iniciarMapa() {
                 
                 // Marcador azul para o usuário
                 marcadorUsuario = L.circleMarker(coordsUser, {
-                    radius: 7,
-                    fillColor: "#3b82f6", // Azul vibrante
+                    radius: 8,
+                    fillColor: "#3b82f6", 
                     color: "#fff",
-                    weight: 2,
+                    weight: 3,
                     fillOpacity: 1
                 }).addTo(mapa).bindPopup("Você está aqui");
 
                 // Enquadra a visão para mostrar a distância entre o cliente e a Benis
                 const bounds = L.latLngBounds([COORDS_LOJA, coordsUser]);
-                mapa.fitBounds(bounds, { padding: [100, 100], maxZoom: 15 });
+                mapa.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
             },
             (error) => {
-                console.log("Geolocalização não ativada pelo usuário.");
+                console.warn("Geolocalização recusada ou indisponível.");
             },
             { enableHighAccuracy: true }
         );
     }
 
-    // 7. Correção de renderização (Importante para containers dinâmicos)
+    // 7. Força o redimensionamento após o load
     setTimeout(() => { 
         mapa.invalidateSize(); 
-    }, 800);
+    }, 500);
 }
-
-// Inicialização automática vinculada ao loader do index.html
-// O mapa é chamado dentro do script de load do index.html para evitar travamentos
