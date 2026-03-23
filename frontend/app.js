@@ -1,13 +1,12 @@
 /**
  * BENIS BURGUER - Gourmet Logic & Map Engine v6.0
- * Status: COMPLETO & CORRIGIDO (Agrupamento + Loader + Mapa + WhatsApp)
+ * Status: LOADER RESTAURADO & FUNCIONAL
  * Localidade: Porto Velho, RO - 2026
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
 let carrinho = [];
 try {
-    // Tenta carregar o carrinho salvo no navegador do cliente
     carrinho = JSON.parse(localStorage.getItem('benis_cart')) || [];
 } catch (e) {
     carrinho = [];
@@ -16,8 +15,6 @@ try {
 let descontoPercentual = 0;
 let cupomAtivo = "";
 let mapa;
-
-// Coordenadas exatas para a Rua Paulo Fortes, Aponiã
 const COORDS_LOJA = [-8.74015, -63.87498]; 
 
 const cardapio = {
@@ -30,7 +27,7 @@ const cardapio = {
         { id: 6, name: "X-Calabresa", preco: 18.00, desc: "Pão, hambúrguer, calabresa, ovo e complementos.", img: "xcalabresa.png" },
         { id: 7, name: "X-Bacon", preco: 19.00, desc: "Pão, hambúrguer, bacon crocante, ovo e complementos.", img: "xbacon.png" },
         { id: 8, name: "X-Havaiano", preco: 19.00, desc: "Hambúrguer, banana, abacaxi, cheddar e cebola caramelizada.", img: "havaiano.png" },
-        { id: 9, name: "X-Benis", preco: 26.00, desc: "O Brabo: Frango, calabresa, bacon, salsicha, banana e cheddar.", img: "xbenis.png" }
+        { id: 10, name: "X-Benis", preco: 26.00, desc: "O Brabo: Frango, calabresa, bacon, salsicha, banana e cheddar.", img: "xbenis.png" }
     ],
     porcoes: [
         { id: 101, name: "Batata Frita", preco: 15.00, desc: "Porção individual crocante.", img: "batata.png" },
@@ -54,12 +51,11 @@ const cardapio = {
 const CUPONS_VALIDOS = { "BENIS10": 10, "APONIA": 15, "PRIMEIRACOMPRA": 5 };
 const formatarMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-// --- 2. ENGINE DO MAPA (v1.3 INTEGRADA) ---
+// --- 2. ENGINE DO MAPA ---
 function iniciarMapa() {
     const mapElement = document.getElementById('mapaEntrega');
     if (!mapElement || mapa) return;
 
-    // Inicialização do Leaflet (Estilo Dark)
     mapa = L.map('mapaEntrega', {
         zoomControl: false, 
         scrollWheelZoom: false,
@@ -68,7 +64,6 @@ function iniciarMapa() {
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(mapa);
 
-    // Pin Customizado da Benis
     const iconLoja = L.divIcon({
         className: 'custom-pin-container',
         html: `<div class="pin-wrapper"><div class="pin-pulse"></div><div class="pin-center"></div></div>`,
@@ -76,41 +71,22 @@ function iniciarMapa() {
         iconAnchor: [20, 20]
     });
 
-    L.marker(COORDS_LOJA, { icon: iconLoja })
-        .addTo(mapa)
-        .bindPopup(`
-            <div class="map-popup-custom">
-                <strong style="color: #ff8c00;">Benis Burguer</strong><br>
-                <small>📍 R. Paulo Fortes, 6245</small>
-            </div>
-        `, { closeButton: false });
-
-    // Localização do Cliente
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
-            const coordsUser = [pos.coords.latitude, pos.coords.longitude];
-            L.circleMarker(coordsUser, { radius: 8, fillColor: "#3b82f6", color: "#fff", weight: 3, fillOpacity: 1 }).addTo(mapa);
-            
-            const bounds = L.latLngBounds([COORDS_LOJA, coordsUser]);
-            mapa.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-        });
-    }
+    L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa)
+        .bindPopup(`<strong style="color:#ff8c00;">Benis Burguer</strong>`, { closeButton: false });
 
     setTimeout(() => { mapa.invalidateSize(); }, 500);
 }
 
-// --- 3. LOGICA DO CARRINHO (AGRUPADO) ---
+// --- 3. LOGICA DO CARRINHO ---
 function adicionarAoCarrinho(cat, id, event) {
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
 
-    // Feedback visual
     const btn = event.currentTarget;
     const originalHTML = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> OK!';
     btn.classList.add('btn-success');
 
-    // Verifica se já existe para aumentar a quantidade
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
         itemExistente.quantidade += 1;
@@ -119,7 +95,6 @@ function adicionarAoCarrinho(cat, id, event) {
     }
 
     salvarEAtualizar();
-
     setTimeout(() => {
         btn.innerHTML = originalHTML;
         btn.classList.remove('btn-success');
@@ -147,11 +122,7 @@ function atualizarInterface() {
     const list = document.getElementById("cartItems");
     if (!list) return;
 
-    list.innerHTML = carrinho.length ? "" : `
-        <div style="text-align:center; padding: 40px; opacity: 0.3;">
-            <i class="fas fa-shopping-basket" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
-            <p>Sua sacola está vazia.</p>
-        </div>`;
+    list.innerHTML = carrinho.length ? "" : `<p style="text-align:center;padding:40px;opacity:0.3;">Sacola vazia.</p>`;
 
     carrinho.forEach(item => {
         const div = document.createElement("div");
@@ -171,57 +142,20 @@ function atualizarInterface() {
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
     const totalFinal = subtotal * (1 - (descontoPercentual / 100));
 
-    // Atualiza Displays
     if (document.getElementById("totalValue")) document.getElementById("totalValue").innerText = formatarMoeda(totalFinal);
     if (document.getElementById("cartCount")) document.getElementById("cartCount").innerText = totalItens;
     if (document.getElementById("cartFabTotal")) document.getElementById("cartFabTotal").innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
     if (document.getElementById("cartToggle")) document.getElementById("cartToggle").style.display = carrinho.length > 0 ? "flex" : "none";
 }
 
-// --- 4. CUPOM & STATUS ---
-function aplicarCupom() {
-    const input = document.getElementById('cupom');
-    const codigo = input.value.toUpperCase().trim();
-    if (CUPONS_VALIDOS[codigo]) {
-        descontoPercentual = CUPONS_VALIDOS[codigo];
-        cupomAtivo = codigo;
-        input.style.borderColor = "#22c55e";
-        atualizarInterface();
-        alert(`Cupom ${codigo} aplicado!`);
-    } else {
-        descontoPercentual = 0;
-        cupomAtivo = "";
-        input.style.borderColor = "#ff4d4d";
-        atualizarInterface();
-    }
-}
-
-function verificarStatus() {
-    const dot = document.getElementById("statusLabel");
-    const text = document.getElementById("statusText");
-    const agora = new Date();
-    const hora = agora.getHours();
-    const dia = agora.getDay();
-    const aberto = (dia !== 1 && hora >= 18 && hora < 24); // Fecha Segunda
-
-    if (dot && text) {
-        dot.className = aberto ? "status-dot online" : "status-dot offline";
-        text.innerText = aberto ? "Aceitando Pedidos" : "Fechado no momento";
-    }
-}
-
-// --- 5. RENDERIZAÇÃO E NAVEGAÇÃO ---
+// --- 4. FUNÇÕES DE APOIO ---
 function mostrarCategoria(categoria) {
     const grid = document.getElementById("menu");
     if (!grid) return;
-
     grid.style.opacity = "0";
     setTimeout(() => {
         grid.innerHTML = "";
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.cat === categoria);
-        });
-
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.cat === categoria));
         cardapio[categoria].forEach(item => {
             const card = document.createElement("div");
             card.className = "card-item";
@@ -241,50 +175,60 @@ function mostrarCategoria(categoria) {
     }, 200);
 }
 
-function toggleCarrinho() { document.getElementById("cartPanel").classList.toggle("open"); }
+function aplicarCupom() {
+    const input = document.getElementById('cupom');
+    const codigo = input.value.toUpperCase().trim();
+    if (CUPONS_VALIDOS[codigo]) {
+        descontoPercentual = CUPONS_VALIDOS[codigo];
+        cupomAtivo = codigo;
+        atualizarInterface();
+        alert(`Cupom ${codigo} aplicado!`);
+    } else {
+        alert("Cupom inválido!");
+    }
+}
 
 function checkout() {
-    if (carrinho.length === 0) return;
+    if (!carrinho.length) return;
+    let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*\n\n";
+    carrinho.forEach(item => {
+        msg += `*${item.quantidade}x* ${item.name} - ${formatarMoeda(item.preco * item.quantidade)}\n`;
+    });
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
     const totalFinal = subtotal * (1 - (descontoPercentual / 100));
-
-    let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*\n";
-    msg += "━━━━━━━━━━━━━━━━━━━━\n\n";
-    carrinho.forEach(item => {
-        msg += `*${item.quantidade}x* ${item.name}\n`;
-        msg += `   └ _${formatarMoeda(item.preco * item.quantidade)}_\n`;
-    });
-    msg += "\n━━━━━━━━━━━━━━━━━━━━\n";
-    if (cupomAtivo) msg += `*Cupom:* ${cupomAtivo} (-${descontoPercentual}%)\n`;
-    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*\n\n`;
-    msg += "📍 *Entrega:* (Informe seu endereço)\n💰 *Pagamento:* (Informe a forma)";
-
+    msg += `\n*TOTAL: ${formatarMoeda(totalFinal)}*`;
     window.open(`https://wa.me/556993668336?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
-// --- 6. INICIALIZAÇÃO FINAL ---
-document.addEventListener('DOMContentLoaded', () => {
-    // CORREÇÃO DO LOADER: Esconde o loader quando tudo carregar
-    const loader = document.getElementById('loader') || document.querySelector('.loader-wrapper');
+function toggleCarrinho() { document.getElementById("cartPanel").classList.toggle("open"); }
+
+// --- 5. INICIALIZAÇÃO E CONTROLE DO LOADER ---
+window.addEventListener('load', () => {
+    // 1. Identifica o loader (pode ser ID ou Classe dependendo do seu HTML)
+    const loader = document.getElementById('loader') || document.querySelector('.loader-wrapper') || document.querySelector('.loading');
+    
+    // 2. Garante que o Loader suma após a página carregar
     if (loader) {
         setTimeout(() => {
-            loader.style.transition = "opacity 0.6s ease";
             loader.style.opacity = "0";
-            setTimeout(() => { loader.style.display = "none"; }, 600);
-        }, 1200); // 1.2s para garantir o visual
+            loader.style.pointerEvents = "none"; // Impede que o loader invisível bloqueie cliques
+            setTimeout(() => {
+                loader.style.display = "none";
+            }, 600);
+        }, 1000); // 1 segundo de exibição para manter a estética
     }
 
-    verificarStatus();
+    // 3. Inicializa o restante da página
     atualizarInterface();
     mostrarCategoria("hamburguer");
-    setTimeout(iniciarMapa, 2000);
+    setTimeout(iniciarMapa, 1500);
+});
 
-    // Fechar carrinho ao clicar fora
-    document.addEventListener('click', (e) => {
-        const panel = document.getElementById("cartPanel");
-        const fab = document.getElementById("cartToggle");
-        if (panel?.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target)) {
-            toggleCarrinho();
-        }
-    });
+// Fecha carrinho ao clicar fora
+document.addEventListener('click', (e) => {
+    const panel = document.getElementById("cartPanel");
+    const fab = document.getElementById("cartToggle");
+    if (panel?.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target)) {
+        toggleCarrinho();
+    }
 });
