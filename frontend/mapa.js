@@ -10,6 +10,8 @@ let marcadorUsuario;
 window.enderecoEntrega = "Não selecionado no mapa"; 
 
 const COORDS_LOJA = [-8.74015, -63.87498]; 
+// URL oficial para abrir no Google Maps (Coordenadas da loja)
+const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
 function iniciarMapa() {
     if (mapa) {
@@ -39,12 +41,22 @@ function iniciarMapa() {
         iconAnchor: [20, 20]
     });
 
-    L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa).bindPopup(`
-        <div class="map-popup-custom">
+    // 1. CRIAR O MARCADOR DA LOJA
+    const marcadorLoja = L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa);
+
+    // 2. CONTEÚDO DO POPUP CLICÁVEL
+    marcadorLoja.bindPopup(`
+        <div class="map-popup-custom" onclick="window.open('${GOOGLE_MAPS_URL}', '_blank')" style="cursor: pointer;">
             <strong style="color: #ff8c00;">Benis Burguer</strong><br>
-            <span style="color: #fff;">📍 R. Paulo Fortes, 6245</span>
+            <span style="color: #fff;">📍 R. Paulo Fortes, 6245</span><br>
+            <small style="color: #3b82f6; display: block; margin-top: 5px;">➔ Abrir no Google Maps</small>
         </div>
     `, { closeButton: false });
+
+    // 3. EVENTO PARA CLIQUE DIRETO NO ÍCONE (OPCIONAL)
+    marcadorLoja.on('dblclick', function() {
+        window.open(GOOGLE_MAPS_URL, '_blank');
+    });
 
     // EVENTO: Clique no mapa para definir local de entrega
     mapa.on('click', function(e) {
@@ -70,7 +82,6 @@ function iniciarMapa() {
  * Processa as coordenadas, atualiza o marcador e busca o endereço por extenso
  */
 async function processarLocalizacao(lat, lng, centralizar = false) {
-    // 1. Atualizar Marcador Visual
     if (marcadorUsuario) mapa.removeLayer(marcadorUsuario);
     
     marcadorUsuario = L.circleMarker([lat, lng], {
@@ -86,12 +97,10 @@ async function processarLocalizacao(lat, lng, centralizar = false) {
         mapa.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
     }
 
-    // 2. Geocodificação Reversa (Transformar lat/lng em Rua)
     try {
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
         const data = await response.json();
         
-        // Extrai a rua e o número ou bairro
         const rua = data.address.road || "Rua não identificada";
         const bairro = data.address.suburb || "Aponiã";
         window.enderecoEntrega = `${rua}, ${data.address.house_number || 'S/N'} - ${bairro}`;
