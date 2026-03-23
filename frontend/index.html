@@ -19,12 +19,12 @@
 <body>
 
     <div id="loader" class="loader-wrapper">
-        <div class="loader-content">
+        <div class="loader-content" style="text-align: center;">
             <img src="logo.png" alt="Benis Burguer" class="loader-logo" onerror="this.src='https://via.placeholder.com/120?text=BENIS'">
             <div class="progress-container">
                 <div id="progressBar" class="progress-bar"></div>
             </div>
-            <p class="loader-text">Preparando a brasa...</p>
+            <p class="loader-text" style="margin-top: 15px; font-weight: 500; color: var(--text-dim);">Preparando a brasa...</p>
         </div>
     </div>
 
@@ -87,12 +87,12 @@
                 <div class="map-overlay-info">
                     <div class="address-details" style="display: flex; align-items: center; gap: 15px;">
                         <i class="fas fa-map-marker-alt" style="color: var(--primary); font-size: 1.5rem;"></i>
-                        <div class="text-info">
+                        <div class="text-info" style="text-align: left;">
                             <strong style="display: block;">Benis Burguer</strong>
                             <p style="font-size: 0.85rem; color: var(--text-dim);">R. Paulo Fortes, 6245 - Aponiã</p>
                         </div>
                     </div>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7410,-63.8745" target="_blank" class="btn-route-premium">
+                    <a href="https://www.google.com/maps/dir//Benis+Burguer+R.+Paulo+Fortes,+6245+Aponiã+Porto+Velho+RO" target="_blank" class="btn-route-premium">
                         <i class="fas fa-directions"></i> <span>Como chegar</span>
                     </a>
                 </div>
@@ -100,10 +100,10 @@
         </section>
     </main>
 
-    <div class="cart-fab" id="cartToggle" onclick="toggleCarrinho()">
+    <div class="cart-fab" id="cartToggle" onclick="toggleCarrinho()" style="cursor: pointer; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; display: none; justify-content: space-between; align-items: center; padding: 18px 25px; border-radius: 20px; background: var(--primary); color: #000; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         <div style="display: flex; align-items: center; gap: 15px;">
             <div style="position: relative;">
-                <i class="fas fa-shopping-bag"></i>
+                <i class="fas fa-shopping-bag" style="font-size: 1.2rem;"></i>
                 <span id="cartCount" style="position: absolute; top: -10px; right: -10px; background: #fff; color: #000; font-size: 0.7rem; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">0</span>
             </div>
             <span id="cartFabTotal" style="font-weight: 700;">Ver sacola (R$ 0,00)</span>
@@ -125,22 +125,22 @@
         <div class="cart-footer-elite">
             <div class="input-group-modern" style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <input type="text" id="cupom" placeholder="Tem um cupom?" style="flex-grow: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; color: #fff; outline: none;">
-                <button id="btnAplicarCupom" onclick="aplicarCupom()" style="background: var(--primary); border: none; padding: 0 15px; border-radius: 12px; font-weight: 700; cursor: pointer;">APLICAR</button>
+                <button id="btnAplicarCupom" onclick="aplicarCupom()" style="background: var(--primary); border: none; padding: 0 15px; border-radius: 12px; font-weight: 700; cursor: pointer; color: #000;">APLICAR</button>
             </div>
             
             <div class="total-summary">
-                <div class="total-row">
+                <div class="total-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                     <span>Subtotal</span>
                     <span id="subtotalValue">R$ 0,00</span>
                 </div>
-                <div class="total-row main">
-                    <span>Total Final</span>
+                <div class="total-row main" style="display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: 800; border-top: 1px dashed var(--glass-border); padding-top: 15px; margin-top: 10px;">
+                    <span>Total</span>
                     <span id="totalValue">R$ 0,00</span>
                 </div>
             </div>
             
-            <button class="checkout-btn" onclick="checkout()">
-                ENVIAR PARA O WHATSAPP <i class="fab fa-whatsapp"></i>
+            <button class="checkout-btn" onclick="checkout()" style="width: 100%; margin-top: 25px; padding: 20px; border-radius: 15px; border: none; background: #25d366; color: #fff; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                ENVIAR PARA O WHATSAPP <i class="fab fa-whatsapp" style="font-size: 1.3rem;"></i>
             </button>
         </div>
     </aside>
