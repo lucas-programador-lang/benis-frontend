@@ -7,6 +7,12 @@
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
 let carrinho = [];
 let descontoAtivo = 0; 
+let mapa;
+let marcadorUsuario;
+// Variável global para capturar o endereço do mapa
+window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)"; 
+
+const COORDS_LOJA = [-8.74015, -63.87498]; // Porto Velho - Aponiã
 
 // Inicialização segura do Carrinho via LocalStorage
 try {
@@ -16,9 +22,6 @@ try {
     console.error("Erro ao carregar carrinho:", e);
     carrinho = [];
 }
-
-let mapa;
-const COORDS_LOJA = [-8.74015, -63.87498]; // Porto Velho - Aponiã
 
 const cardapio = {
     hamburguer: [
@@ -63,13 +66,13 @@ const cardapio = {
 
 const formatarMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-// --- 2. ENGINE DO MAPA ---
+// --- 2. ENGINE DO MAPA (COM GEOCODIFICAÇÃO) ---
 function iniciarMapa() {
     if (mapa) return;
     const mapElement = document.getElementById('mapaEntrega');
     if (!mapElement) return;
 
-    mapa = L.map('mapaEntrega', { zoomControl: false }).setView(COORDS_LOJA, 16);
+    mapa = L.map('mapaEntrega', { zoomControl: false, attributionControl: false }).setView(COORDS_LOJA, 16);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(mapa);
 
     const iconLoja = L.divIcon({
@@ -81,7 +84,38 @@ function iniciarMapa() {
     L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa)
         .bindPopup(`<strong style="color:#ff8c00;">Benis Burguer</strong><br>Aponiã - Porto Velho`);
 
+    // Evento de clique para definir entrega
+    mapa.on('click', (e) => processarLocalizacao(e.latlng.lat, e.latlng.lng));
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            processarLocalizacao(pos.coords.latitude, pos.coords.longitude, true);
+        });
+    }
+
     setTimeout(() => mapa.invalidateSize(), 500);
+}
+
+async function processarLocalizacao(lat, lng, centralizar = false) {
+    if (marcadorUsuario) mapa.removeLayer(marcadorUsuario);
+    
+    marcadorUsuario = L.circleMarker([lat, lng], {
+        radius: 10, fillColor: "#3b82f6", color: "#fff", weight: 3, fillOpacity: 1
+    }).addTo(mapa);
+
+    if (centralizar) {
+        const bounds = L.latLngBounds([COORDS_LOJA, [lat, lng]]);
+        mapa.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+    }
+
+    try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        const data = await res.json();
+        window.enderecoEntrega = `${data.address.road || 'Rua não identificada'}, ${data.address.house_number || 'S/N'} - ${data.address.suburb || 'Aponiã'}`;
+        marcadorUsuario.bindPopup(`<b>Entregar aqui:</b><br>${window.enderecoEntrega}`).openPopup();
+    } catch (e) {
+        window.enderecoEntrega = `Coordenadas: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    }
 }
 
 // --- 3. LÓGICA DO CARRINHO ---
@@ -89,11 +123,10 @@ function adicionarAoCarrinho(cat, id, event) {
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
 
-    // Feedback Visual no botão
     const btn = event.currentTarget;
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
-    btn.style.background = "var(--success)";
+    btn.style.background = "#22c55e";
     
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
@@ -169,9 +202,9 @@ function aplicarCupom() {
         descontoAtivo = 10.00;
         if (discountRow) discountRow.style.display = "flex";
         document.getElementById("discountValue").innerText = `- ${formatarMoeda(descontoAtivo)}`;
-        alert("Cupom BENIS10 aplicado!");
+        alert("Cupom BENIS10 aplicado com sucesso!");
     } else {
-        alert("Cupom inválido.");
+        alert("Cupom inválido ou expirado.");
         descontoAtivo = 0;
         if (discountRow) discountRow.style.display = "none";
     }
@@ -207,7 +240,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP ---
+// --- 6. CHECKOUT WHATSAPP (INTEGRADO COM MAPA) ---
 function checkout() {
     if (!carrinho.length) return;
     
@@ -216,7 +249,7 @@ function checkout() {
     
     carrinho.forEach(item => {
         msg += `✅ *${item.quantidade}x ${item.name}*\n`;
-        msg += `   Subtotal: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
+        msg += `    Subtotal: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
     });
 
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
@@ -225,8 +258,10 @@ function checkout() {
     msg += "━━━━━━━━━━━━━━━━━━━━━━\n";
     if (descontoAtivo > 0) msg += `🎁 *DESCONTO:* - ${formatarMoeda(descontoAtivo)}\n`;
     msg += `💰 *TOTAL DO PEDIDO:* ${formatarMoeda(totalFinal)}\n\n`;
+    
     msg += "📍 *ENDEREÇO DE ENTREGA:* \n";
-    msg += "_(Informe Rua, Número e Bairro)_";
+    msg += `🗺️ ${window.enderecoEntrega}\n\n`;
+    msg += "_(Confirme o número da casa/apartamento ao enviar)_";
 
     const fone = "556993668336"; 
     window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, "_blank");
@@ -242,14 +277,14 @@ function verificarStatusLoja() {
     const agora = new Date();
     const diaSemana = agora.getDay();
     const hora = agora.getHours();
-    const tempoAbertura = 19 * 60; // 19:00h
-    const tempoFechamento = (23 * 60) + 59; // 23:59h
+    const tempoAbertura = 19 * 60; // 19:00
+    const tempoFechamento = (23 * 60) + 59; // 23:59
     const tempoAtual = (hora * 60) + agora.getMinutes();
 
     const statusText = document.getElementById("statusText");
     const statusLabel = document.getElementById("statusLabel");
 
-    if (diaSemana === 1) { // Segunda-feira (Fechado)
+    if (diaSemana === 1) { // Segunda fechado
         if (statusText) statusText.innerText = "Fechada • Abre Terça às 19:00";
     } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
         if (statusText) statusText.innerText = "Aberta • No Braseiro";
