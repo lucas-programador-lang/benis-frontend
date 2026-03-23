@@ -222,7 +222,7 @@ body::before {
 
 .cart-fab:hover { transform: translateX(-50%) translateY(-5px); filter: brightness(1.1); }
 
-/* --- 5. CARRINHO PANEL (SACOLA) CORRIGIDO --- */
+/* --- 5. CARRINHO PANEL (SACOLA) --- */
 .cart-panel-elite {
     position: fixed; 
     top: 0; 
@@ -230,7 +230,7 @@ body::before {
     width: 100%; 
     max-width: 420px; 
     height: 100vh; 
-    background: #0a0a0b; /* Fundo Ultra Dark */
+    background: #0a0a0b; 
     z-index: 5000; 
     transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
     border-left: 1px solid var(--glass-border); 
@@ -241,7 +241,6 @@ body::before {
 
 .cart-panel-elite.open { right: 0; }
 
-/* Header da Sacola Premium */
 .cart-header-elite {
     padding: 30px 25px;
     display: flex;
@@ -261,7 +260,6 @@ body::before {
 
 .cart-header-elite h2 i { color: var(--primary); }
 
-/* Botão Fechar (O NOVO "X" PROFISSIONAL) */
 .btn-close-cart {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--glass-border);
@@ -293,44 +291,90 @@ body::before {
     gap: 12px;
 }
 
-/* Área de Cupom Otimizada */
+/* --- ESTILIZAÇÃO DOS ITENS NA SACOLA --- */
+.cart-item-elite {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03); 
+    padding: 16px 20px; 
+    border-radius: 20px; 
+    border: 1px solid var(--glass-border);
+    transition: var(--transition-smooth);
+    animation: slideIn 0.3s ease-out;
+}
+
+.cart-item-elite:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.cart-item-info h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.cart-item-info p {
+    font-size: 0.9rem;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* BOTÃO DE REMOVER (O NOVO "X" DO ITEM) */
+.btn-remove {
+    background: rgba(255, 77, 77, 0.05);
+    border: 1px solid rgba(255, 77, 77, 0.1);
+    color: var(--danger);
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-remove i { font-size: 0.9rem; }
+
+.btn-remove:hover {
+    background: var(--danger);
+    color: white;
+    transform: scale(1.1) rotate(8deg);
+    border-color: transparent;
+    box-shadow: 0 8px 20px rgba(255, 77, 77, 0.4);
+}
+
+@keyframes slideIn { 
+    from { opacity: 0; transform: translateX(20px); } 
+    to { opacity: 1; transform: translateX(0); } 
+}
+
+/* --- ÁREA DE CUPOM & FOOTER --- */
 .coupon-wrapper {
     margin: 10px 0 20px;
-    display: flex;
-    gap: 10px;
+    display: flex; gap: 10px;
     background: rgba(255,255,255,0.03);
-    padding: 8px;
-    border-radius: 18px;
+    padding: 8px; border-radius: 18px;
     border: 1px solid var(--glass-border);
 }
 
 .coupon-wrapper input {
-    background: transparent;
-    border: none;
-    padding: 10px 15px;
-    color: #fff;
-    flex-grow: 1;
-    font-size: 0.9rem;
-    outline: none;
+    background: transparent; border: none;
+    padding: 10px 15px; color: #fff;
+    flex-grow: 1; font-size: 0.9rem; outline: none;
 }
 
 .btn-apply-coupon {
-    background: var(--primary);
-    border: none;
-    color: #000;
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: var(--primary); border: none;
+    color: #000; width: 40px; height: 40px;
+    border-radius: 12px; cursor: pointer;
+    transition: 0.3s; display: flex;
+    align-items: center; justify-content: center;
 }
 
-.btn-apply-coupon:hover { transform: scale(1.05); filter: brightness(1.2); }
-
-/* Rodapé da Sacola Elite */
 .cart-footer-elite {
     padding: 25px;
     background: rgba(255, 255, 255, 0.01);
@@ -338,48 +382,21 @@ body::before {
     border-top: 1px solid var(--glass-border);
 }
 
-.total-details {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.detail-row {
-    display: flex;
-    justify-content: space-between;
-    color: var(--text-dim);
-    font-size: 0.95rem;
-}
-
 .detail-row.grand-total {
-    margin-top: 10px;
-    padding-top: 10px;
+    margin-top: 10px; padding-top: 10px;
     border-top: 1px solid var(--glass-border);
-    color: #fff;
-    font-size: 1.8rem;
-    font-weight: 800;
+    color: #fff; font-size: 1.8rem; font-weight: 800;
 }
 
-/* Botão WhatsApp Com Efeito Glow e Animação */
 .checkout-btn {
-    width: 100%;
-    background: var(--success);
-    color: #fff;
-    padding: 22px;
-    border-radius: 22px;
-    border: none;
-    font-weight: 800;
-    font-size: 1.1rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+    width: 100%; background: var(--success);
+    color: #fff; padding: 22px; border-radius: 22px;
+    border: none; font-weight: 800; font-size: 1.1rem;
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: center; gap: 12px;
     transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    text-transform: uppercase; letter-spacing: 1px;
 }
 
 .checkout-btn:hover {
@@ -388,17 +405,7 @@ body::before {
     background: #21ba5a;
 }
 
-/* Item Individual na Sacola */
-.cart-item-elite {
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(255,255,255,0.03); padding: 18px; border-radius: 20px; 
-    border: 1px solid var(--glass-border);
-    animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-/* --- MAPA --- */
+/* --- MAPA & MARCADOR --- */
 .location-section { padding: 60px 6%; }
 .map-card-wrapper { 
     border-radius: 30px; overflow: hidden; height: 450px; 
@@ -406,9 +413,6 @@ body::before {
 }
 #mapaEntrega { height: 100%; width: 100%; filter: brightness(0.8) contrast(1.2); }
 
-/* --- MARCADOR --- */
-.custom-pin-container { display: flex; justify-content: center; align-items: center; }
-.pin-wrapper { position: relative; width: 20px; height: 20px; }
 .pin-center { width: 16px; height: 16px; background: var(--primary); border: 2px solid #fff; border-radius: 50%; position: relative; z-index: 2; }
 .pin-pulse { 
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
