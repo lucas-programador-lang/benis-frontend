@@ -1,6 +1,6 @@
 /**
- * BENIS BURGUER - Gourmet Logic Engine v4.8.2 (Stable)
- * Sincronizado com: HTML/CSS v4.5 (Dark Mode Premium)
+ * BENIS BURGUER - Gourmet Logic Engine v4.9.0 (Elite Edition)
+ * Sincronizado com: HTML/CSS v4.9 (Dark Mode Premium)
  * Local: Porto Velho - RO
  */
 
@@ -49,14 +49,12 @@ function mostrarCategoria(categoria) {
     const menuContainer = document.getElementById("menu");
     if (!menuContainer) return;
 
-    // Efeito de transição suave
     menuContainer.style.opacity = "0";
     menuContainer.style.transform = "translateY(10px)";
 
     setTimeout(() => {
         menuContainer.innerHTML = "";
         
-        // Atualiza botões de abas
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-cat') === categoria);
         });
@@ -85,7 +83,7 @@ function mostrarCategoria(categoria) {
     }, 250);
 }
 
-// --- GERENCIAMENTO DO CARRINHO ---
+// --- GERENCIAMENTO DO CARRINHO (ESTILO PREMIUM X-BAURU) ---
 
 function atualizarInterface() {
     const cartList = document.getElementById("cartItems");
@@ -107,12 +105,13 @@ function atualizarInterface() {
         carrinho.forEach(item => {
             const div = document.createElement("div");
             div.className = "cart-item-elite";
+            // Layout corrigido para bater com o CSS novo (Nome/Preço à esquerda, Lixeira à direita)
             div.innerHTML = `
-                <div>
-                    <strong style="display:block;">${item.name}</strong>
-                    <span style="color:var(--primary); font-weight:600;">${formatarMoeda(item.preco)}</span>
+                <div class="item-main">
+                    <h4>${item.name}</h4>
+                    <span class="price">${formatarMoeda(item.preco)}</span>
                 </div>
-                <button onclick="removerDoCarrinho(${item.cartId})" style="background:none; border:none; color:var(--danger); cursor:pointer; padding: 10px;">
+                <button class="btn-remove" onclick="removerDoCarrinho(${item.cartId})" aria-label="Remover">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             `;
@@ -134,7 +133,6 @@ function adicionarAoCarrinho(cat, index, event) {
     const item = cardapio[cat][index];
     const btn = event.currentTarget;
 
-    // Feedback Visual
     const originalContent = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> OK!';
     btn.style.background = "#22c55e";
@@ -189,7 +187,7 @@ function aplicarCupom() {
     }
 }
 
-// --- STATUS E FINALIZAÇÃO ---
+// --- STATUS DA BRASA (LOGICA PVH) ---
 
 function verificarStatusLoja() {
     const dot = document.getElementById("statusLabel");
@@ -197,7 +195,7 @@ function verificarStatusLoja() {
     
     const agora = new Date();
     const hora = agora.getHours();
-    const dia = agora.getDay(); // 0 = Domingo, 1 = Segunda...
+    const dia = agora.getDay(); 
 
     // Aberto Terça a Domingo, 18h às 00h
     const aberto = (dia !== 1 && hora >= 18 && hora < 24);
@@ -225,14 +223,12 @@ function checkout() {
     if (cupomAtivo) msg += `*Cupom:* ${cupomAtivo} (-${descontoPercentual}%)%0A`;
     msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A📍 *Endereço de entrega:*%0A💰 *Forma de pagamento:*`;
 
-    // Número de Porto Velho configurado conforme solicitado
     window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
 }
 
 // --- INICIALIZAÇÃO ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Configura eventos das abas
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat));
     });
