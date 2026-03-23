@@ -22,7 +22,7 @@
         <div class="loader-content">
             <img src="logo.png" alt="Benis Burguer" class="loader-logo" onerror="this.src='https://via.placeholder.com/120?text=BENIS'">
             <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
+                <div id="progressBar" class="progress-bar"></div>
             </div>
             <p class="loader-text">Preparando a brasa...</p>
         </div>
@@ -46,26 +46,32 @@
         </div>
     </header>
 
-    <main class="container">
+    <main>
         <section class="hero-elite">
             <div class="hero-content">
                 <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
                 <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
-                <div class="status-pill">
-                    <div class="status-indicator">
-                        <span id="statusLabel" class="status-dot"></span>
-                        <span id="statusText">Verificando brasa...</span>
-                    </div>
+                <div class="status-indicator">
+                    <span id="statusLabel" class="status-dot"></span>
+                    <span id="statusText">Verificando brasa...</span>
                 </div>
             </div>
         </section>
 
         <div class="nav-container-glass">
             <nav class="categorias-elite">
-                <button class="tab-btn active" data-cat="hamburguer"><i class="fas fa-hamburger"></i> <span>Burguers</span></button>
-                <button class="tab-btn" data-cat="porcoes"><i class="fas fa-cheese"></i> <span>Porções</span></button>
-                <button class="tab-btn" data-cat="extras"><i class="fas fa-plus-circle"></i> <span>Extras</span></button>
-                <button class="tab-btn" data-cat="bebidas"><i class="fas fa-wine-glass"></i> <span>Bebidas</span></button>
+                <button class="tab-btn active" data-cat="hamburguer">
+                    <i class="fas fa-hamburger"></i> <span>Burguers</span>
+                </button>
+                <button class="tab-btn" data-cat="porcoes">
+                    <i class="fas fa-cheese"></i> <span>Porções</span>
+                </button>
+                <button class="tab-btn" data-cat="extras">
+                    <i class="fas fa-plus-circle"></i> <span>Extras</span>
+                </button>
+                <button class="tab-btn" data-cat="bebidas">
+                    <i class="fas fa-wine-glass"></i> <span>Bebidas</span>
+                </button>
             </nav>
         </div>
 
@@ -73,20 +79,20 @@
 
         <section class="location-section">
             <div class="section-header-elite">
-                <span class="mini-badge">Localização</span>
-                <h2>Onde Estamos</h2>
+                <span class="hero-badge" style="font-size: 0.7rem; padding: 5px 12px;">Localização</span>
+                <h2 style="margin-top: 10px;">Onde Estamos</h2>
             </div>
             <div class="map-card-wrapper">
                 <div id="mapaEntrega"></div>
                 <div class="map-overlay-info">
-                    <div class="address-details">
-                        <i class="fas fa-map-marker-alt"></i>
+                    <div class="address-details" style="display: flex; align-items: center; gap: 15px;">
+                        <i class="fas fa-map-marker-alt" style="color: var(--primary); font-size: 1.5rem;"></i>
                         <div class="text-info">
-                            <strong>Benis Burguer</strong>
-                            <p>R. Paulo Fortes, 6245 - Aponiã</p>
+                            <strong style="display: block;">Benis Burguer</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-dim);">R. Paulo Fortes, 6245 - Aponiã</p>
                         </div>
                     </div>
-                    <a href="https://www.google.com/maps/dir//Benis+Burguer" target="_blank" class="btn-route-premium">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7410,-63.8745" target="_blank" class="btn-route-premium">
                         <i class="fas fa-directions"></i> <span>Como chegar</span>
                     </a>
                 </div>
@@ -95,50 +101,51 @@
     </main>
 
     <div class="cart-fab" id="cartToggle" onclick="toggleCarrinho()">
-        <div class="cart-fab-icon">
-            <i class="fas fa-shopping-bag"></i>
-            <span id="cartCount" class="count-badge">0</span>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="position: relative;">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" style="position: absolute; top: -10px; right: -10px; background: #fff; color: #000; font-size: 0.7rem; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">0</span>
+            </div>
+            <span id="cartFabTotal" style="font-weight: 700;">Ver sacola (R$ 0,00)</span>
         </div>
-        <div id="cartFabTotal" class="cart-fab-label">Ver sacola (R$ 0,00)</div>
+        <i class="fas fa-chevron-right"></i>
     </div>
 
     <aside class="cart-panel-elite" id="cartPanel">
-        <div class="cart-inner">
-            <div class="cart-header-elite">
-                <h3><i class="fas fa-shopping-cart"></i> Seu Pedido</h3>
-                <button onclick="toggleCarrinho()" class="close-btn"><i class="fas fa-times"></i></button>
+        <div class="cart-header-elite">
+            <h3><i class="fas fa-shopping-cart" style="color: var(--primary);"></i> Seu Pedido</h3>
+            <button onclick="toggleCarrinho()" style="background:none; border:none; color: #fff; cursor:pointer; font-size: 1.2rem;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div id="cartItems" class="cart-content-scroll">
             </div>
 
-            <div id="cartItems" class="cart-content-scroll">
-                </div>
-
-            <div class="cart-footer-elite">
-                <div class="coupon-area">
-                    <div class="input-group-modern">
-                        <div class="input-wrapper">
-                            <i class="fas fa-ticket-alt"></i>
-                            <input type="text" id="cupom" placeholder="CUPOM">
-                        </div>
-                        <button id="btnAplicarCupom" onclick="aplicarCupom()">APLICAR</button>
-                    </div>
-                </div>
-                <div class="total-summary">
-                    <div class="total-row">
-                        <span>Subtotal</span>
-                        <span id="subtotalValue">R$ 0,00</span>
-                    </div>
-                    <div class="total-row main">
-                        <span>Total Final</span>
-                        <span id="totalValue">R$ 0,00</span>
-                    </div>
-                </div>
-                <button class="checkout-btn" onclick="checkout()">
-                    <span>ENVIAR PARA O WHATSAPP</span> <i class="fab fa-whatsapp"></i>
-                </button>
+        <div class="cart-footer-elite">
+            <div class="input-group-modern" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="cupom" placeholder="Tem um cupom?" style="flex-grow: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; color: #fff; outline: none;">
+                <button id="btnAplicarCupom" onclick="aplicarCupom()" style="background: var(--primary); border: none; padding: 0 15px; border-radius: 12px; font-weight: 700; cursor: pointer;">APLICAR</button>
             </div>
+            
+            <div class="total-summary">
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <span id="subtotalValue">R$ 0,00</span>
+                </div>
+                <div class="total-row main">
+                    <span>Total Final</span>
+                    <span id="totalValue">R$ 0,00</span>
+                </div>
+            </div>
+            
+            <button class="checkout-btn" onclick="checkout()">
+                ENVIAR PARA O WHATSAPP <i class="fab fa-whatsapp"></i>
+            </button>
         </div>
     </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="script.js"></script> </body>
+    <script src="script.js"></script>
+</body>
 </html>
