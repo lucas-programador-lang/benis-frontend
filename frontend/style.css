@@ -1,6 +1,6 @@
 /**
- * BENIS BURGUER - Gourmet Visual Engine v5.1 (Elite Edition)
- * Fusion: Dark Mode Premium + Leaflet Maps Custom Engine
+ * BENIS BURGUER - Gourmet Visual Engine v5.2 (Elite Edition)
+ * Fusion: Dark Mode Premium + Leaflet Maps + Social Media Glow Fix
  * Location: Porto Velho/RO - 2026
  */
 
@@ -18,6 +18,9 @@
     --danger: #ff4d4d;
     --success: #22c55e;
     --card-radius: 24px;
+    /* Cores das Redes Sociais */
+    --whatsapp: #25d366;
+    --instagram: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
 }
 
 /* --- RESET & BASE --- */
@@ -35,7 +38,7 @@ body {
     line-height: 1.6;
 }
 
-/* Partículas de Fundo Dinâmicas */
+/* Partículas de Fundo */
 body::before {
     content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 200%;
     background-image: 
@@ -60,7 +63,7 @@ body::before {
 
 @keyframes pulseLogo { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
 
-/* --- HEADER & NAVIGATION --- */
+/* --- HEADER & SOCIAL FIX --- */
 .glass-header {
     background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 1000; padding: 12px 6%;
@@ -68,6 +71,30 @@ body::before {
 .header-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
 .logo-img { height: 45px; }
 
+.social-links { display: flex; gap: 10px; }
+.social-btn {
+    width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    background: var(--bg-card); border: 1px solid var(--glass-border); color: white; transition: var(--transition-smooth);
+    text-decoration: none;
+}
+
+/* Hover WhatsApp */
+.btn-whatsapp:hover { 
+    background: var(--whatsapp); 
+    color: #000; 
+    box-shadow: 0 0 20px rgba(37, 211, 102, 0.5); 
+    border-color: var(--whatsapp);
+}
+
+/* Hover Instagram CORRIGIDO */
+.btn-instagram:hover { 
+    background: var(--instagram); 
+    color: #fff; 
+    box-shadow: 0 0 20px rgba(214, 36, 159, 0.5); 
+    border-color: transparent;
+}
+
+/* --- NAVIGATION --- */
 .nav-container-glass { 
     position: sticky; top: 69px; 
     background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); 
@@ -128,12 +155,11 @@ body::before {
     padding: 18px; border-radius: 18px; font-weight: 800; cursor: pointer;
 }
 
-/* --- MOTOR DE MAPA (ESTILOS INTEGRADOS) --- */
+/* --- MOTOR DE MAPA --- */
 .location-section { padding: 60px 6%; }
 .map-card-wrapper { border-radius: 30px; overflow: hidden; height: 400px; position: relative; border: 1px solid var(--glass-border); }
 #mapaEntrega { height: 100%; width: 100%; }
 
-/* Filtro dark para os tiles do mapa */
 .map-tiles-dark { filter: grayscale(1) invert(1) contrast(1.2) brightness(0.9); }
 
 .custom-pin-container { display: flex; justify-content: center; align-items: center; }
@@ -157,16 +183,13 @@ body::before {
     100% { transform: scale(2.5); opacity: 0; }
 }
 
-/* Popup Leaflet Estilo Elite */
 .leaflet-popup-content-wrapper {
     background: rgba(15, 15, 15, 0.95) !important;
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border);
     border-radius: 15px !important;
     color: #fff !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
-.leaflet-popup-tip { background: rgba(15, 15, 15, 0.95) !important; }
 
 .map-overlay-info {
     position: absolute; bottom: 15px; left: 15px; right: 15px; 
@@ -183,5 +206,3 @@ body::before {
     .cart-panel-elite { max-width: 100%; }
     .cart-fab { width: 95%; bottom: 15px; }
 }
-
-@keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
