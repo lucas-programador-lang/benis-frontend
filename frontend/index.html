@@ -21,7 +21,7 @@
         <div class="loader-content" style="text-align: center;">
             <img src="logo.png" alt="Benis Burguer" class="loader-logo" onerror="this.src='https://via.placeholder.com/120?text=BENIS'">
             <div class="progress-container">
-                <div id="progressBar" class="progress-bar"></div>
+                <div id="progressBar" class="progress-bar" style="width: 0%;"></div>
             </div>
             <p class="loader-text" style="margin-top: 15px; font-weight: 500; color: #888;">Preparando a brasa...</p>
         </div>
@@ -59,16 +59,16 @@
 
         <div class="nav-container-glass">
             <nav class="categorias-elite">
-                <button class="tab-btn active" data-cat="hamburguer">
+                <button class="tab-btn active" data-cat="hamburguer" onclick="mostrarCategoria('hamburguer')">
                     <i class="fas fa-hamburger"></i> <span>Burguers</span>
                 </button>
-                <button class="tab-btn" data-cat="porcoes">
+                <button class="tab-btn" data-cat="porcoes" onclick="mostrarCategoria('porcoes')">
                     <i class="fas fa-cheese"></i> <span>Porções</span>
                 </button>
-                <button class="tab-btn" data-cat="extras">
+                <button class="tab-btn" data-cat="extras" onclick="mostrarCategoria('extras')">
                     <i class="fas fa-plus-circle"></i> <span>Extras</span>
                 </button>
-                <button class="tab-btn" data-cat="bebidas">
+                <button class="tab-btn" data-cat="bebidas" onclick="mostrarCategoria('bebidas')">
                     <i class="fas fa-wine-glass"></i> <span>Bebidas</span>
                 </button>
             </nav>
@@ -91,7 +91,7 @@
                             <p style="font-size: 0.85rem; color: #aaa;">R. Paulo Fortes, 6245 - Aponiã</p>
                         </div>
                     </div>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7410,-63.8745" target="_blank" class="btn-route-premium">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.74015,-63.87498" target="_blank" class="btn-route-premium">
                         <i class="fas fa-directions"></i> <span>Como chegar</span>
                     </a>
                 </div>
