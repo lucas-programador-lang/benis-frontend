@@ -1,6 +1,6 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v6.0
- * Status: LOADER RESTAURADO & FUNCIONAL
+ * BENIS BURGUER - Gourmet Logic & Map Engine v6.1
+ * Status: OTIMIZADO & INTELIGENTE
  * Localidade: Porto Velho, RO - 2026
  */
 
@@ -23,7 +23,7 @@ const cardapio = {
         { id: 2, name: "X-Bauru", preco: 8.00, desc: "Pão, queijo, presunto, alface e tomate.", img: "bauru.png" },
         { id: 3, name: "X-Burguer", preco: 13.00, desc: "Pão, hambúrguer, queijo, presunto, alface, tomate, milho e batata.", img: "xbuerger.png" },
         { id: 4, name: "X-Salada", preco: 14.00, desc: "Pão, hambúrguer, ovo, queijo, presunto, alface, tomate, milho e batata.", img: "xsalada.png" },
-        { id: 5, name: "X-Salada Especial", preco: 17.00, desc: "Hambúrguer, ovo, salsicha, banana, catupiry e muito mais!", img: "especial.png" },
+        { id: 5, name: "X-Salada Especial", preco: 17.00, desc: "Hambúrguer, ovo, salsicha, banana, catupiry e complementos.", img: "especial.png" },
         { id: 6, name: "X-Calabresa", preco: 18.00, desc: "Pão, hambúrguer, calabresa, ovo e complementos.", img: "xcalabresa.png" },
         { id: 7, name: "X-Bacon", preco: 19.00, desc: "Pão, hambúrguer, bacon crocante, ovo e complementos.", img: "xbacon.png" },
         { id: 8, name: "X-Havaiano", preco: 19.00, desc: "Hambúrguer, banana, abacaxi, cheddar e cebola caramelizada.", img: "havaiano.png" },
@@ -43,15 +43,14 @@ const cardapio = {
     extras: [
         { id: 301, name: "Hambúrguer Extra", preco: 5.00, desc: "Turbine seu pedido.", img: "extra-meat.png" },
         { id: 302, name: "Cheddar", preco: 4.00, desc: "Cremosidade extra.", img: "extra-cheddar.png" },
-        { id: 303, name: "Bacon", preco: 3.00, desc: "Crocância máxima.", img: "extra-bacon.png" },
-        { id: 304, name: "Cebola Caramelizada", preco: 3.00, desc: "Toque agridoce.", img: "extra-onion.png" }
+        { id: 303, name: "Bacon", preco: 3.00, desc: "Crocância máxima.", img: "extra-bacon.png" }
     ]
 };
 
 const CUPONS_VALIDOS = { "BENIS10": 10, "APONIA": 15, "PRIMEIRACOMPRA": 5 };
 const formatarMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-// --- 2. ENGINE DO MAPA ---
+// --- 2. ENGINE DO MAPA (LEAFLET) ---
 function iniciarMapa() {
     const mapElement = document.getElementById('mapaEntrega');
     if (!mapElement || mapa) return;
@@ -72,20 +71,21 @@ function iniciarMapa() {
     });
 
     L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa)
-        .bindPopup(`<strong style="color:#ff8c00;">Benis Burguer</strong>`, { closeButton: false });
+        .bindPopup(`<strong style="color:#ff8c00;">Benis Burguer</strong><br>Aponiã`, { closeButton: false });
 
     setTimeout(() => { mapa.invalidateSize(); }, 500);
 }
 
-// --- 3. LOGICA DO CARRINHO ---
+// --- 3. LÓGICA DO CARRINHO ---
 function adicionarAoCarrinho(cat, id, event) {
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
 
     const btn = event.currentTarget;
     const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-check"></i> OK!';
-    btn.classList.add('btn-success');
+    btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
+    btn.style.background = "var(--success)";
+    btn.style.color = "#000";
 
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
@@ -97,8 +97,9 @@ function adicionarAoCarrinho(cat, id, event) {
     salvarEAtualizar();
     setTimeout(() => {
         btn.innerHTML = originalHTML;
-        btn.classList.remove('btn-success');
-    }, 800);
+        btn.style.background = "";
+        btn.style.color = "";
+    }, 1000);
 }
 
 function removerDoCarrinho(id) {
@@ -122,19 +123,21 @@ function atualizarInterface() {
     const list = document.getElementById("cartItems");
     if (!list) return;
 
-    list.innerHTML = carrinho.length ? "" : `<p style="text-align:center;padding:40px;opacity:0.3;">Sacola vazia.</p>`;
+    list.innerHTML = carrinho.length ? "" : `<div style="text-align:center;padding:40px;opacity:0.4;"><i class="fas fa-shopping-basket" style="font-size:3rem;margin-bottom:10px;"></i><p>Sua sacola está vazia.</p></div>`;
 
     carrinho.forEach(item => {
         const div = document.createElement("div");
         div.className = "cart-item-elite";
         div.innerHTML = `
             <div style="flex-grow:1; text-align:left;">
-                <h4 style="color:#fff; font-size:0.95rem;">${item.quantidade}x ${item.name}</h4>
+                <h4 style="color:#fff; font-size:0.95rem; margin-bottom:4px;">${item.quantidade}x ${item.name}</h4>
                 <span style="color:var(--primary); font-weight:700;">${formatarMoeda(item.preco * item.quantidade)}</span>
             </div>
-            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})">
-                <i class="fas fa-trash-alt"></i>
-            </button>`;
+            <div style="display:flex; gap:8px;">
+                <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" style="background:rgba(255,255,255,0.05); color:#fff;">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>`;
         list.appendChild(div);
     });
 
@@ -142,90 +145,135 @@ function atualizarInterface() {
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
     const totalFinal = subtotal * (1 - (descontoPercentual / 100));
 
-    if (document.getElementById("totalValue")) document.getElementById("totalValue").innerText = formatarMoeda(totalFinal);
-    if (document.getElementById("cartCount")) document.getElementById("cartCount").innerText = totalItens;
-    if (document.getElementById("cartFabTotal")) document.getElementById("cartFabTotal").innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
-    if (document.getElementById("cartToggle")) document.getElementById("cartToggle").style.display = carrinho.length > 0 ? "flex" : "none";
+    document.getElementById("totalValue") && (document.getElementById("totalValue").innerText = formatarMoeda(totalFinal));
+    document.getElementById("cartCount") && (document.getElementById("cartCount").innerText = totalItens);
+    document.getElementById("cartFabTotal") && (document.getElementById("cartFabTotal").innerText = `Ver sacola (${formatarMoeda(totalFinal)})`);
+    document.getElementById("cartToggle") && (document.getElementById("cartToggle").style.display = carrinho.length > 0 ? "flex" : "none");
 }
 
-// --- 4. FUNÇÕES DE APOIO ---
+// --- 4. NAVEGAÇÃO E STATUS ---
 function mostrarCategoria(categoria) {
     const grid = document.getElementById("menu");
     if (!grid) return;
+    
     grid.style.opacity = "0";
+    grid.style.transform = "translateY(10px)";
+    
     setTimeout(() => {
         grid.innerHTML = "";
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.cat === categoria));
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.cat === categoria);
+        });
+
         cardapio[categoria].forEach(item => {
             const card = document.createElement("div");
             card.className = "card-item";
             card.innerHTML = `
-                <div class="card-image-box"><img src="img/${item.img}" onerror="this.src='logo.png'"></div>
+                <div class="card-image-box">
+                    <img src="img/${item.img}" onerror="this.src='logo.png'">
+                </div>
                 <div class="card-info">
-                    <h3>${item.name}</h3>
-                    <p>${item.desc}</p>
+                    <div>
+                        <h3>${item.name}</h3>
+                        <p>${item.desc}</p>
+                    </div>
                     <span class="price-tag">${formatarMoeda(item.preco)}</span>
                 </div>
                 <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${item.id}, event)">
-                    <i class="fas fa-plus"></i> ADICIONAR
+                    <i class="fas fa-cart-plus"></i> ADICIONAR
                 </button>`;
             grid.appendChild(card);
         });
         grid.style.opacity = "1";
-    }, 200);
+        grid.style.transform = "translateY(0)";
+    }, 250);
+}
+
+function verificarStatusLoja() {
+    const agora = new Date();
+    const hora = agora.getHours();
+    const statusDot = document.getElementById("statusLabel");
+    const statusText = document.getElementById("statusText");
+    
+    // Aberto das 18h às 00h
+    if (hora >= 18 || hora < 0) {
+        statusDot?.classList.add("online");
+        if (statusText) statusText.innerText = "Aberta • Retirada e Entrega";
+    } else {
+        statusDot?.classList.add("offline");
+        if (statusText) statusText.innerText = "Fechada • Abre às 18:00";
+    }
 }
 
 function aplicarCupom() {
     const input = document.getElementById('cupom');
     const codigo = input.value.toUpperCase().trim();
+    
+    if (cupomAtivo === codigo) {
+        alert("Este cupom já está aplicado!");
+        return;
+    }
+
     if (CUPONS_VALIDOS[codigo]) {
         descontoPercentual = CUPONS_VALIDOS[codigo];
         cupomAtivo = codigo;
         atualizarInterface();
-        alert(`Cupom ${codigo} aplicado!`);
+        alert(`Sucesso! Cupom ${codigo} aplicado: ${descontoPercentual}% de desconto.`);
     } else {
-        alert("Cupom inválido!");
+        alert("Cupom não encontrado ou expirado.");
     }
 }
 
 function checkout() {
     if (!carrinho.length) return;
-    let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*\n\n";
+    
+    let msg = "🍔 *BENIS BURGUER - NOVO PEDIDO* 🍔\n";
+    msg += "--------------------------------------\n\n";
+    
     carrinho.forEach(item => {
-        msg += `*${item.quantidade}x* ${item.name} - ${formatarMoeda(item.preco * item.quantidade)}\n`;
+        msg += `✅ *${item.quantidade}x ${item.name}*\n`;
+        msg += `   Subtotal: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
     });
+
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
     const totalFinal = subtotal * (1 - (descontoPercentual / 100));
-    msg += `\n*TOTAL: ${formatarMoeda(totalFinal)}*`;
+
+    if (cupomAtivo) msg += `🎟️ *Cupom:* ${cupomAtivo} (-${descontoPercentual}%)\n`;
+    msg += `\n💰 *TOTAL A PAGAR: ${formatarMoeda(totalFinal)}*`;
+    msg += `\n\n--------------------------------------\n`;
+    msg += `📍 *Endereço de Entrega:* \n(Digite seu endereço aqui)`;
+
     window.open(`https://wa.me/556993668336?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
-function toggleCarrinho() { document.getElementById("cartPanel").classList.toggle("open"); }
+function toggleCarrinho() { 
+    document.getElementById("cartPanel").classList.toggle("open"); 
+}
 
-// --- 5. INICIALIZAÇÃO E CONTROLE DO LOADER ---
+// --- 5. INICIALIZAÇÃO ---
 window.addEventListener('load', () => {
-    // 1. Identifica o loader (pode ser ID ou Classe dependendo do seu HTML)
-    const loader = document.getElementById('loader') || document.querySelector('.loader-wrapper') || document.querySelector('.loading');
-    
-    // 2. Garante que o Loader suma após a página carregar
-    if (loader) {
-        setTimeout(() => {
-            loader.style.opacity = "0";
-            loader.style.pointerEvents = "none"; // Impede que o loader invisível bloqueie cliques
-            setTimeout(() => {
-                loader.style.display = "none";
-            }, 600);
-        }, 1000); // 1 segundo de exibição para manter a estética
-    }
+    const loader = document.getElementById('loader');
+    const progressBar = document.getElementById('progressBar');
 
-    // 3. Inicializa o restante da página
-    atualizarInterface();
-    mostrarCategoria("hamburguer");
-    setTimeout(iniciarMapa, 1500);
+    // Animação fake de progresso
+    if (progressBar) progressBar.style.width = "100%";
+
+    setTimeout(() => {
+        if (loader) {
+            loader.style.opacity = "0";
+            loader.style.pointerEvents = "none";
+            setTimeout(() => loader.style.display = "none", 600);
+        }
+        
+        verificarStatusLoja();
+        atualizarInterface();
+        mostrarCategoria("hamburguer");
+        iniciarMapa();
+    }, 1200);
 });
 
 // Fecha carrinho ao clicar fora
-document.addEventListener('click', (e) => {
+document.addEventListener('mousedown', (e) => {
     const panel = document.getElementById("cartPanel");
     const fab = document.getElementById("cartToggle");
     if (panel?.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target)) {
