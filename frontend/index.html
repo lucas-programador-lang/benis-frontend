@@ -45,7 +45,7 @@
     <main>
         <section class="hero-elite">
             <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
-            <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
+            <h1>Sabor que vicia, <br><span class="text-gradient" style="background: var(--gradient-glow); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">qualidade que conquista.</span></h1>
             <div class="status-indicator">
                 <span id="statusLabel" class="status-dot"></span>
                 <span id="statusText">Verificando braseiro...</span>
@@ -85,14 +85,14 @@
 
     <footer>
         <p>&copy; 2026 Benis Burguer - Porto Velho/RO</p>
-        <p style="margin-top: 5px;">Gourmet Visual Engine v6.7 Elite Edition</p>
+        <p style="margin-top: 5px; font-size: 0.7rem; opacity: 0.5;">Gourmet Visual Engine v6.7 Elite Edition</p>
     </footer>
 
     <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="display: none;">
         <div class="cart-fab-content" style="display: flex; align-items: center; gap: 12px;">
             <div style="position: relative;">
                 <i class="fas fa-shopping-bag" style="font-size: 1.4rem;"></i>
-                <span id="cartCount">0</span>
+                <span id="cartCount" style="position: absolute; top: -8px; right: -8px; background: #fff; color: #000; font-size: 0.7rem; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">0</span>
             </div>
             <span id="cartFabTotal">Ver sacola (R$ 0,00)</span>
         </div>
