@@ -1,11 +1,13 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v6.7 (Elite Edition)
+ * BENIS BURGUER - Gourmet Logic & Map Engine v6.8 (Elite Edition)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
 let carrinho = [];
+let descontoAtivo = 0; // Valor em Reais
+
 try {
     const savedCart = localStorage.getItem('benis_cart');
     carrinho = savedCart ? JSON.parse(savedCart) : [];
@@ -32,7 +34,7 @@ const cardapio = {
         { id: 11, name: "X-Turbinado", preco: 20.00, desc: "Pão, 2 hambúrgueres, 2 ovos, 2 queijos, 2 presuntos, alface, tomate, batata e milho.", img: "turbinado.png" },
         { id: 12, name: "X-Bagunça", preco: 20.00, desc: "Pão, hambúrguer, calabresa, bacon, ovo, banana, queijo, presunto, alface, tomate, milho e batata.", img: "bagunca.png" },
         { id: 13, name: "X-Tudo", preco: 23.00, desc: "Pão, hambúrguer, frango, calabresa, bacon, salsicha, banana, catupiry, queijo, presunto, alface, tomate, milho e batata.", img: "xtudo.png" },
-        { id: 14, name: "X-Havaino", preco: 19.00, desc: "Pão, hambúrguer, banana, abacaxi, cheddar, queijo, presunto, alface, tomate, cebola caramelizada, milho e batata.", img: "havaiano.png" },
+        { id: 14, name: "X-Havaiano", preco: 19.00, desc: "Pão, hambúrguer, banana, abacaxi, cheddar, queijo, presunto, alface, tomate, cebola caramelizada, milho e batata.", img: "havaiano.png" },
         { id: 15, name: "X-Benis", preco: 26.00, desc: "Pão, hambúrguer, frango, calabresa, bacon, salsicha, banana, abacaxi, cheddar, cebola caramelizada, queijo, presunto, alface, tomate, milho e batata.", img: "xbenis.png" }
     ],
     porcoes: [
@@ -44,7 +46,13 @@ const cardapio = {
         { id: 202, name: "Coca Cola 1L", preco: 10.00, desc: "Refrigerante 1 Litro.", img: "coca1l.png" },
         { id: 203, name: "Tuchaua 2L", preco: 9.00, desc: "Guaraná regional 2 Litros.", img: "tuchaua.png" },
         { id: 204, name: "Dydyo 2L", preco: 9.00, desc: "Guaraná regional 2 Litros.", img: "dydyo.png" },
-        { id: 205, name: "Coca Cola em Lata", preco: 7.00, desc: "Refrigerante lata 350ml.", img: "cocalata.png" }
+        { id: 205, name: "Coca Cola em Lata", preco: 7.00, desc: "Refrigerante lata 350ml.", img: "cocalata.png" },
+        { id: 206, name: "Sucos Naturais", preco: 7.00, desc: "Suco de fruta natural 400ml.", img: "suco.png" }
+    ],
+    extras: [
+        { id: 301, name: "Hambúrguer Extra", preco: 5.00, desc: "Adicional de carne.", img: "carne.png" },
+        { id: 302, name: "Bacon Extra", preco: 3.00, desc: "Adicional de bacon.", img: "bacon.png" },
+        { id: 303, name: "Ovo Extra", preco: 2.00, desc: "Adicional de ovo.", img: "ovo.png" }
     ]
 };
 
@@ -132,18 +140,45 @@ function atualizarInterface() {
         list.appendChild(div);
     });
 
-    const total = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
+    const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
+    const totalFinal = Math.max(0, subtotal - descontoAtivo);
     const cartCount = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
 
-    if (document.getElementById("totalValue")) document.getElementById("totalValue").innerText = formatarMoeda(total);
+    // Atualização dos campos de valor
+    if (document.getElementById("subtotalValue")) document.getElementById("subtotalValue").innerText = formatarMoeda(subtotal);
+    if (document.getElementById("totalValue")) document.getElementById("totalValue").innerText = formatarMoeda(totalFinal);
     if (document.getElementById("cartCount")) document.getElementById("cartCount").innerText = cartCount;
-    if (document.getElementById("cartFabTotal")) document.getElementById("cartFabTotal").innerText = `Ver sacola • ${formatarMoeda(total)}`;
+    if (document.getElementById("cartFabTotal")) document.getElementById("cartFabTotal").innerText = `Ver sacola • ${formatarMoeda(totalFinal)}`;
 
     const cartToggle = document.getElementById("cartToggle");
     if (cartToggle) cartToggle.style.display = carrinho.length > 0 ? "flex" : "none";
 }
 
-// --- 4. CATEGORIAS ---
+// --- 4. SISTEMA DE CUPOM ---
+function aplicarCupom() {
+    const cupomInput = document.getElementById("cupom");
+    const cupom = cupomInput.value.toUpperCase().trim();
+    const discountRow = document.getElementById("discountRow");
+    const discountValue = document.getElementById("discountValue");
+
+    if (cupom === "BENIS10") {
+        descontoAtivo = 10.00; // Desconto fixo de R$ 10
+        if (discountRow) discountRow.style.display = "flex";
+        if (discountValue) discountValue.innerText = `- ${formatarMoeda(descontoAtivo)}`;
+        alert("Cupom BENIS10 aplicado com sucesso!");
+    } else if (cupom === "") {
+        descontoAtivo = 0;
+        if (discountRow) discountRow.style.display = "none";
+    } else {
+        alert("Cupom inválido.");
+        descontoAtivo = 0;
+        if (discountRow) discountRow.style.display = "none";
+    }
+    
+    salvarEAtualizar();
+}
+
+// --- 5. CATEGORIAS ---
 function mostrarCategoria(categoria) {
     const grid = document.getElementById("menu");
     if (!grid) return;
@@ -172,7 +207,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 5. CHECKOUT WHATSAPP ---
+// --- 6. CHECKOUT WHATSAPP ---
 function checkout() {
     if (!carrinho.length) return;
     
@@ -184,10 +219,12 @@ function checkout() {
         msg += `   Subtotal: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
     });
 
-    const total = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
+    const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
+    const totalFinal = subtotal - descontoAtivo;
     
     msg += "━━━━━━━━━━━━━━━━━━━━━━\n";
-    msg += `💰 *TOTAL DO PEDIDO:* ${formatarMoeda(total)}\n\n`;
+    if (descontoAtivo > 0) msg += `🎁 *DESCONTO:* - ${formatarMoeda(descontoAtivo)}\n`;
+    msg += `💰 *TOTAL DO PEDIDO:* ${formatarMoeda(totalFinal)}\n\n`;
     msg += "📍 *ENDEREÇO DE ENTREGA:* \n";
     msg += "_(Informe Rua, Número e Bairro)_";
 
@@ -199,22 +236,21 @@ function toggleCarrinho() {
     document.getElementById("cartPanel")?.classList.toggle("open");
 }
 
-// --- 6. CONTROLE DE HORÁRIO E BOOTSTRAP ---
+// --- 7. CONTROLE DE HORÁRIO ---
 function verificarStatusLoja() {
     const agora = new Date();
-    const diaSemana = agora.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+    const diaSemana = agora.getDay();
     const hora = agora.getHours();
     const minutos = agora.getMinutes();
     const tempoAtual = (hora * 60) + minutos;
 
-    const tempoAbertura = 19 * 60; // 19:00 em minutos
-    const tempoFechamento = (23 * 60) + 59; // 23:59 em minutos
+    const tempoAbertura = 19 * 60; 
+    const tempoFechamento = (23 * 60) + 59; 
 
     const statusText = document.getElementById("statusText");
     const statusLabel = document.getElementById("statusLabel");
 
-    // Lógica: Se for Segunda (1) está FECHADA. Nos outros dias, checa o horário.
-    if (diaSemana === 1) {
+    if (diaSemana === 1) { // Segunda-feira
         if (statusText) statusText.innerText = "Fechada • Abre Terça às 19:00";
         statusLabel?.classList.remove("online");
     } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
@@ -226,8 +262,13 @@ function verificarStatusLoja() {
     }
 }
 
+// --- BOOTSTRAP ---
 window.addEventListener('DOMContentLoaded', () => {
     const loader = document.getElementById('loader');
+    const progressBar = document.getElementById('progressBar');
+
+    if (progressBar) progressBar.style.width = "100%";
+
     setTimeout(() => {
         if (loader) {
             loader.style.opacity = "0";
