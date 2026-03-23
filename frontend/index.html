@@ -24,7 +24,6 @@
         <div class="loader-content">
             <div class="loader-logo-container">
                 <img src="logo.png" alt="Benis Burguer" class="loader-logo">
-                <div class="loader-shimmer"></div>
             </div>
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
@@ -36,7 +35,7 @@
     <header class="glass-header">
         <div class="header-container">
             <div class="logo-area">
-                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img glow-effect">
+                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img">
             </div>
             <div class="header-actions">
                 <div class="social-links">
@@ -70,19 +69,19 @@
         <div class="nav-container-glass">
             <nav class="categorias-elite" id="categoryNav">
                 <button class="tab-btn active" data-cat="hamburguer">
-                    <div class="icon-box"><i class="fas fa-hamburger"></i></div>
+                    <i class="fas fa-hamburger"></i>
                     <span>Burguers</span>
                 </button>
                 <button class="tab-btn" data-cat="porcoes">
-                    <div class="icon-box"><i class="fas fa-cheese"></i></div>
+                    <i class="fas fa-cheese"></i>
                     <span>Porções</span>
                 </button>
                 <button class="tab-btn" data-cat="adicionais">
-                    <div class="icon-box"><i class="fas fa-plus-circle"></i></div>
+                    <i class="fas fa-plus-circle"></i>
                     <span>Extras</span>
                 </button>
                 <button class="tab-btn" data-cat="bebidas">
-                    <div class="icon-box"><i class="fas fa-wine-glass"></i></div>
+                    <i class="fas fa-wine-glass"></i>
                     <span>Bebidas</span>
                 </button>
             </nav>
@@ -98,17 +97,15 @@
             </div>
             
             <div class="map-card-wrapper">
-                <div class="map-card">
-                    <div id="mapaEntrega"></div>
-                    <div class="map-overlay-info">
-                        <div class="info-content">
-                            <i class="fas fa-location-arrow"></i>
-                            <p>R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO</p>
-                        </div>
-                        <a href="https://www.google.com/maps/search/?api=1&query=Benis+Burguer+Aponia" target="_blank" class="btn-location">
-                            Como chegar <i class="fas fa-external-link-alt"></i>
-                        </a>
+                <div id="mapaEntrega"></div>
+                <div class="map-overlay-info">
+                    <div class="info-content">
+                        <i class="fas fa-location-arrow" style="color: var(--primary); margin-right: 10px;"></i>
+                        <p>R. Paulo Fortes, 6245 - Aponiã, Porto Velho</p>
                     </div>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Benis+Burguer+Porto+Velho" target="_blank" class="btn-location">
+                        Como chegar <i class="fas fa-external-link-alt"></i>
+                    </a>
                 </div>
             </div>
         </section>
@@ -127,10 +124,7 @@
     <aside class="cart-panel-elite" id="cartPanel">
         <div class="cart-inner">
             <div class="cart-header-elite">
-                <div class="header-title">
-                    <i class="fas fa-shopping-cart"></i>
-                    <h3>Seu Pedido</h3>
-                </div>
+                <h3><i class="fas fa-shopping-cart"></i> Seu Pedido</h3>
                 <button onclick="toggleCarrinho()" class="close-btn" aria-label="Fechar carrinho">
                     <i class="fas fa-times"></i>
                 </button>
@@ -145,50 +139,34 @@
 
             <div class="cart-footer-elite">
                 <div class="summary-details">
-                    <div class="summary-row">
-                        <span>Subtotal</span>
-                        <span id="subtotalValue" class="price-text">R$ 0,00</span>
+                    <div class="total-row">
+                        <span>Total</span>
+                        <span id="totalValue">R$ 0,00</span>
                     </div>
                     
                     <div class="coupon-area">
                         <div class="input-group-glass">
                             <i class="fas fa-tag"></i>
-                            <input type="text" id="cupom" placeholder="Código do Cupom">
-                            <button class="apply-btn" onclick="aplicarCupom()">Aplicar</button>
+                            <input type="text" id="cupom" placeholder="CUPOM">
+                            <button id="btnAplicarCupom" onclick="aplicarCupom()">Aplicar</button>
                         </div>
-                    </div>
-
-                    <div class="summary-row total-row">
-                        <span>Total Final</span>
-                        <span id="totalValue" class="total-price-text">R$ 0,00</span>
                     </div>
                 </div>
 
                 <button class="checkout-btn" onclick="checkout()">
-                    <span class="btn-text">Finalizar no WhatsApp</span>
+                    <span>Finalizar no WhatsApp</span>
                     <i class="fab fa-whatsapp"></i>
                 </button>
             </div>
         </div>
     </aside>
 
-    <div id="cartOverlay" class="cart-overlay" onclick="toggleCarrinho()"></div>
-
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="app.js"></script>
     <script src="mapa.js"></script>
     
     <script>
-        // Registro do Service Worker para PWA
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("service-worker.js")
-                .then(reg => console.log("Elite PWA Ativo!", reg.scope))
-                .catch(err => console.error("Erro PWA:", err));
-            });
-        }
-
-        // Simulação básica de Loader (remover quando integrar com app.js)
+        // Simulação do Loader Premium
         window.addEventListener('DOMContentLoaded', () => {
             const bar = document.getElementById('progressBar');
             let width = 0;
@@ -197,12 +175,13 @@
                     clearInterval(interval);
                     setTimeout(() => {
                         document.getElementById('loader').classList.add('fade-out');
-                    }, 500);
+                    }, 400);
                 } else {
-                    width += 5;
+                    width += Math.random() * 15;
+                    if(width > 100) width = 100;
                     bar.style.width = width + '%';
                 }
-            }, 50);
+            }, 60);
         });
     </script>
 </body>
