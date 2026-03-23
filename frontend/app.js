@@ -1,7 +1,7 @@
 /**
- * BENIS BURGUER - Gourmet Logic Engine v4.9.0 (Elite Edition)
- * Sincronizado com: HTML/CSS v4.9 (Dark Mode Premium)
- * Local: Porto Velho - RO
+ * BENIS BURGUER - Gourmet Logic Engine v4.9.5 (Final Revision)
+ * Sincronizado com: HTML/CSS v4.9.5 (Elite Edition)
+ * Correções: Layout de Carrinho (X-Bauru) e Loader Controlado
  */
 
 const cardapio = {
@@ -83,7 +83,7 @@ function mostrarCategoria(categoria) {
     }, 250);
 }
 
-// --- GERENCIAMENTO DO CARRINHO (ESTILO PREMIUM X-BAURU) ---
+// --- GERENCIAMENTO DO CARRINHO (ESTILO IDENTICO À FOTO) ---
 
 function atualizarInterface() {
     const cartList = document.getElementById("cartItems");
@@ -105,7 +105,7 @@ function atualizarInterface() {
         carrinho.forEach(item => {
             const div = document.createElement("div");
             div.className = "cart-item-elite";
-            // Layout corrigido para bater com o CSS novo (Nome/Preço à esquerda, Lixeira à direita)
+            // AQUI ESTÁ A CORREÇÃO: Estrutura item-main e btn-remove para o CSS alinhar
             div.innerHTML = `
                 <div class="item-main">
                     <h4>${item.name}</h4>
@@ -187,7 +187,7 @@ function aplicarCupom() {
     }
 }
 
-// --- STATUS DA BRASA (LOGICA PVH) ---
+// --- STATUS E FINALIZAÇÃO ---
 
 function verificarStatusLoja() {
     const dot = document.getElementById("statusLabel");
@@ -197,7 +197,6 @@ function verificarStatusLoja() {
     const hora = agora.getHours();
     const dia = agora.getDay(); 
 
-    // Aberto Terça a Domingo, 18h às 00h
     const aberto = (dia !== 1 && hora >= 18 && hora < 24);
 
     if (dot && text) {
@@ -226,9 +225,26 @@ function checkout() {
     window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
 }
 
-// --- INICIALIZAÇÃO ---
+// --- INICIALIZAÇÃO E LOADER ---
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Esconde o loader após o carregamento (Corrige o problema da logo grande)
+    const loader = document.querySelector('.loader-wrapper');
+    const progressBar = document.querySelector('.progress-bar');
+    
+    if (progressBar) {
+        let width = 0;
+        const interval = setInterval(() => {
+            if (width >= 100) {
+                clearInterval(interval);
+                if (loader) loader.classList.add('fade-out');
+            } else {
+                width += 10;
+                progressBar.style.width = width + '%';
+            }
+        }, 100);
+    }
+
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat));
     });
