@@ -4,7 +4,7 @@
  * Localidade: Porto Velho, RO - 2026
  */
 
-// Configurações Iniciais
+// --- CONFIGURAÇÕES INICIAIS ---
 let carrinho = [];
 try {
     carrinho = JSON.parse(localStorage.getItem('benis_cart')) || [];
@@ -50,7 +50,7 @@ const CUPONS_VALIDOS = { "BENIS10": 10, "APONIA": 15, "PRIMEIRACOMPRA": 5 };
 
 const formatarMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-// Renderização do Menu
+// --- RENDERIZAÇÃO DO MENU ---
 function mostrarCategoria(categoria) {
     const grid = document.getElementById("menu");
     if (!grid) return;
@@ -61,7 +61,6 @@ function mostrarCategoria(categoria) {
     setTimeout(() => {
         grid.innerHTML = "";
         
-        // Atualiza estado dos botões de categoria
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-cat') === categoria);
         });
@@ -90,18 +89,63 @@ function mostrarCategoria(categoria) {
     }, 200);
 }
 
-// Lógica do Carrinho
+// --- LÓGICA DO CARRINHO (AGRUPADO) ---
+function adicionarAoCarrinho(cat, id, event) {
+    const itemOriginal = cardapio[cat].find(p => p.id === id);
+    if (!itemOriginal) return;
+
+    // Feedback visual no botão
+    const btn = event.currentTarget;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i> OK!';
+    btn.classList.add('btn-success');
+
+    // Lógica de agrupamento: verifica se o item já existe pelo ID
+    const itemNoCarrinho = carrinho.find(i => i.id === id);
+
+    if (itemNoCarrinho) {
+        itemNoCarrinho.quantidade += 1;
+    } else {
+        carrinho.push({ 
+            ...itemOriginal, 
+            quantidade: 1 
+        });
+    }
+
+    localStorage.setItem('benis_cart', JSON.stringify(carrinho));
+    atualizarInterface();
+
+    setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.classList.remove('btn-success');
+    }, 800);
+}
+
+function removerDoCarrinho(id) {
+    // Procura o item no carrinho
+    const index = carrinho.findIndex(i => i.id === id);
+    
+    if (index !== -1) {
+        if (carrinho[index].quantidade > 1) {
+            carrinho[index].quantidade -= 1; // Diminui um se houver vários
+        } else {
+            carrinho.splice(index, 1); // Remove do array se for o último
+        }
+    }
+
+    localStorage.setItem('benis_cart', JSON.stringify(carrinho));
+    atualizarInterface();
+}
+
 function atualizarInterface() {
     const list = document.getElementById("cartItems");
     const totalDisplay = document.getElementById("totalValue");
-    const subtotalDisplay = document.getElementById("subtotalValue");
     const cartCount = document.getElementById("cartCount");
     const fabTotal = document.getElementById("cartFabTotal");
     const fabContainer = document.getElementById("cartToggle");
 
     if (!list) return;
 
-    // Renderiza itens
     list.innerHTML = carrinho.length ? "" : `
         <div style="text-align:center; padding: 40px 20px; opacity: 0.3;">
             <i class="fas fa-shopping-basket" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
@@ -113,23 +157,20 @@ function atualizarInterface() {
         div.className = "cart-item-elite";
         div.innerHTML = `
             <div style="flex-grow:1; text-align:left;">
-                <h4 style="font-size: 0.95rem; margin-bottom: 2px; color: #fff;">${item.name}</h4>
-                <span style="color: var(--primary); font-weight: 700;">${formatarMoeda(item.preco)}</span>
+                <h4 style="font-size: 0.95rem; margin-bottom: 2px; color: #fff;">${item.quantidade}x ${item.name}</h4>
+                <span style="color: var(--primary); font-weight: 700;">${formatarMoeda(item.preco * item.quantidade)}</span>
             </div>
-            <button class="btn-remove" onclick="removerDoCarrinho('${item.cartId}')" title="Remover item">
+            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" title="Remover um">
                 <i class="fas fa-trash-alt"></i>
             </button>
         `;
         list.appendChild(div);
     });
 
-    // Cálculos
-    const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
+    const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
     const totalFinal = subtotal * (1 - (descontoPercentual / 100));
 
-    // Atualiza Displays
-    if (cartCount) cartCount.innerText = carrinho.length;
-    if (subtotalDisplay) subtotalDisplay.innerText = formatarMoeda(subtotal);
+    if (cartCount) cartCount.innerText = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
     if (totalDisplay) totalDisplay.innerText = formatarMoeda(totalFinal);
     if (fabTotal) fabTotal.innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
     
@@ -138,38 +179,7 @@ function atualizarInterface() {
     }
 }
 
-function adicionarAoCarrinho(cat, id, event) {
-    const item = cardapio[cat].find(p => p.id === id);
-    if (!item) return;
-
-    // Feedback visual no botão
-    const btn = event.currentTarget;
-    const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-check"></i> OK!';
-    btn.classList.add('btn-success'); // Adicione esta classe no seu CSS se quiser mudar a cor
-
-    const itemCarrinho = { 
-        ...item, 
-        cartId: `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` 
-    };
-
-    carrinho.push(itemCarrinho);
-    localStorage.setItem('benis_cart', JSON.stringify(carrinho));
-    
-    atualizarInterface();
-
-    setTimeout(() => {
-        btn.innerHTML = originalHTML;
-        btn.classList.remove('btn-success');
-    }, 800);
-}
-
-function removerDoCarrinho(cartId) {
-    carrinho = carrinho.filter(i => i.cartId !== cartId);
-    localStorage.setItem('benis_cart', JSON.stringify(carrinho));
-    atualizarInterface();
-}
-
+// --- CUPOM ---
 function aplicarCupom() {
     const input = document.getElementById('cupom');
     if (!input) return;
@@ -194,15 +204,14 @@ function toggleCarrinho() {
     if (panel) panel.classList.toggle("open");
 }
 
-// Utilidades
+// --- UTILIDADES ---
 function verificarStatus() {
     const dot = document.getElementById("statusLabel");
     const text = document.getElementById("statusText");
     const agora = new Date();
     const hora = agora.getHours();
-    const dia = agora.getDay(); // 0 = Domingo, 1 = Segunda...
+    const dia = agora.getDay();
 
-    // Aberto de Terça a Domingo, das 18h às 00h
     const aberto = (dia !== 1 && hora >= 18 && hora < 24);
 
     if (dot && text) {
@@ -244,19 +253,18 @@ function checkout() {
         return;
     }
 
-    const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
+    const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
     const totalFinal = subtotal * (1 - (descontoPercentual / 100));
 
     let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*\n";
     msg += "━━━━━━━━━━━━━━━━━━━━\n\n";
     
     carrinho.forEach((item, index) => {
-        msg += `*${index + 1}.* ${item.name}\n`;
-        msg += `   └ _${formatarMoeda(item.preco)}_\n`;
+        msg += `*${item.quantidade}x* ${item.name}\n`;
+        msg += `   └ _${formatarMoeda(item.preco * item.quantidade)}_\n`;
     });
 
     msg += "\n━━━━━━━━━━━━━━━━━━━━\n";
-    msg += `*Subtotal:* ${formatarMoeda(subtotal)}\n`;
     if (cupomAtivo) msg += `*Cupom:* ${cupomAtivo} (-${descontoPercentual}%)\n`;
     msg += `*TOTAL: ${formatarMoeda(totalFinal)}*\n`;
     msg += "━━━━━━━━━━━━━━━━━━━━\n\n";
@@ -267,22 +275,28 @@ function checkout() {
     window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
-// Inicialização
+// --- INICIALIZAÇÃO ---
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. CORREÇÃO DO LOADER: Garante que ele suma
+    const loader = document.querySelector('.loader-wrapper');
+    if (loader) {
+        setTimeout(() => {
+            loader.classList.add('fade-out');
+        }, 1500); // Tempo para a animação do loader
+    }
+
     // Configura botões de aba
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.onclick = () => mostrarCategoria(btn.dataset.cat);
     });
 
-    // Inicia funções
     verificarStatus();
     atualizarInterface();
     mostrarCategoria("hamburguer");
     
-    // Pequeno delay para o mapa carregar após a animação do loader
-    setTimeout(inicializarMapa, 1000);
+    setTimeout(inicializarMapa, 2000);
 
-    // Fecha carrinho ao clicar fora dele (UX)
+    // Fecha carrinho ao clicar fora dele
     document.addEventListener('click', (e) => {
         const panel = document.getElementById("cartPanel");
         const fab = document.getElementById("cartToggle");
