@@ -12,8 +12,7 @@ let marcadorUsuario;
 window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)"; 
 
 const COORDS_LOJA = [-8.74015, -63.87498]; // Porto Velho - Aponiã
-// Link oficial para o Google Maps
-const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
+const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
 // Inicialização segura do Carrinho via LocalStorage
 try {
@@ -86,10 +85,11 @@ function iniciarMapa() {
     // Marcador da Loja com link direto para o Google Maps
     L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa)
         .bindPopup(`
-            <div onclick="window.open('${GOOGLE_MAPS_URL}', '_blank')" style="cursor:pointer; text-align:center;">
-                <strong style="color:#ff8c00;">Benis Burguer</strong><br>
-                Aponiã - Porto Velho<br>
-                <small style="color:#3b82f6;">Ver no Google Maps ➔</small>
+            <div onclick="window.open('${GOOGLE_MAPS_URL}', '_blank')" style="cursor:pointer; text-align:center; padding: 5px;">
+                <strong style="color:#ff8c00; font-size: 14px;">Benis Burguer</strong><br>
+                <span style="color:#eee;">Aponiã - Porto Velho</span><br>
+                <hr style="border: 0; border-top: 1px solid #444; margin: 5px 0;">
+                <small style="color:#3b82f6;">Clique para abrir no Maps ➔</small>
             </div>
         `).openPopup();
 
@@ -142,7 +142,7 @@ function adicionarAoCarrinho(cat, id, event) {
     if (itemExistente) {
         itemExistente.quantidade += 1;
     } else {
-        carrinho.push({ ...itemOriginal, quantidade: 1 });
+        carrinho.push({ ...itemOriginal, quantity: 1, quantidade: 1 });
     }
 
     salvarEAtualizar();
@@ -258,7 +258,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP E LIMPEZA ---
+// --- 6. CHECKOUT WHATSAPP COM LIMPEZA E FEEDBACK ---
 function checkout() {
     if (!carrinho.length) return;
     
@@ -284,17 +284,29 @@ function checkout() {
     const fone = "556993668336"; 
     window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, "_blank");
 
-    // --- LIMPEZA PÓS-PEDIDO ---
-    carrinho = []; // Esvazia o carrinho local
-    descontoAtivo = 0; // Reseta o cupom se houver
-    localStorage.removeItem('benis_cart'); // Limpa o banco de dados local
+    // Lógica de Limpeza Pós-Pedido
+    carrinho = [];
+    descontoAtivo = 0;
+    localStorage.removeItem('benis_cart');
     
-    // Atualiza a interface visual para mostrar o carrinho vazio
     atualizarInterface();
     
-    // Fecha o painel do carrinho lateral
     const panel = document.getElementById("cartPanel");
     if (panel) panel.classList.remove("open");
+
+    // Feedback Visual com SweetAlert2 (Opcional, mas recomendado)
+    if (window.Swal) {
+        Swal.fire({
+            title: 'Pedido Enviado!',
+            text: 'Sua sacola foi limpa e o pedido enviado para o WhatsApp.',
+            icon: 'success',
+            background: '#1a1a1a',
+            color: '#fff',
+            confirmButtonColor: '#ff8c00'
+        });
+    } else {
+        alert("Pedido enviado! Sua sacola foi limpa.");
+    }
 }
 
 function toggleCarrinho() { 
@@ -334,7 +346,6 @@ window.addEventListener('DOMContentLoaded', () => {
     mostrarCategoria("hamburguer");
     iniciarMapa();
 
-    // Fechar sacola ao clicar fora
     document.addEventListener('click', (e) => {
         const panel = document.getElementById("cartPanel");
         const cartToggle = document.getElementById("cartToggle");
