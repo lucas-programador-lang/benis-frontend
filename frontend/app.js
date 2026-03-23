@@ -1,7 +1,7 @@
 /**
- * BENIS BURGUER - Gourmet Logic Engine v5.2 (Revised)
+ * BENIS BURGUER - Gourmet Logic Engine v5.2 (Revised & Fixed)
  * Sincronizado com: style.css (Elite Edition)
- * Localidade: Porto Velho, RO
+ * Localidade: Porto Velho, RO - Aponiã
  */
 
 const cardapio = {
@@ -105,9 +105,9 @@ function atualizarInterface() {
         const div = document.createElement("div");
         div.className = "cart-item-elite";
         div.innerHTML = `
-            <div class="item-main">
-                <h4>${item.name}</h4>
-                <span class="price">${formatarMoeda(item.preco)}</span>
+            <div class="item-main" style="flex-grow:1; text-align:left;">
+                <h4 style="font-size: 0.95rem;">${item.name}</h4>
+                <span class="price" style="color: var(--primary); font-weight: 700;">${formatarMoeda(item.preco)}</span>
             </div>
             <button class="btn-remove" onclick="removerDoCarrinho('${item.cartId}')">
                 <i class="fas fa-trash-alt"></i>
@@ -125,7 +125,7 @@ function atualizarInterface() {
     if (fabTotal) fabTotal.innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
     
     if (fabContainer) {
-        carrinho.length > 0 ? fabContainer.classList.add('active') : fabContainer.classList.remove('active');
+        fabContainer.style.display = carrinho.length > 0 ? "flex" : "none";
     }
 }
 
@@ -204,7 +204,7 @@ function verificarStatus() {
 
 function inicializarMapa() {
     const mapElement = document.getElementById('mapaEntrega');
-    if (!mapElement) return;
+    if (!mapElement || typeof L === 'undefined') return;
 
     const coords = [-8.7410, -63.8745]; 
     const mapa = L.map('mapaEntrega', { zoomControl: false }).setView(coords, 16);
@@ -243,28 +243,35 @@ function checkout() {
     msg += "📍 *Endereço:* (Digite aqui)\n";
     msg += "💰 *Pagamento:* (Dinheiro/Pix/Cartão)";
 
-    // EncodeURIComponent garante que emojis e quebras de linha funcionem no link
     window.open(`https://wa.me/556993668336?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
+// --- INICIALIZAÇÃO ---
 document.addEventListener('DOMContentLoaded', () => {
+    // Sistema de Loader Corrigido
     const progressBar = document.getElementById('progressBar');
+    const loader = document.getElementById("loader");
+    
     if (progressBar) {
         let width = 0;
         const interval = setInterval(() => {
-            width += 15;
+            width += Math.floor(Math.random() * 15) + 5;
             if (width > 100) width = 100;
             progressBar.style.width = width + '%';
+            
             if (width >= 100) {
                 clearInterval(interval);
                 setTimeout(() => {
-                    const loader = document.getElementById("loader");
                     if (loader) loader.classList.add('fade-out');
-                }, 300);
+                }, 500);
             }
-        }, 100);
+        }, 150);
+    } else {
+        // Fallback caso o elemento não exista
+        if (loader) loader.classList.add('fade-out');
     }
 
+    // Configuração dos botões de categoria
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat));
     });
@@ -273,5 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
     atualizarInterface();
     mostrarCategoria("hamburguer");
     
-    setTimeout(inicializarMapa, 500);
+    // Inicializa o mapa com pequeno atraso para garantir o carregamento do CSS
+    setTimeout(inicializarMapa, 800);
 });
