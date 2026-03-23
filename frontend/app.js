@@ -1,7 +1,7 @@
 /**
- * BENIS BURGUER - Gourmet Logic Engine v4.8.1
- * Sincronizado com: HTML/CSS v4.5 (Porto Velho)
- * Correções: Loader Sync, FAB Position & Animation Feedback
+ * BENIS BURGUER - Gourmet Logic Engine v4.8.2 (Stable)
+ * Sincronizado com: HTML/CSS v4.5 (Dark Mode Premium)
+ * Local: Porto Velho - RO
  */
 
 const cardapio = {
@@ -43,17 +43,20 @@ const CUPONS_VALIDOS = { "BENIS10": 10, "APONIA": 15, "PRIMEIRACOMPRA": 5 };
 
 const formatarMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-// --- GERENCIAMENTO DE INTERFACE ---
+// --- RENDERIZAÇÃO DO MENU ---
 
 function mostrarCategoria(categoria) {
     const menuContainer = document.getElementById("menu");
     if (!menuContainer) return;
-    
+
+    // Efeito de transição suave
     menuContainer.style.opacity = "0";
     menuContainer.style.transform = "translateY(10px)";
-    
+
     setTimeout(() => {
         menuContainer.innerHTML = "";
+        
+        // Atualiza botões de abas
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-cat') === categoria);
         });
@@ -71,15 +74,18 @@ function mostrarCategoria(categoria) {
                     <span class="price-tag">${formatarMoeda(item.preco)}</span>
                 </div>
                 <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index}, event)">
-                    <i class="fas fa-plus"></i>
+                    <i class="fas fa-plus"></i> ADICIONAR
                 </button>
             `;
             menuContainer.appendChild(card);
         });
+
         menuContainer.style.opacity = "1";
         menuContainer.style.transform = "translateY(0)";
     }, 250);
 }
+
+// --- GERENCIAMENTO DO CARRINHO ---
 
 function atualizarInterface() {
     const cartList = document.getElementById("cartItems");
@@ -91,30 +97,23 @@ function atualizarInterface() {
     if (!cartList) return;
 
     if (carrinho.length === 0) {
-        cartList.innerHTML = `
-            <div style="text-align:center; padding: 40px 20px; color: rgba(255,255,255,0.2)">
-                <i class="fas fa-shopping-basket" style="font-size: 3rem; margin-bottom: 15px"></i>
-                <p>Sua sacola está vazia.</p>
-            </div>`;
+        cartList.innerHTML = `<div style="text-align:center; padding: 50px 20px; opacity: 0.3;">
+            <i class="fas fa-shopping-basket" style="font-size: 3rem; margin-bottom: 10px;"></i>
+            <p>Sua sacola está vazia.</p>
+        </div>`;
         if (fabContainer) fabContainer.classList.remove('active');
     } else {
         cartList.innerHTML = "";
         carrinho.forEach(item => {
             const div = document.createElement("div");
             div.className = "cart-item-elite";
-            div.style.padding = "15px 0";
-            div.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
-            div.style.display = "flex";
-            div.style.justifyContent = "space-between";
-            div.style.alignItems = "center";
-            
             div.innerHTML = `
                 <div>
-                    <strong style="display:block; font-size: 0.95rem;">${item.name}</strong>
-                    <span style="color: var(--primary); font-weight: 600;">${formatarMoeda(item.preco)}</span>
+                    <strong style="display:block;">${item.name}</strong>
+                    <span style="color:var(--primary); font-weight:600;">${formatarMoeda(item.preco)}</span>
                 </div>
                 <button onclick="removerDoCarrinho(${item.cartId})" style="background:none; border:none; color:var(--danger); cursor:pointer; padding: 10px;">
-                    <i class="fas fa-trash"></i>
+                    <i class="fas fa-trash-alt"></i>
                 </button>
             `;
             cartList.appendChild(div);
@@ -123,43 +122,40 @@ function atualizarInterface() {
     }
 
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
-    const totalFinal = subtotal - (subtotal * (descontoPercentual / 100));
+    const valorDesconto = subtotal * (descontoPercentual / 100);
+    const totalFinal = subtotal - valorDesconto;
 
     if (countElement) countElement.innerText = carrinho.length;
     if (totalElement) totalElement.innerText = formatarMoeda(totalFinal);
-    if (fabTotal) fabTotal.innerText = `Ver sacola • ${formatarMoeda(totalFinal)}`;
+    if (fabTotal) fabTotal.innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
 }
-
-// --- LÓGICA DO CARRINHO ---
 
 function adicionarAoCarrinho(cat, index, event) {
     const item = cardapio[cat][index];
     const btn = event.currentTarget;
+
+    // Feedback Visual
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i> OK!';
+    btn.style.background = "#22c55e";
     
-    // Feedback visual premium
-    const originalIcon = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-check"></i>';
-    btn.style.background = "#25d366";
-    btn.style.transform = "scale(1.1)";
-    
-    const itemParaAdicionar = { 
+    const novoItem = { 
         ...item, 
-        cartId: Date.now() + Math.floor(Math.random() * 1000) 
+        cartId: Date.now() + Math.random() 
     };
-    
-    carrinho.push(itemParaAdicionar);
+
+    carrinho.push(novoItem);
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
     atualizarInterface();
 
     setTimeout(() => {
-        btn.innerHTML = originalIcon;
+        btn.innerHTML = originalContent;
         btn.style.background = "";
-        btn.style.transform = "";
     }, 800);
 }
 
-function removerDoCarrinho(idParaRemover) {
-    carrinho = carrinho.filter(i => i.cartId !== idParaRemover);
+function removerDoCarrinho(id) {
+    carrinho = carrinho.filter(i => i.cartId !== id);
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
     atualizarInterface();
 }
@@ -179,12 +175,8 @@ function aplicarCupom() {
     if (CUPONS_VALIDOS[codigo]) {
         descontoPercentual = CUPONS_VALIDOS[codigo];
         cupomAtivo = codigo;
-        if (btn) {
-            btn.innerHTML = `<i class="fas fa-check"></i>`;
-            btn.style.background = "#22c55e";
-        }
-        input.disabled = true;
         input.style.borderColor = "#22c55e";
+        if (btn) btn.innerHTML = '<i class="fas fa-check"></i>';
         atualizarInterface();
     } else {
         input.style.borderColor = "var(--danger)";
@@ -193,31 +185,26 @@ function aplicarCupom() {
             { transform: 'translateX(5px)' },
             { transform: 'translateX(-5px)' },
             { transform: 'translateX(0)' }
-        ], { duration: 300 });
-        setTimeout(() => input.style.borderColor = "", 1500);
+        ], { duration: 200 });
     }
 }
 
-// --- UTILITÁRIOS E STATUS ---
+// --- STATUS E FINALIZAÇÃO ---
 
 function verificarStatusLoja() {
     const dot = document.getElementById("statusLabel");
     const text = document.getElementById("statusText");
-    const timer = document.getElementById("statusTimer");
     
     const agora = new Date();
     const hora = agora.getHours();
-    const dia = agora.getDay(); 
-    
-    // Porto Velho: Terça a Domingo das 18h às 00h
-    const estaAberto = (dia !== 1 && hora >= 18 && hora < 24);
-    
+    const dia = agora.getDay(); // 0 = Domingo, 1 = Segunda...
+
+    // Aberto Terça a Domingo, 18h às 00h
+    const aberto = (dia !== 1 && hora >= 18 && hora < 24);
+
     if (dot && text) {
-        dot.className = estaAberto ? "status-dot online" : "status-dot offline";
-        text.innerText = estaAberto ? "Aceitando Pedidos" : "Fechado no momento";
-        if (timer) {
-            timer.innerText = estaAberto ? "Entrega estimada: 30-50 min" : "Abrimos hoje às 18:00";
-        }
+        dot.className = aberto ? "status-dot online" : "status-dot";
+        text.innerText = aberto ? "Aceitando Pedidos" : "Fechado no momento";
     }
 }
 
@@ -225,53 +212,32 @@ function checkout() {
     if (carrinho.length === 0) return;
 
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
-    const totalFinal = subtotal - (subtotal * (descontoPercentual / 100));
+    const valorDesconto = subtotal * (descontoPercentual / 100);
+    const totalFinal = subtotal - valorDesconto;
     
     let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*%0A━━━━━━━━━━━━━━━━━━━━%0A";
     
-    carrinho.forEach((item, index) => {
-        msg += `*${index + 1}.* ${item.name} _(${formatarMoeda(item.preco)})_%0A`;
+    carrinho.forEach((item, i) => {
+        msg += `*${i + 1}.* ${item.name} _(${formatarMoeda(item.preco)})_%0A`;
     });
-    
+
     msg += "━━━━━━━━━━━━━━━━━━━━%0A";
     if (cupomAtivo) msg += `*Cupom:* ${cupomAtivo} (-${descontoPercentual}%)%0A`;
     msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A📍 *Endereço de entrega:*%0A💰 *Forma de pagamento:*`;
-    
+
+    // Número de Porto Velho configurado conforme solicitado
     window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
 }
 
-// --- LOADER & INIT ---
-
-function inicializarSistema() {
-    const progressBar = document.getElementById('progressBar');
-    const loader = document.getElementById('loader');
-    let width = 0;
-
-    const interval = setInterval(() => {
-        width += Math.random() * 30;
-        if (width > 100) width = 100;
-        if (progressBar) progressBar.style.width = width + '%';
-
-        if (width >= 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-                if (loader) loader.classList.add('fade-out');
-                verificarStatusLoja();
-                atualizarInterface();
-                mostrarCategoria("hamburguer");
-            }, 500);
-        }
-    }, 150);
-}
+// --- INICIALIZAÇÃO ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Escuta abas
+    // Configura eventos das abas
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const cat = btn.getAttribute('data-cat');
-            mostrarCategoria(cat);
-        });
+        btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat));
     });
 
-    inicializarSistema();
+    verificarStatusLoja();
+    atualizarInterface();
+    mostrarCategoria("hamburguer");
 });
