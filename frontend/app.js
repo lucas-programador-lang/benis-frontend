@@ -1,7 +1,6 @@
 /**
- * BENIS BURGUER - Gourmet Logic Engine v4.7
- * Sincronizado com: HTML v4.5 + CSS v4.5
- * Local: Bairro Aponiã, Porto Velho - RO
+ * BENIS BURGUER - Gourmet Logic Engine v4.8
+ * Sincronizado com: HTML v4.5 (Porto Velho)
  */
 
 const cardapio = {
@@ -41,19 +40,15 @@ let cupomAtivo = "";
 
 const CUPONS_VALIDOS = { "BENIS10": 10, "APONIA": 15, "PRIMEIRACOMPRA": 5 };
 
-const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-// --- RENDERIZAÇÃO DO MENU ---
+const formatarMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 function mostrarCategoria(categoria) {
     const menuContainer = document.getElementById("menu");
     if (!menuContainer) return;
-
     menuContainer.style.opacity = "0";
     
     setTimeout(() => {
         menuContainer.innerHTML = "";
-        
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-cat') === categoria);
         });
@@ -61,10 +56,9 @@ function mostrarCategoria(categoria) {
         cardapio[categoria].forEach((item, index) => {
             const card = document.createElement("div");
             card.className = "card-item";
-            
             card.innerHTML = `
                 <div class="card-image-box">
-                    <img src="img/${item.img || 'default.png'}" alt="${item.name}" onerror="this.src='logo.png'">
+                    <img src="img/${item.img}" alt="${item.name}" onerror="this.src='logo.png'">
                 </div>
                 <div class="card-info">
                     <h3>${item.name}</h3>
@@ -81,17 +75,13 @@ function mostrarCategoria(categoria) {
     }, 250);
 }
 
-// --- GESTÃO DO CARRINHO ---
-
 function adicionarAoCarrinho(cat, index, event) {
     const item = cardapio[cat][index];
     const btn = event.currentTarget;
-    
     btn.innerHTML = '<i class="fas fa-check"></i>';
     btn.style.background = "#25d366";
     
     carrinho.push({ ...item, cartId: Date.now() + Math.random() });
-    
     atualizarInterface();
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
 
@@ -108,7 +98,7 @@ function removerDoCarrinho(cartId) {
 }
 
 function atualizarInterface() {
-    const cartList = document.getElementById("cartItems"); // O container de scroll
+    const cartList = document.getElementById("cartItems");
     const totalElement = document.getElementById("totalValue");
     const countElement = document.getElementById("cartCount");
     const fabTotal = document.getElementById("cartFabTotal");
@@ -117,11 +107,7 @@ function atualizarInterface() {
     if (!cartList) return;
 
     if (carrinho.length === 0) {
-        cartList.innerHTML = `
-            <div class="empty-cart-msg">
-                <i class="fas fa-box-open" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
-                <p>Sua sacola está vazia.</p>
-            </div>`;
+        cartList.innerHTML = `<div class="empty-cart-msg"><p>Sua sacola está vazia.</p></div>`;
         if (fabContainer) fabContainer.style.transform = "translateY(150%)";
     } else {
         cartList.innerHTML = "";
@@ -172,18 +158,13 @@ function aplicarCupom() {
     }
 }
 
-// --- STATUS DA LOJA ---
-
 function verificarStatusLoja() {
     const dot = document.getElementById("statusLabel");
     const text = document.getElementById("statusText");
     const timer = document.getElementById("statusTimer");
-    
     const agora = new Date();
     const hora = agora.getHours();
-    const dia = agora.getDay(); // 0 = Domingo, 1 = Segunda...
-
-    // Aberto de Terça a Domingo, das 18h às 23:59h
+    const dia = agora.getDay();
     const estaAberto = (dia !== 1 && hora >= 18 && hora < 24);
     
     if (dot && text) {
@@ -193,48 +174,24 @@ function verificarStatusLoja() {
     }
 }
 
-// --- FINALIZAÇÃO ---
-
 function checkout() {
     if (carrinho.length === 0) return;
-
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
     const totalFinal = subtotal - (subtotal * descontoPercentual / 100);
-
-    let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*%0A";
-    msg += "━━━━━━━━━━━━━━━━━━━━%0A";
+    let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*%0A━━━━━━━━━━━━━━━━━━━━%0A";
     carrinho.forEach((item, index) => {
         msg += `*${index + 1}.* ${item.name} _(${formatarMoeda(item.preco)})_%0A`;
     });
     msg += "━━━━━━━━━━━━━━━━━━━━%0A";
     if (cupomAtivo) msg += `*Cupom:* ${cupomAtivo} (-${descontoPercentual}%)%0A`;
-    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A`;
-    msg += "📍 *Endereço de Entrega:*%0A";
-    msg += "_(Por favor, digite seu endereço aqui)_";
-
+    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A📍 *Endereço:* `;
     window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
 }
 
-// --- INICIALIZAÇÃO ---
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Listeners das Tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const cat = btn.getAttribute('data-cat');
-            mostrarCategoria(cat);
-        });
+        btn.addEventListener('click', () => mostrarCategoria(btn.getAttribute('data-cat')));
     });
-
-    // Fechar carrinho ao clicar fora dele (UX Elite)
-    document.addEventListener('click', (e) => {
-        const panel = document.getElementById("cartPanel");
-        const fab = document.getElementById("cartToggle");
-        if (panel?.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target)) {
-            toggleCarrinho();
-        }
-    });
-
     verificarStatusLoja();
     atualizarInterface();
     mostrarCategoria("hamburguer");
