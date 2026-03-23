@@ -1,5 +1,5 @@
 /**
- * BENIS BURGUER - Elite Logic Engine v4.2
+ * BENIS BURGUER - Elite Logic Engine v4.2.1
  * Módulo: UI Dinâmica, Sistema de Cupons & Checkout WhatsApp
  * Local: Porto Velho - RO
  */
@@ -62,24 +62,19 @@ function mostrarCategoria(categoria) {
     const menuContainer = document.getElementById("menu");
     if (!menuContainer) return;
 
-    // Fade out suave antes de trocar
     menuContainer.style.opacity = "0";
     
     setTimeout(() => {
         menuContainer.innerHTML = "";
         
-        // Atualizar botões de categoria
         document.querySelectorAll('.tab-btn').forEach(btn => {
             const catAttr = btn.getAttribute('data-cat');
             btn.classList.toggle('active', catAttr === categoria);
         });
 
-        // Renderizar Cards
         cardapio[categoria].forEach((item, index) => {
             const card = document.createElement("div");
             card.className = "card-item";
-            // Stagger animation delay
-            card.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.1}s`;
             
             card.innerHTML = `
                 <div class="card-image-box">
@@ -92,7 +87,7 @@ function mostrarCategoria(categoria) {
                         <span class="price-tag">${formatarMoeda(item.preco)}</span>
                     </div>
                 </div>
-                <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index})">
+                <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index}, event)">
                     <i class="fas fa-plus"></i> Adicionar
                 </button>
             `;
@@ -104,9 +99,8 @@ function mostrarCategoria(categoria) {
 
 // --- LÓGICA DO CARRINHO ---
 
-function adicionarAoCarrinho(cat, index) {
+function adicionarAoCarrinho(cat, index, event) {
     const item = cardapio[cat][index];
-    // Adiciona feedback tátil/visual no botão
     const btn = event.currentTarget;
     const originalContent = btn.innerHTML;
     
@@ -137,7 +131,7 @@ function removerDoCarrinho(cartId) {
 
 function aplicarCupom() {
     const input = document.getElementById('cupom');
-    const btn = document.querySelector('.apply-btn');
+    const btn = document.getElementById('btnAplicarCupom');
     if (!input) return;
 
     const codigo = input.value.toUpperCase().trim();
@@ -146,8 +140,8 @@ function aplicarCupom() {
         descontoPercentual = CUPONS_VALIDOS[codigo];
         cupomAtivo = codigo;
         
-        btn.innerHTML = `<i class="fas fa-check"></i> ${descontoPercentual}% OFF`;
-        btn.classList.add('active');
+        btn.innerHTML = `<i class="fas fa-check"></i> ${descontoPercentual}%`;
+        btn.style.background = "#22c55e";
         input.disabled = true;
         
         atualizarInterface();
@@ -161,7 +155,6 @@ function aplicarCupom() {
 
 function atualizarInterface() {
     const cartList = document.getElementById("cartItems");
-    const subtotalElement = document.getElementById("subtotalValue");
     const totalElement = document.getElementById("totalValue");
     const countElement = document.getElementById("cartCount");
     const fabTotal = document.getElementById("cartFabTotal");
@@ -178,14 +171,14 @@ function atualizarInterface() {
         cartList.innerHTML = "";
         carrinho.forEach(item => {
             const div = document.createElement("div");
-            div.className = "cart-item-row";
+            div.className = "cart-item-elite"; // Classe corrigida para bater com o CSS
             div.innerHTML = `
-                <div class="details">
-                    <p class="name">${item.name}</p>
-                    <p class="price-sm">${formatarMoeda(item.preco)}</p>
+                <div class="cart-item-info">
+                    <strong>${item.name}</strong>
+                    <span>${formatarMoeda(item.preco)}</span>
                 </div>
-                <button class="remove-item-btn" onclick="removerDoCarrinho(${item.cartId})">
-                    <i class="fas fa-times"></i>
+                <button class="btn-remove-item" onclick="removerDoCarrinho(${item.cartId})" aria-label="Remover item">
+                    <i class="fas fa-trash"></i>
                 </button>
             `;
             cartList.appendChild(div);
@@ -196,15 +189,14 @@ function atualizarInterface() {
     const valorDesconto = (subtotal * descontoPercentual) / 100;
     const totalFinal = subtotal - valorDesconto;
 
-    // Atualização com efeito de contagem suave (opcional)
     if (countElement) countElement.innerText = carrinho.length;
-    if (subtotalElement) subtotalElement.innerText = formatarMoeda(subtotal);
     if (totalElement) totalElement.innerText = formatarMoeda(totalFinal);
     if (fabTotal) fabTotal.innerText = formatarMoeda(totalFinal);
     
-    // Anima o FAB se houver itens
     const fab = document.getElementById("cartToggle");
-    if (fab) fab.classList.toggle('has-items', carrinho.length > 0);
+    if (fab) {
+        if (carrinho.length > 0) fab.style.display = "flex";
+    }
 }
 
 function salvarDados() {
@@ -219,16 +211,26 @@ function mostrarToast(msg) {
 
     const toast = document.createElement("div");
     toast.className = "toast-elite";
-    toast.innerHTML = `<i class="fas fa-fire"></i> ${msg}`;
+    toast.style.position = "fixed";
+    toast.style.bottom = "120px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.background = "rgba(0,0,0,0.8)";
+    toast.style.backdropFilter = "blur(10px)";
+    toast.style.color = "white";
+    toast.style.padding = "12px 25px";
+    toast.style.borderRadius = "100px";
+    toast.style.zIndex = "3000";
+    toast.style.fontSize = "14px";
+    toast.style.border = "1px solid rgba(255,255,255,0.1)";
+
+    toast.innerHTML = `<i class="fas fa-fire" style="color: #ff8c00; margin-right: 8px;"></i> ${msg}`;
     document.body.appendChild(toast);
     
     setTimeout(() => {
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }, 10);
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
 }
 
 function verificarStatusLoja() {
@@ -240,13 +242,13 @@ function verificarStatusLoja() {
     const hora = agora.getHours();
     const dia = agora.getDay();
     
-    // Aberto de Terça (2) a Domingo (0), 18h às 00h
+    // Aberto de Terça (2) a Domingo (0), 18h às 00h (Porto Velho Time)
     const estaAberto = (dia !== 1 && hora >= 18 && hora < 24);
     
     if (dot && text) {
         dot.className = estaAberto ? "status-dot online" : "status-dot offline";
         text.innerText = estaAberto ? "Aceitando Pedidos" : "Restaurante Fechado";
-        if (timer) timer.innerText = estaAberto ? "Entrega estimada: 30-50 min" : "Abrimos amanhã às 18:00";
+        if (timer) timer.innerText = estaAberto ? "Entrega estimada: 30-50 min" : "Abrimos às 18:00";
     }
 }
 
@@ -280,22 +282,11 @@ function checkout() {
 // --- INIT ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Configura botões da Navbar
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.onclick = () => mostrarCategoria(btn.dataset.cat);
+        btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat));
     });
 
-    // Inicializa Componentes
     verificarStatusLoja();
     atualizarInterface();
     mostrarCategoria("hamburguer");
-
-    // Remove Loader
-    const loader = document.getElementById('loader');
-    if (loader) {
-        setTimeout(() => {
-            loader.classList.add('fade-out');
-            setTimeout(() => loader.remove(), 600);
-        }, 1500);
-    }
 });
