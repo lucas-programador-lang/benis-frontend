@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     
     <link rel="stylesheet" href="style.css">
-    
     <meta name="theme-color" content="#0a0a0a">
 </head>
 <body>
@@ -35,10 +34,10 @@
             </div>
             <div class="header-actions">
                 <div class="social-links">
-                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="social-btn btn-instagram" title="Instagram">
+                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="social-btn btn-instagram">
                         <i class="fab fa-instagram"></i>
                     </a>
-                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp" title="WhatsApp">
+                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp">
                         <i class="fab fa-whatsapp"></i>
                     </a>
                 </div>
@@ -78,8 +77,8 @@
         <section id="menu" class="menu-grid"></section>
 
         <section class="location-section">
-            <div class="section-header-elite">
-                <span class="hero-badge" style="font-size: 0.7rem; padding: 5px 12px;">Localização</span>
+            <div class="section-header-elite" style="text-align: center; margin-bottom: 30px;">
+                <span class="hero-badge" style="font-size: 0.7rem;">Localização</span>
                 <h2 style="margin-top: 10px;">Onde Estamos</h2>
             </div>
             <div class="map-card-wrapper">
@@ -87,12 +86,12 @@
                 <div class="map-overlay-info">
                     <div class="address-details" style="display: flex; align-items: center; gap: 15px;">
                         <i class="fas fa-map-marker-alt" style="color: var(--primary); font-size: 1.5rem;"></i>
-                        <div class="text-info" style="text-align: left;">
+                        <div class="text-info">
                             <strong style="display: block;">Benis Burguer</strong>
                             <p style="font-size: 0.85rem; color: var(--text-dim);">R. Paulo Fortes, 6245 - Aponiã</p>
                         </div>
                     </div>
-                    <a href="https://www.google.com/maps/dir//Benis+Burguer+R.+Paulo+Fortes,+6245+Aponiã+Porto+Velho+RO" target="_blank" class="btn-route-premium">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7410,-63.8745" target="_blank" class="btn-route-premium">
                         <i class="fas fa-directions"></i> <span>Como chegar</span>
                     </a>
                 </div>
@@ -100,13 +99,13 @@
         </section>
     </main>
 
-    <div class="cart-fab" id="cartToggle" onclick="toggleCarrinho()" style="cursor: pointer; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; display: none; justify-content: space-between; align-items: center; padding: 18px 25px; border-radius: 20px; background: var(--primary); color: #000; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()">
         <div style="display: flex; align-items: center; gap: 15px;">
             <div style="position: relative;">
                 <i class="fas fa-shopping-bag" style="font-size: 1.2rem;"></i>
-                <span id="cartCount" style="position: absolute; top: -10px; right: -10px; background: #fff; color: #000; font-size: 0.7rem; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">0</span>
+                <span id="cartCount">0</span>
             </div>
-            <span id="cartFabTotal" style="font-weight: 700;">Ver sacola (R$ 0,00)</span>
+            <span id="cartFabTotal">Ver sacola (R$ 0,00)</span>
         </div>
         <i class="fas fa-chevron-right"></i>
     </div>
@@ -114,7 +113,7 @@
     <aside class="cart-panel-elite" id="cartPanel">
         <div class="cart-header-elite">
             <h3><i class="fas fa-shopping-cart" style="color: var(--primary);"></i> Seu Pedido</h3>
-            <button onclick="toggleCarrinho()" style="background:none; border:none; color: #fff; cursor:pointer; font-size: 1.2rem;">
+            <button onclick="toggleCarrinho()" class="close-cart-btn">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -123,24 +122,24 @@
             </div>
 
         <div class="cart-footer-elite">
-            <div class="input-group-modern" style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="cupom" placeholder="Tem um cupom?" style="flex-grow: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; color: #fff; outline: none;">
-                <button id="btnAplicarCupom" onclick="aplicarCupom()" style="background: var(--primary); border: none; padding: 0 15px; border-radius: 12px; font-weight: 700; cursor: pointer; color: #000;">APLICAR</button>
+            <div class="input-group-modern">
+                <input type="text" id="cupom" placeholder="Tem um cupom?">
+                <button id="btnAplicarCupom" onclick="aplicarCupom()">APLICAR</button>
             </div>
             
             <div class="total-summary">
-                <div class="total-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <div class="total-row">
                     <span>Subtotal</span>
                     <span id="subtotalValue">R$ 0,00</span>
                 </div>
-                <div class="total-row main" style="display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: 800; border-top: 1px dashed var(--glass-border); padding-top: 15px; margin-top: 10px;">
+                <div class="total-row main">
                     <span>Total</span>
                     <span id="totalValue">R$ 0,00</span>
                 </div>
             </div>
             
-            <button class="checkout-btn" onclick="checkout()" style="width: 100%; margin-top: 25px; padding: 20px; border-radius: 15px; border: none; background: #25d366; color: #fff; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                ENVIAR PARA O WHATSAPP <i class="fab fa-whatsapp" style="font-size: 1.3rem;"></i>
+            <button class="checkout-btn" onclick="checkout()">
+                ENVIAR PARA O WHATSAPP <i class="fab fa-whatsapp"></i>
             </button>
         </div>
     </aside>
