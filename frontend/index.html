@@ -10,8 +10,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
@@ -22,7 +22,7 @@
     <div id="loader" class="loader-wrapper">
         <img src="logo.png" class="loader-logo" alt="Carregando Benis Burguer" onerror="this.src='https://via.placeholder.com/120x120/ff8c00/ffffff?text=BENIS'">
         <div class="progress-container" style="width: 200px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-top: 20px;">
-            <div id="progressBar" style="width: 0%; height: 100%; background: #ff8c00; transition: width 0.4s ease;"></div>
+            <div id="progressBar" style="width: 30%; height: 100%; background: var(--primary); transition: width 0.4s ease;"></div>
         </div>
     </div>
 
@@ -45,7 +45,7 @@
     <main>
         <section class="hero-elite">
             <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
-            <h1>Sabor que vicia, <br><span class="text-gradient" style="background: var(--gradient-glow); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">qualidade que conquista.</span></h1>
+            <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
             <div class="status-indicator">
                 <span id="statusLabel" class="status-dot"></span>
                 <span id="statusText">Verificando braseiro...</span>
@@ -73,18 +73,22 @@
             </nav>
         </div>
 
-        <section id="menu" class="menu-grid"></section>
+        <section id="menu" class="menu-grid">
+            </section>
 
         <section class="location-section">
             <div class="hero-badge" style="margin-bottom: 30px; display: table; margin-inline: auto;">
                 <i class="fas fa-map-marker-alt"></i> Onde estamos
             </div>
-            <div id="mapaEntrega" class="map-card-wrapper"></div>
+            <div class="map-card-wrapper">
+                <div id="mapaEntrega"></div>
+            </div>
         </section>
     </main>
 
     <footer>
         <p>&copy; 2026 Benis Burguer - Porto Velho/RO</p>
+        <p class="footer-engine">Visual Engine v6.8 | Elite Edition</p>
     </footer>
 
     <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="display: none;">
@@ -122,7 +126,7 @@
                     <span>Subtotal</span>
                     <span id="subtotalValue">R$ 0,00</span>
                 </div>
-                <div id="discountRow" class="detail-row" style="display: none; color: #25d366;">
+                <div id="discountRow" class="detail-row" style="display: none; color: var(--success);">
                     <span>Desconto</span>
                     <span id="discountValue">- R$ 0,00</span>
                 </div>
