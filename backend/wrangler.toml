@@ -1,0 +1,8 @@
+name = "benis-burguer-api"
+main = "worker.js"
+compatibility_date = "2024-03-22"
+
+[[d1_databases]]
+binding = "DB" # Isso deve ser igual ao 'env.DB' no seu código
+database_name = "NOME_DO_SEU_BANCO_D1"
+database_id = "ID_DO_SEU_BANCO_D1"
