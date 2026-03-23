@@ -12,7 +12,7 @@ let marcadorUsuario;
 window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)"; 
 
 const COORDS_LOJA = [-8.74015, -63.87498]; // Porto Velho - Aponiã
-const GOOGLE_MAPS_URL = `https://maps.app.goo.gl/rn4jwRprwGBP4jRk8`;
+const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
 // Inicialização segura do Carrinho via LocalStorage
 try {
@@ -82,7 +82,6 @@ function iniciarMapa() {
         iconSize: [40, 40], iconAnchor: [20, 20]
     });
 
-    // Marcador da Loja com link direto para o Google Maps
     L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa)
         .bindPopup(`
             <div onclick="window.open('${GOOGLE_MAPS_URL}', '_blank')" style="cursor:pointer; text-align:center; padding: 5px;">
@@ -142,7 +141,7 @@ function adicionarAoCarrinho(cat, id, event) {
     if (itemExistente) {
         itemExistente.quantidade += 1;
     } else {
-        carrinho.push({ ...itemOriginal, quantity: 1, quantidade: 1 });
+        carrinho.push({ ...itemOriginal, quantidade: 1 });
     }
 
     salvarEAtualizar();
@@ -220,7 +219,11 @@ function aplicarCupom() {
         if (discountRow) discountRow.style.display = "flex";
         const discVal = document.getElementById("discountValue");
         if (discVal) discVal.innerText = `- ${formatarMoeda(descontoAtivo)}`;
-        alert("Cupom BENIS10 aplicado: R$ 10,00 de desconto!");
+        if(window.Swal) {
+            Swal.fire({ title: 'Cupom Aplicado!', text: 'R$ 10,00 de desconto garantido.', icon: 'success', background: '#1a1a1a', color: '#fff' });
+        } else {
+            alert("Cupom BENIS10 aplicado!");
+        }
     } else {
         alert("Cupom inválido ou expirado.");
         descontoAtivo = 0;
@@ -279,12 +282,12 @@ function checkout() {
     
     msg += "📍 *ENDEREÇO DE ENTREGA:* \n";
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
-    msg += "*Observação:* (Informe o número da casa e ponto de referência aqui)";
+    msg += "*Observação:* (Informe número e ponto de referência aqui)";
 
     const fone = "556993668336"; 
     window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, "_blank");
 
-    // Lógica de Limpeza Pós-Pedido
+    // Limpeza Pós-Pedido
     carrinho = [];
     descontoAtivo = 0;
     localStorage.removeItem('benis_cart');
@@ -294,7 +297,6 @@ function checkout() {
     const panel = document.getElementById("cartPanel");
     if (panel) panel.classList.remove("open");
 
-    // Feedback Visual com SweetAlert2 (Opcional, mas recomendado)
     if (window.Swal) {
         Swal.fire({
             title: 'Pedido Enviado!',
@@ -304,8 +306,6 @@ function checkout() {
             color: '#fff',
             confirmButtonColor: '#ff8c00'
         });
-    } else {
-        alert("Pedido enviado! Sua sacola foi limpa.");
     }
 }
 
@@ -320,14 +320,14 @@ function verificarStatusLoja() {
     const diaSemana = agora.getDay();
     const hora = agora.getHours();
     const minutos = agora.getMinutes();
-    const tempoAbertura = 19 * 60; // 19:00
-    const tempoFechamento = (23 * 60) + 59; // 23:59
+    const tempoAbertura = 19 * 60; 
+    const tempoFechamento = (23 * 60) + 59; 
     const tempoAtual = (hora * 60) + minutos;
 
     const statusText = document.getElementById("statusText");
-    const statusDot = document.querySelector(".status-dot");
+    const statusDot = document.getElementById("statusLabel");
 
-    if (diaSemana === 1) { // Segunda fechado
+    if (diaSemana === 1) { 
         if (statusText) statusText.innerText = "Fechado • Abre Terça às 19:00";
         statusDot?.classList.remove("online");
     } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
