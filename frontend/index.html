@@ -5,123 +5,168 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Benis Burguer | Elite Delivery</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="style.css">
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="theme-color" content="#ff8c00">
+    <meta name="theme-color" content="#121212">
+    <meta name="description" content="O melhor hambúrguer artesanal de Porto Velho. Peça agora pelo nosso delivery elite.">
 </head>
 <body>
 
     <div id="loader" class="loader-wrapper">
         <div class="loader-content">
-            <img src="logo.png" alt="Carregando..." class="loader-logo">
-            <div class="progress-bar"></div>
+            <div class="loader-logo-container">
+                <img src="logo.png" alt="Benis Burguer" class="loader-logo">
+                <div class="loader-shimmer"></div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <p class="loader-text">Preparando a brasa...</p>
         </div>
     </div>
 
     <header class="glass-header">
         <div class="header-container">
-            <div class="logo">
-                <img src="logo.png" alt="Benis Burguer" class="glow-effect">
+            <div class="logo-area">
+                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img glow-effect">
             </div>
-            <div class="social-links">
-                <a href="https://www.instagram.com/obenisburguer" target="_blank" class="glass-icon"><i class="fab fa-instagram"></i></a>
-                <a href="https://wa.me/556993668336" target="_blank" class="glass-icon"><i class="fab fa-whatsapp"></i></a>
+            <div class="header-actions">
+                <div class="social-links">
+                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="glass-icon" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://wa.me/556993668336" target="_blank" class="glass-icon" aria-label="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
 
     <main class="container">
         <section class="hero-elite">
-            <div class="hero-badge">A melhor de Porto Velho</div>
-            <h1>Sabor que vicia, <span class="text-gradient">qualidade que conquista.</span></h1>
-            
-            <div class="status-pill">
-                <span id="statusLabel" class="status-dot"></span>
-                <span id="statusText">Verificando status...</span>
-                <small id="statusTimer" class="timer-desc"></small>
+            <div class="hero-content">
+                <span class="hero-badge"><i class="fas fa-crown"></i> A melhor de Porto Velho</span>
+                <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
+                
+                <div class="status-pill" id="statusContainer">
+                    <div class="status-indicator">
+                        <span id="statusLabel" class="status-dot"></span>
+                        <span id="statusText">Verificando restaurante...</span>
+                    </div>
+                    <small id="statusTimer" class="timer-desc"></small>
+                </div>
             </div>
         </section>
 
         <div class="nav-container-glass">
             <nav class="categorias-elite" id="categoryNav">
                 <button class="tab-btn active" data-cat="hamburguer">
-                    <i class="fas fa-hamburger"></i> Burguers
+                    <div class="icon-box"><i class="fas fa-hamburger"></i></div>
+                    <span>Burguers</span>
                 </button>
                 <button class="tab-btn" data-cat="porcoes">
-                    <i class="fas fa-cheese"></i> Porções
+                    <div class="icon-box"><i class="fas fa-cheese"></i></div>
+                    <span>Porções</span>
                 </button>
                 <button class="tab-btn" data-cat="adicionais">
-                    <i class="fas fa-plus-circle"></i> Extras
+                    <div class="icon-box"><i class="fas fa-plus-circle"></i></div>
+                    <span>Extras</span>
                 </button>
                 <button class="tab-btn" data-cat="bebidas">
-                    <i class="fas fa-wine-glass"></i> Bebidas
+                    <div class="icon-box"><i class="fas fa-wine-glass"></i></div>
+                    <span>Bebidas</span>
                 </button>
             </nav>
         </div>
 
-        <section id="menu" class="menu-grid"></section>
+        <section id="menu" class="menu-grid">
+            </section>
 
         <section class="location-section">
-            <div class="section-title">
-                <i class="fas fa-map-marker-alt"></i>
-                <h2>Onde estamos</h2>
+            <div class="section-header">
+                <span class="section-subtitle">Visite-nos</span>
+                <h2 class="section-title"><i class="fas fa-map-marked-alt"></i> Onde estamos</h2>
             </div>
-            <div class="map-card">
-                <div id="mapaEntrega"></div>
-                <div class="map-info">
-                    <p>R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO</p>
-                    <a href="https://www.google.com/maps/dir//Benis+Burguer" target="_blank" class="btn-link">
-                        Como chegar <i class="fas fa-external-link-alt"></i>
-                    </a>
+            
+            <div class="map-card-wrapper">
+                <div class="map-card">
+                    <div id="mapaEntrega"></div>
+                    <div class="map-overlay-info">
+                        <div class="info-content">
+                            <i class="fas fa-location-arrow"></i>
+                            <p>R. Paulo Fortes, 6245 - Aponiã, Porto Velho - RO</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Benis+Burguer+Aponia" target="_blank" class="btn-location">
+                            Como chegar <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <div class="cart-fab" id="cartToggle" onclick="toggleCarrinho()">
-        <div class="cart-fab-icon">
-            <i class="fas fa-shopping-basket"></i>
-            <span id="cartCount" class="count-badge">0</span>
+    <div class="cart-fab" id="cartToggle" onclick="toggleCarrinho()" role="button" aria-label="Abrir Carrinho">
+        <div class="cart-fab-content">
+            <div class="cart-fab-icon">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" class="count-badge">0</span>
+            </div>
+            <div id="cartFabTotal" class="cart-fab-label">R$ 0,00</div>
         </div>
-        <div id="cartFabTotal" class="cart-fab-label">R$ 0,00</div>
     </div>
 
     <aside class="cart-panel-elite" id="cartPanel">
         <div class="cart-inner">
             <div class="cart-header-elite">
-                <h3>Seu Pedido</h3>
+                <div class="header-title">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Seu Pedido</h3>
+                </div>
                 <button onclick="toggleCarrinho()" class="close-btn" aria-label="Fechar carrinho">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
             <div id="cartItems" class="cart-content-scroll">
+                <div class="empty-cart-msg">
+                    <i class="fas fa-box-open"></i>
+                    <p>Seu carrinho está vazio</p>
                 </div>
+            </div>
 
-            <div class="cart-summary">
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <span id="subtotalValue">R$ 0,00</span>
-                </div>
-                
-                <div class="summary-row promo">
-                    <input type="text" id="cupom" placeholder="🏷️ Código do Cupom">
-                    <button class="apply-btn" onclick="aplicarCupom()">Aplicar</button>
-                </div>
+            <div class="cart-footer-elite">
+                <div class="summary-details">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span id="subtotalValue" class="price-text">R$ 0,00</span>
+                    </div>
+                    
+                    <div class="coupon-area">
+                        <div class="input-group-glass">
+                            <i class="fas fa-tag"></i>
+                            <input type="text" id="cupom" placeholder="Código do Cupom">
+                            <button class="apply-btn" onclick="aplicarCupom()">Aplicar</button>
+                        </div>
+                    </div>
 
-                <div class="summary-row total">
-                    <span>Total</span>
-                    <span id="totalValue">R$ 0,00</span>
+                    <div class="summary-row total-row">
+                        <span>Total Final</span>
+                        <span id="totalValue" class="total-price-text">R$ 0,00</span>
+                    </div>
                 </div>
 
                 <button class="checkout-btn" onclick="checkout()">
-                    <i class="fab fa-whatsapp"></i> Finalizar no WhatsApp
+                    <span class="btn-text">Finalizar no WhatsApp</span>
+                    <i class="fab fa-whatsapp"></i>
                 </button>
             </div>
         </div>
@@ -134,7 +179,7 @@
     <script src="mapa.js"></script>
     
     <script>
-        // Registro do Service Worker para PWA (Elite Experience)
+        // Registro do Service Worker para PWA
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {
                 navigator.serviceWorker.register("service-worker.js")
@@ -142,6 +187,23 @@
                 .catch(err => console.error("Erro PWA:", err));
             });
         }
+
+        // Simulação básica de Loader (remover quando integrar com app.js)
+        window.addEventListener('DOMContentLoaded', () => {
+            const bar = document.getElementById('progressBar');
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('loader').classList.add('fade-out');
+                    }, 500);
+                } else {
+                    width += 5;
+                    bar.style.width = width + '%';
+                }
+            }, 50);
+        });
     </script>
 </body>
 </html>
