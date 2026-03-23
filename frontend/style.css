@@ -206,3 +206,4 @@ body::before {
     .cart-panel-elite { max-width: 100%; }
     .cart-fab { width: 95%; bottom: 15px; }
 }
+@keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
