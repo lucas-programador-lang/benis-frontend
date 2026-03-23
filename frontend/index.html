@@ -37,8 +37,12 @@
             </div>
             <div class="header-actions">
                 <div class="social-links">
-                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="glass-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="https://wa.me/556993668336" target="_blank" class="glass-icon"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="social-btn btn-instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -74,7 +78,8 @@
             <div class="map-card-wrapper">
                 <div id="mapaEntrega"></div>
                 <div class="map-overlay-info">
-                    <p><i class="fas fa-location-arrow"></i> R. Paulo Fortes, 6245 - Porto Velho</p>
+                    <p><i class="fas fa-location-arrow"></i> R. Paulo Fortes, 6245 - Aponiã</p>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.74015,-63.87498" target="_blank" class="route-btn">Como chegar</a>
                 </div>
             </div>
         </section>
@@ -97,8 +102,7 @@
                 <button onclick="toggleCarrinho()" class="close-btn"><i class="fas fa-times"></i></button>
             </div>
 
-            <div id="cartItems" class="cart-content-scroll">
-                </div>
+            <div id="cartItems" class="cart-content-scroll"></div>
 
             <div class="cart-footer-elite">
                 <div class="summary-details">
@@ -124,24 +128,25 @@
     <script src="app.js"></script>
     <script src="mapa.js"></script>
     <script>
+        // Lógica do Loader
         window.addEventListener('load', () => {
             const bar = document.getElementById('progressBar');
             let width = 0;
             const interval = setInterval(() => {
                 if (width >= 100) {
                     clearInterval(interval);
-                    setTimeout(() => document.getElementById('loader').classList.add('fade-out'), 300);
+                    setTimeout(() => {
+                        document.getElementById('loader').classList.add('fade-out');
+                        // Força o mapa a carregar após o loader
+                        if(typeof iniciarMapa === 'function') iniciarMapa();
+                    }, 500);
                 } else {
-                    width += Math.random() * 20;
+                    width += Math.random() * 25;
                     if(width > 100) width = 100;
                     bar.style.width = width + '%';
                 }
-            }, 50);
+            }, 100);
         });
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./service-worker.js');
-        }
     </script>
 </body>
 </html>
