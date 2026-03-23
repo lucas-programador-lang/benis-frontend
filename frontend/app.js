@@ -1,7 +1,6 @@
 /**
- * BENIS BURGUER - Elite Logic Engine v4.5 (Ultimate)
- * Módulo: UI Dinâmica, Sistema de Cupons & Checkout WhatsApp
- * Local: Porto Velho - RO
+ * BENIS BURGUER - Elite Logic Engine v4.5
+ * Sincronizado com index.html
  */
 
 const cardapio = {
@@ -35,21 +34,13 @@ const cardapio = {
     ]
 };
 
-// --- ESTADO GLOBAL ---
 let carrinho = JSON.parse(localStorage.getItem('benis_cart')) || [];
 let descontoPercentual = 0;
 let cupomAtivo = "";
 
-const CUPONS_VALIDOS = {
-    "PRIMEIRACOMPRA": 10,
-    "BENIS15": 15,
-    "PORTOWEST": 5
-};
+const CUPONS_VALIDOS = { "PRIMEIRACOMPRA": 10, "BENIS15": 15, "PORTOWEST": 5 };
 
-// --- UTILITÁRIOS ---
 const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-// --- INTERFACE ---
 
 function toggleCarrinho() {
     const panel = document.getElementById("cartPanel");
@@ -60,9 +51,7 @@ function mostrarCategoria(categoria) {
     const menuContainer = document.getElementById("menu");
     if (!menuContainer) return;
 
-    // Efeito de transição suave
     menuContainer.style.opacity = "0";
-    menuContainer.style.transform = "translateY(10px)";
     
     setTimeout(() => {
         menuContainer.innerHTML = "";
@@ -73,7 +62,7 @@ function mostrarCategoria(categoria) {
 
         cardapio[categoria].forEach((item, index) => {
             const card = document.createElement("div");
-            card.className = "card-item";
+            card.className = "card-item"; // Mantido conforme seu CSS original
             
             card.innerHTML = `
                 <div class="card-image-box">
@@ -84,52 +73,38 @@ function mostrarCategoria(categoria) {
                     <p>${item.desc}</p>
                     <div class="card-footer">
                         <span class="price-tag">${formatarMoeda(item.preco)}</span>
-                        <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index}, event)">
-                            <i class="fas fa-plus"></i> <span class="btn-text">Adicionar</span>
-                        </button>
                     </div>
                 </div>
+                <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index}, event)">
+                    <i class="fas fa-plus"></i> Adicionar
+                </button>
             `;
             menuContainer.appendChild(card);
         });
         menuContainer.style.opacity = "1";
-        menuContainer.style.transform = "translateY(0)";
     }, 200);
 }
-
-// --- LÓGICA DO CARRINHO ---
 
 function adicionarAoCarrinho(cat, index, event) {
     const item = cardapio[cat][index];
     const btn = event.currentTarget;
-    const btnText = btn.querySelector('.btn-text');
-    const originalIcon = btn.querySelector('i').className;
+    const originalContent = btn.innerHTML;
     
-    // Feedback Visual Premium
-    btn.querySelector('i').className = 'fas fa-check';
-    if(btnText) btnText.innerText = 'Adicionado';
+    btn.innerHTML = '<i class="fas fa-check"></i> Adicionado';
     btn.style.background = "#25d366";
-    btn.style.color = "#fff";
     
-    carrinho.push({ 
-        ...item, 
-        cartId: Date.now() + Math.random() // ID único para remoção precisa
-    });
+    carrinho.push({ ...item, cartId: Date.now() + Math.random() });
     
     atualizarInterface();
     salvarDados();
-    mostrarToast(`${item.name} na sacola! 🍔`);
 
     setTimeout(() => {
-        btn.querySelector('i').className = originalIcon;
-        if(btnText) btnText.innerText = 'Adicionar';
+        btn.innerHTML = originalContent;
         btn.style.background = "";
-        btn.style.color = "";
     }, 1000);
 }
 
 function removerDoCarrinho(cartId) {
-    // A remoção usa o cartId único para não remover todos os itens iguais de uma vez
     carrinho = carrinho.filter(item => item.cartId !== cartId);
     atualizarInterface();
     salvarDados();
@@ -138,23 +113,17 @@ function removerDoCarrinho(cartId) {
 function aplicarCupom() {
     const input = document.getElementById('cupom');
     const btn = document.getElementById('btnAplicarCupom');
-    if (!input) return;
-
     const codigo = input.value.toUpperCase().trim();
 
     if (CUPONS_VALIDOS[codigo]) {
         descontoPercentual = CUPONS_VALIDOS[codigo];
         cupomAtivo = codigo;
-        
-        btn.innerHTML = `<i class="fas fa-check"></i> ${descontoPercentual}% OFF`;
+        btn.innerHTML = `<i class="fas fa-check"></i> ${descontoPercentual}%`;
         btn.style.background = "#22c55e";
         input.disabled = true;
-        
         atualizarInterface();
-        mostrarToast(`Cupom ${codigo} aplicado! 🏷️`);
     } else {
         input.classList.add('error-shake');
-        mostrarToast("Cupom inválido! ❌");
         setTimeout(() => input.classList.remove('error-shake'), 500);
     }
 }
@@ -164,22 +133,16 @@ function atualizarInterface() {
     const totalElement = document.getElementById("totalValue");
     const countElement = document.getElementById("cartCount");
     const fabTotal = document.getElementById("cartFabTotal");
-    const fab = document.getElementById("cartToggle");
 
     if (!cartList) return;
 
     if (carrinho.length === 0) {
-        cartList.innerHTML = `
-            <div class="empty-cart-msg">
-                <i class="fas fa-shopping-basket"></i>
-                <p>Sua sacola está vazia.</p>
-            </div>`;
-        if (fab) fab.style.display = "none";
+        cartList.innerHTML = `<div class="empty-cart-msg"><p>Seu carrinho está vazio</p></div>`;
     } else {
         cartList.innerHTML = "";
         carrinho.forEach(item => {
             const div = document.createElement("div");
-            div.className = "cart-item-elite";
+            div.className = "cart-item-elite"; 
             div.innerHTML = `
                 <div class="cart-item-info">
                     <strong>${item.name}</strong>
@@ -191,102 +154,53 @@ function atualizarInterface() {
             `;
             cartList.appendChild(div);
         });
-        if (fab) fab.style.display = "flex";
     }
 
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
-    const valorDesconto = (subtotal * descontoPercentual) / 100;
-    const totalFinal = subtotal - valorDesconto;
+    const totalFinal = subtotal - (subtotal * descontoPercentual / 100);
 
     if (countElement) countElement.innerText = carrinho.length;
     if (totalElement) totalElement.innerText = formatarMoeda(totalFinal);
-    if (fabTotal) fabTotal.innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
+    if (fabTotal) fabTotal.innerText = formatarMoeda(totalFinal);
 }
 
 function salvarDados() {
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
 }
 
-// --- FEEDBACK ---
-
-function mostrarToast(msg) {
-    const existing = document.querySelector('.toast-elite');
-    if (existing) existing.remove();
-
-    const toast = document.createElement("div");
-    toast.className = "toast-elite";
-    toast.style.cssText = `
-        position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-        background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); color: white;
-        padding: 12px 25px; border-radius: 50px; z-index: 5000; font-size: 14px;
-        border: 1px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        animation: fadeIn 0.3s ease;
-    `;
-
-    toast.innerHTML = `<i class="fas fa-fire" style="color: var(--primary); margin-right: 8px;"></i> ${msg}`;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = "0";
-        setTimeout(() => toast.remove(), 300);
-    }, 2500);
-}
-
 function verificarStatusLoja() {
     const dot = document.getElementById("statusLabel");
     const text = document.getElementById("statusText");
-    const timer = document.getElementById("statusTimer");
-    
     const agora = new Date();
     const hora = agora.getHours();
     const dia = agora.getDay();
-    
-    // Aberto Terça a Domingo, 18h às 00h (Porto Velho)
     const estaAberto = (dia !== 1 && hora >= 18 && hora < 24);
     
     if (dot && text) {
         dot.className = estaAberto ? "status-dot online" : "status-dot offline";
-        text.innerText = estaAberto ? "Aceitando Pedidos" : "Fechado no momento";
-        if (timer) timer.innerText = estaAberto ? "Entrega: 30-50 min" : "Abrimos hoje às 18:00";
+        text.innerText = estaAberto ? "Aceitando Pedidos" : "Restaurante Fechado";
     }
 }
 
-// --- CHECKOUT WHATSAPP ---
-
 function checkout() {
-    if (carrinho.length === 0) {
-        mostrarToast("Adicione um burguer primeiro! 😋");
-        return;
-    }
-
+    if (carrinho.length === 0) return;
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
     const totalFinal = subtotal - (subtotal * descontoPercentual / 100);
 
     let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*%0A";
-    msg += "━━━━━━━━━━━━━━━━━━━━%0A";
-    
     carrinho.forEach((item, index) => {
         msg += `*${index + 1}.* ${item.name} _(${formatarMoeda(item.preco)})_%0A`;
     });
-    
-    msg += "━━━━━━━━━━━━━━━━━━━━%0A";
     if (cupomAtivo) msg += `*Cupom:* ${cupomAtivo} (-${descontoPercentual}%)%0A`;
-    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A`;
-    msg += "📍 *Endereço de Entrega:*%0A";
-    msg += "_Por favor, envie sua localização ou digite o endereço aqui..._";
+    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*`;
 
-    const fone = "556993668336";
-    window.open(`https://wa.me/${fone}?text=${msg}`, "_blank");
+    window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
 }
 
-// --- INITIALIZATION ---
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Setup listeners para as abas
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat));
     });
-
     verificarStatusLoja();
     atualizarInterface();
     mostrarCategoria("hamburguer");
