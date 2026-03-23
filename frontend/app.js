@@ -8,6 +8,7 @@
 let carrinho = [];
 let descontoAtivo = 0; 
 
+// Inicialização segura do Carrinho via LocalStorage
 try {
     const savedCart = localStorage.getItem('benis_cart');
     carrinho = savedCart ? JSON.parse(savedCart) : [];
@@ -17,7 +18,7 @@ try {
 }
 
 let mapa;
-const COORDS_LOJA = [-8.74015, -63.87498]; 
+const COORDS_LOJA = [-8.74015, -63.87498]; // Porto Velho - Aponiã
 
 const cardapio = {
     hamburguer: [
@@ -88,9 +89,11 @@ function adicionarAoCarrinho(cat, id, event) {
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
 
+    // Feedback Visual no botão
     const btn = event.currentTarget;
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
+    btn.style.background = "var(--success)";
     
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
@@ -100,7 +103,10 @@ function adicionarAoCarrinho(cat, id, event) {
     }
 
     salvarEAtualizar();
-    setTimeout(() => { btn.innerHTML = originalText; }, 800);
+    setTimeout(() => { 
+        btn.innerHTML = originalText;
+        btn.style.background = "";
+    }, 800);
 }
 
 function removerDoCarrinho(id) {
@@ -227,7 +233,8 @@ function checkout() {
 }
 
 function toggleCarrinho() { 
-    document.getElementById("cartPanel")?.classList.toggle("open");
+    const panel = document.getElementById("cartPanel");
+    if (panel) panel.classList.toggle("open");
 }
 
 // --- 7. CONTROLE DE HORÁRIO ---
@@ -235,14 +242,14 @@ function verificarStatusLoja() {
     const agora = new Date();
     const diaSemana = agora.getDay();
     const hora = agora.getHours();
-    const tempoAbertura = 19 * 60; 
-    const tempoFechamento = (23 * 60) + 59; 
+    const tempoAbertura = 19 * 60; // 19:00h
+    const tempoFechamento = (23 * 60) + 59; // 23:59h
     const tempoAtual = (hora * 60) + agora.getMinutes();
 
     const statusText = document.getElementById("statusText");
     const statusLabel = document.getElementById("statusLabel");
 
-    if (diaSemana === 1) { // Segunda
+    if (diaSemana === 1) { // Segunda-feira (Fechado)
         if (statusText) statusText.innerText = "Fechada • Abre Terça às 19:00";
     } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
         if (statusText) statusText.innerText = "Aberta • No Braseiro";
