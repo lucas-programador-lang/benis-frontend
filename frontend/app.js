@@ -1,7 +1,7 @@
 /**
  * BENIS BURGUER - Gourmet Logic Engine v4.9.5 (Final Revision)
  * Sincronizado com: HTML/CSS v4.9.5 (Elite Edition)
- * Correções: Layout de Carrinho (X-Bauru) e Loader Controlado
+ * Ajustes: Alinhamento de itens e lógica de cupom aprimorada
  */
 
 const cardapio = {
@@ -44,7 +44,6 @@ const CUPONS_VALIDOS = { "BENIS10": 10, "APONIA": 15, "PRIMEIRACOMPRA": 5 };
 const formatarMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 // --- RENDERIZAÇÃO DO MENU ---
-
 function mostrarCategoria(categoria) {
     const menuContainer = document.getElementById("menu");
     if (!menuContainer) return;
@@ -83,8 +82,7 @@ function mostrarCategoria(categoria) {
     }, 250);
 }
 
-// --- GERENCIAMENTO DO CARRINHO (ESTILO IDENTICO À FOTO) ---
-
+// --- GERENCIAMENTO DO CARRINHO ---
 function atualizarInterface() {
     const cartList = document.getElementById("cartItems");
     const totalElement = document.getElementById("totalValue");
@@ -95,17 +93,17 @@ function atualizarInterface() {
     if (!cartList) return;
 
     if (carrinho.length === 0) {
-        cartList.innerHTML = `<div style="text-align:center; padding: 50px 20px; opacity: 0.3;">
-            <i class="fas fa-shopping-basket" style="font-size: 3rem; margin-bottom: 10px;"></i>
-            <p>Sua sacola está vazia.</p>
-        </div>`;
+        cartList.innerHTML = `
+            <div style="text-align:center; padding: 50px 20px; opacity: 0.3;">
+                <i class="fas fa-shopping-basket" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                <p>Sua sacola está vazia.</p>
+            </div>`;
         if (fabContainer) fabContainer.classList.remove('active');
     } else {
         cartList.innerHTML = "";
         carrinho.forEach(item => {
             const div = document.createElement("div");
             div.className = "cart-item-elite";
-            // AQUI ESTÁ A CORREÇÃO: Estrutura item-main e btn-remove para o CSS alinhar
             div.innerHTML = `
                 <div class="item-main">
                     <h4>${item.name}</h4>
@@ -187,16 +185,13 @@ function aplicarCupom() {
     }
 }
 
-// --- STATUS E FINALIZAÇÃO ---
-
+// --- STATUS E WHATSAPP ---
 function verificarStatusLoja() {
     const dot = document.getElementById("statusLabel");
     const text = document.getElementById("statusText");
-    
     const agora = new Date();
     const hora = agora.getHours();
     const dia = agora.getDay(); 
-
     const aberto = (dia !== 1 && hora >= 18 && hora < 24);
 
     if (dot && text) {
@@ -213,7 +208,6 @@ function checkout() {
     const totalFinal = subtotal - valorDesconto;
     
     let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*%0A━━━━━━━━━━━━━━━━━━━━%0A";
-    
     carrinho.forEach((item, i) => {
         msg += `*${i + 1}.* ${item.name} _(${formatarMoeda(item.preco)})_%0A`;
     });
@@ -225,10 +219,8 @@ function checkout() {
     window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
 }
 
-// --- INICIALIZAÇÃO E LOADER ---
-
+// --- INICIALIZAÇÃO ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Esconde o loader após o carregamento (Corrige o problema da logo grande)
     const loader = document.querySelector('.loader-wrapper');
     const progressBar = document.querySelector('.progress-bar');
     
