@@ -1,6 +1,7 @@
-/* BENIS BURGUER - Gourmet Visual Engine v4.2 
+/* BENIS BURGUER - Gourmet Visual Engine v4.2.1
    Design: Dark Mode Premium, Glassmorphism & Micro-interactions
    Local: Porto Velho - RO
+   Update: UI Fixes para Cupom e Botão Remover
 */
 
 :root {
@@ -15,6 +16,7 @@
     --shadow-premium: 0 20px 50px rgba(0, 0, 0, 0.8);
     --gradient-glow: linear-gradient(135deg, #ff8c00, #ff5e00);
     --transition-smooth: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    --danger: #ff4d4d;
 }
 
 /* --- RESET & BASE --- */
@@ -389,6 +391,38 @@ body::before {
 .cart-content-scroll::-webkit-scrollbar-track { background: transparent; }
 .cart-content-scroll::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
 
+/* --- ITENS DO CARRINHO (ESTILIZAÇÃO) --- */
+.cart-item-elite {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--glass-border);
+    animation: fadeIn 0.4s ease;
+}
+
+.cart-item-info strong { font-size: 0.95rem; display: block; }
+.cart-item-info span { color: var(--primary); font-weight: 700; font-size: 0.9rem; }
+
+/* NOVO: Botão Remover Minimalista */
+.btn-remove-item {
+    background: rgba(255, 77, 77, 0.1);
+    border: 1px solid rgba(255, 77, 77, 0.15);
+    color: var(--danger);
+    width: 30px; height: 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition-smooth);
+    font-size: 12px;
+}
+
+.btn-remove-item:hover {
+    background: var(--danger);
+    color: white;
+    transform: rotate(90deg) scale(1.1);
+}
+
 .empty-cart-msg {
     text-align: center;
     padding-top: 100px;
@@ -404,6 +438,7 @@ body::before {
     border-top: 1px solid var(--glass-border);
 }
 
+/* NOVO: Input de Cupom Estilizado */
 .input-group-glass {
     background: rgba(255,255,255,0.05);
     border: 1px solid var(--glass-border);
@@ -412,11 +447,37 @@ body::before {
     align-items: center;
     padding: 5px 15px;
     margin-bottom: 25px;
+    transition: var(--transition-smooth);
+}
+
+.input-group-glass:focus-within {
+    border-color: var(--primary);
+    background: rgba(255, 140, 0, 0.05);
 }
 
 .input-group-glass input {
     flex: 1; background: transparent; border: none;
-    color: white; padding: 12px; outline: none;
+    color: white; padding: 12px; outline: none; font-size: 14px;
+}
+
+/* Botão Aplicar Elite */
+#btnAplicarCupom {
+    background: var(--primary);
+    color: black;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+#btnAplicarCupom:hover {
+    background: var(--primary-hover);
+    transform: scale(1.05);
 }
 
 .total-row {
@@ -472,7 +533,7 @@ body::before {
 .cart-fab-icon { position: relative; font-size: 1.5rem; color: #000; }
 
 .count-badge {
-    position: absolute; -top: 10px; -right: 12px;
+    position: absolute; top: -10px; right: -12px;
     background: #fff; color: #000;
     font-size: 12px; font-weight: 900;
     min-width: 24px; height: 24px;
@@ -538,6 +599,11 @@ body::before {
 @keyframes pulse {
     0% { transform: scale(1); opacity: 1; }
     100% { transform: scale(3); opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 /* --- RESPONSIVIDADE --- */
