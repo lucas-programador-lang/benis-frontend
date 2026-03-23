@@ -66,7 +66,16 @@ body::before {
 }
 .header-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
 .logo-img { height: 50px; transition: var(--transition-smooth); }
-.logo-img:hover { transform: scale(1.05) rotate(-2deg); }
+
+/* Botões Sociais Corrigidos */
+.social-links { display: flex; gap: 12px; }
+.social-btn {
+    width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    background: var(--bg-card); border: 1px solid var(--glass-border); color: white; transition: var(--transition-smooth); text-decoration: none;
+    font-size: 1.2rem;
+}
+.btn-whatsapp:hover { background: #25d366; color: #000; box-shadow: 0 0 20px rgba(37, 211, 102, 0.4); }
+.btn-instagram:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); box-shadow: 0 0 20px rgba(220, 39, 67, 0.4); }
 
 /* --- HERO & STATUS --- */
 .hero-elite { padding: 60px 6% 40px; text-align: center; }
@@ -79,7 +88,8 @@ body::before {
 .hero-elite h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: 20px; }
 
 .status-pill { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); padding: 12px 24px; border-radius: 100px; display: inline-flex; align-items: center; gap: 12px; }
-.status-dot.online { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 12px #22c55e; position: relative; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; background: #666; }
+.status-dot.online { background: #22c55e; box-shadow: 0 0 12px #22c55e; position: relative; }
 .status-dot.online::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid #22c55e; animation: pulse 2s infinite; }
 
 /* --- CATEGORY NAVIGATION --- */
@@ -107,13 +117,13 @@ body::before {
     border-radius: var(--card-radius); overflow: hidden; transition: var(--transition-smooth); position: relative;
 }
 .card-item:hover { transform: translateY(-12px); border-color: var(--primary); box-shadow: var(--shadow-premium); }
-.card-image-box { width: 100%; height: 220px; overflow: hidden; }
+.card-image-box { width: 100%; height: 220px; overflow: hidden; background: #1a1a1a; }
 .card-image-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s; }
 .card-item:hover .card-image-box img { transform: scale(1.1); }
 
 .card-info { padding: 25px; }
 .card-info h3 { font-size: 1.4rem; margin-bottom: 8px; }
-.card-info p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px; }
+.card-info p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px; min-height: 40px; }
 .price-tag { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
 
 .add-btn {
@@ -121,7 +131,6 @@ body::before {
     padding: 16px; border-radius: 20px; font-weight: 800; cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition-smooth);
 }
-.add-btn:active { transform: scale(0.95); }
 
 /* --- CARRINHO PANEL --- */
 .cart-panel-elite {
@@ -133,79 +142,43 @@ body::before {
 .cart-panel-elite.open { right: 0; }
 .cart-content-scroll { flex: 1; overflow-y: auto; padding-right: 10px; margin: 20px 0; }
 
-/* Cupom & Footer */
-.input-group-glass {
-    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-    border-radius: 18px; display: flex; align-items: center; padding: 5px 15px; margin-bottom: 20px;
-}
-.input-group-glass input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; }
-#btnAplicarCupom { background: var(--primary); color: black; border: none; padding: 8px 15px; border-radius: 12px; font-weight: 800; cursor: pointer; }
-
-.checkout-btn {
-    width: 100%; background: #25d366; color: black; border: none; padding: 20px;
-    border-radius: 22px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: var(--transition-smooth);
-}
-.checkout-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(37, 211, 102, 0.3); }
-
-/* Itens do Carrinho */
-.cart-item-elite { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--glass-border); }
-.btn-remove-item {
-    background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.2);
-    color: var(--danger); width: 32px; height: 32px; border-radius: 10px; cursor: pointer; transition: 0.3s;
-    display: flex; align-items: center; justify-content: center;
-}
-.btn-remove-item:hover { background: var(--danger); color: white; transform: rotate(90deg); }
-
-/* --- CARRINHO FAB --- */
-.cart-fab {
-    position: fixed; bottom: 40px; right: 40px; background: var(--gradient-glow);
-    padding: 15px 30px; border-radius: 100px; cursor: pointer; z-index: 1100;
-    transition: var(--transition-smooth); box-shadow: 0 10px 30px rgba(255, 140, 0, 0.3);
-}
-.cart-fab-content { display: flex; align-items: center; gap: 15px; color: #000; font-weight: 800; }
-.count-badge { background: #fff; color: #000; font-size: 12px; font-weight: 900; padding: 2px 8px; border-radius: 10px; margin-left: 5px; }
+.total-row { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: 800; margin: 15px 0; color: var(--primary); }
 
 /* --- MAPA SECTION --- */
 .location-section { padding: 80px 6%; max-width: 1200px; margin: 0 auto; }
 .map-card-wrapper {
     position: relative; border-radius: 40px; overflow: hidden;
-    border: 1px solid var(--glass-border); height: 450px;
+    border: 1px solid var(--glass-border); height: 450px; background: #111;
 }
-#mapaEntrega { height: 100%; width: 100%; }
+#mapaEntrega { height: 100% !important; width: 100% !important; z-index: 1; }
 
 .map-overlay-info {
     position: absolute; bottom: 30px; left: 30px; right: 30px;
-    background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(20px);
+    background: rgba(10, 10, 10, 0.75); backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border); border-radius: 25px;
-    padding: 25px; display: flex; justify-content: space-between; align-items: center; z-index: 400;
+    padding: 25px; display: flex; justify-content: space-between; align-items: center; z-index: 100;
 }
+.route-btn { background: var(--primary); color: #000; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 800; }
 
-/* --- RESPONSIVIDADE MOBILE PREMIUM --- */
+/* --- RESPONSIVIDADE MOBILE PREMIUM (iFood Style) --- */
 @media (max-width: 768px) {
     :root { --card-radius: 22px; }
-
     .hero-elite h1 { font-size: 2.2rem; }
     
-    /* Grid vira Lista Estilo App */
-    .menu-grid { grid-template-columns: 1fr; gap: 15px; padding: 20px 6%; }
+    .menu-grid { grid-template-columns: 1fr; gap: 12px; padding: 20px 6%; }
     .card-item { display: flex; flex-direction: row; padding: 12px; gap: 15px; align-items: center; }
-    .card-image-box { width: 90px; height: 90px; min-width: 90px; border-radius: 15px; }
+    .card-image-box { width: 95px; height: 95px; min-width: 95px; border-radius: 15px; }
     .card-info { padding: 0; flex: 1; }
     .card-info h3 { font-size: 1rem; margin-bottom: 2px; }
     .card-info p { font-size: 0.75rem; margin-bottom: 8px; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .price-tag { font-size: 1.1rem; }
     .add-btn { width: auto; padding: 8px 15px; font-size: 0.7rem; margin-top: 5px; }
 
-    /* Carrinho Mobile Full Width */
     .cart-panel-elite { width: 100%; padding: 25px; }
-    .cart-fab { bottom: 20px; right: 20px; left: 20px; width: auto; text-align: center; justify-content: center; border-radius: 20px; }
+    .cart-fab { bottom: 20px; right: 20px; left: 20px; width: auto; border-radius: 20px; }
     
-    /* Mapa Responsivo */
-    .map-card-wrapper { height: 350px; border-radius: 25px; }
-    .map-overlay-info { position: static; margin-top: 15px; flex-direction: column; gap: 15px; text-align: center; border-radius: 20px; }
-
-    /* Categorias Scroll */
-    .categorias-elite { justify-content: flex-start; }
+    .map-card-wrapper { height: 300px; border-radius: 25px; }
+    .map-overlay-info { position: relative; bottom: 0; left: 0; right: 0; margin-top: 15px; flex-direction: column; gap: 15px; text-align: center; background: var(--bg-card); }
 }
 
 /* --- ANIMAÇÕES --- */
