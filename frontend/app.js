@@ -1,7 +1,7 @@
 /**
- * BENIS BURGUER - Gourmet Logic Engine v5.2 (Elite Edition)
- * Sincronizado com: style.css v5.2
- * Localidade: Porto Velho, RO - 2026
+ * BENIS BURGUER - Gourmet Logic Engine v5.1
+ * Sincronizado com: style.css (Elite Edition)
+ * Localidade: Porto Velho, RO
  */
 
 const cardapio = {
@@ -27,6 +27,7 @@ const cardapio = {
         { id: 204, name: "Dydyo 2L", preco: 9.00, desc: "Clássico de Porto Velho.", img: "dydyo.png" },
         { id: 205, name: "Coca Cola Lata", preco: 7.00, desc: "Refresco geladinho.", img: "cocalata.png" }
     ],
+    // Corrigido para "extras" para bater com o data-cat do seu HTML
     extras: [
         { id: 301, name: "Hambúrguer Extra", preco: 5.00, desc: "Turbine seu pedido.", img: "extra-meat.png" },
         { id: 302, name: "Cheddar", preco: 4.00, desc: "Cremosidade extra.", img: "extra-cheddar.png" },
@@ -58,7 +59,9 @@ function mostrarCategoria(categoria) {
             btn.classList.toggle('active', btn.getAttribute('data-cat') === categoria);
         });
 
+        // Verificação de segurança caso a categoria não exista
         const itens = cardapio[categoria] || [];
+        
         itens.forEach((item, index) => {
             const card = document.createElement("div");
             card.className = "card-item";
@@ -66,9 +69,9 @@ function mostrarCategoria(categoria) {
                 <div class="card-image-box">
                     <img src="img/${item.img}" alt="${item.name}" onerror="this.src='logo.png'">
                 </div>
-                <div class="card-info" style="padding: 20px;">
-                    <h3 style="margin-bottom: 5px;">${item.name}</h3>
-                    <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 10px;">${item.desc}</p>
+                <div class="card-info">
+                    <h3>${item.name}</h3>
+                    <p>${item.desc}</p>
                     <span class="price-tag">${formatarMoeda(item.preco)}</span>
                 </div>
                 <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index}, event)">
@@ -89,27 +92,26 @@ function atualizarInterface() {
     const totalValue = document.getElementById("totalValue");
     const subtotalDisplay = document.getElementById("subtotalValue");
     const cartCount = document.getElementById("cartCount");
-    const fabContainer = document.getElementById("cartToggle");
     const fabTotal = document.getElementById("cartFabTotal");
+    const fabContainer = document.getElementById("cartToggle");
 
     if (!list) return;
 
     list.innerHTML = carrinho.length ? "" : `
-        <div style="text-align:center; padding: 60px 20px; opacity: 0.3;">
-            <i class="fas fa-shopping-basket" style="font-size: 3rem; margin-bottom: 15px;"></i>
+        <div style="text-align:center; padding: 40px 20px; opacity: 0.3;">
+            <i class="fas fa-shopping-basket" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
             <p>Sua sacola está vazia.</p>
         </div>`;
 
     carrinho.forEach(item => {
         const div = document.createElement("div");
-        div.className = "cart-item-elite"; // Sincronizado com CSS
-        div.style = "display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--glass-border);";
+        div.className = "cart-item-elite";
         div.innerHTML = `
-            <div>
-                <h4 style="font-size: 1rem;">${item.name}</h4>
-                <span style="color: var(--primary); font-weight: bold;">${formatarMoeda(item.preco)}</span>
+            <div class="item-main">
+                <h4>${item.name}</h4>
+                <span class="price">${formatarMoeda(item.preco)}</span>
             </div>
-            <button onclick="removerDoCarrinho(${item.cartId})" style="background: rgba(255,77,77,0.1); color: var(--danger); border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer;">
+            <button class="btn-remove" onclick="removerDoCarrinho('${item.cartId}')">
                 <i class="fas fa-trash-alt"></i>
             </button>
         `;
@@ -135,10 +137,11 @@ function adicionarAoCarrinho(cat, index, event) {
 
     const originalContent = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
-    btn.style.background = "var(--success)";
+    btn.style.background = "#22c55e";
     btn.style.color = "#fff";
     
-    carrinho.push({ ...item, cartId: Date.now() + Math.random() });
+    // Gerando ID como String para evitar problemas de precisão
+    carrinho.push({ ...item, cartId: `id-${Date.now()}-${Math.random()}` });
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
     atualizarInterface();
 
@@ -157,15 +160,19 @@ function removerDoCarrinho(id) {
 
 function aplicarCupom() {
     const input = document.getElementById('cupom');
+    const btn = document.getElementById('btnAplicarCupom');
+    if (!input) return;
+    
     const codigo = input.value.toUpperCase().trim();
 
     if (CUPONS_VALIDOS[codigo]) {
         descontoPercentual = CUPONS_VALIDOS[codigo];
         cupomAtivo = codigo;
-        input.style.borderColor = "var(--success)";
+        input.style.borderColor = "#22c55e";
+        if (btn) btn.innerHTML = '<i class="fas fa-check"></i>';
         atualizarInterface();
     } else {
-        input.style.borderColor = "var(--danger)";
+        input.style.borderColor = "#ff4d4d";
         input.animate([
             { transform: 'translateX(0)' },
             { transform: 'translateX(5px)' },
@@ -176,34 +183,46 @@ function aplicarCupom() {
 }
 
 function toggleCarrinho() {
-    document.getElementById("cartPanel").classList.toggle("open");
+    const panel = document.getElementById("cartPanel");
+    if (panel) panel.classList.toggle("open");
+}
+
+// --- STATUS DA LOJA ---
+function verificarStatus() {
+    const dot = document.getElementById("statusLabel");
+    const text = document.getElementById("statusText");
+    const data = new Date();
+    const hora = data.getHours();
+    const dia = data.getDay();
+    
+    // Aberto de Terça (2) a Domingo (0), das 18h às 00h. Segunda (1) fechado.
+    const aberto = (dia !== 1 && hora >= 18 && hora < 24);
+
+    if (dot && text) {
+        dot.className = aberto ? "status-dot online" : "status-dot";
+        text.innerText = aberto ? "Aceitando Pedidos" : "Fechado agora";
+    }
 }
 
 // --- CONFIGURAÇÃO DO MAPA ---
 function inicializarMapa() {
-    const coords = [-8.7410, -63.8745]; // Bairro Aponiã
+    const mapElement = document.getElementById('mapaEntrega');
+    if (!mapElement) return;
+
+    const coords = [-8.7410, -63.8745]; 
     const mapa = L.map('mapaEntrega', { zoomControl: false }).setView(coords, 16);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap'
     }).addTo(mapa);
 
-    const pinHtml = `
-        <div class="custom-pin-container">
-            <div class="pin-wrapper">
-                <div class="pin-pulse"></div>
-                <div class="pin-center"></div>
-            </div>
-        </div>`;
-
-    const customIcon = L.divIcon({
-        html: pinHtml,
-        className: 'custom-div-icon',
-        iconSize: [40, 40],
-        iconAnchor: [20, 20]
+    const iconCustom = L.icon({
+        iconUrl: 'logo.png',
+        iconSize: [45, 45],
+        className: 'map-marker-benis'
     });
 
-    L.marker(coords, { icon: customIcon }).addTo(mapa)
+    L.marker(coords, { icon: iconCustom }).addTo(mapa)
         .bindPopup('<b>Benis Burguer</b><br>R. Paulo Fortes, 6245')
         .openPopup();
 }
@@ -225,7 +244,7 @@ function checkout() {
     msg += "━━━━━━━━━━━━━━━━━━━━%0A";
     if (cupomAtivo) msg += `✅ *Cupom:* ${cupomAtivo} (-${descontoPercentual}%)%0A`;
     msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A`;
-    msg += "📍 *Endereço:* (Preencha aqui)%0A";
+    msg += "📍 *Endereço:* (Digite aqui)%0A";
     msg += "💰 *Pagamento:* (Dinheiro/Pix/Cartão)";
 
     window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
@@ -233,27 +252,30 @@ function checkout() {
 
 // --- INICIALIZAÇÃO ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Simulação de carregamento do Loader
     const progressBar = document.getElementById('progressBar');
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += 20;
-        if (progressBar) progressBar.style.width = progress + '%';
-        if (progress >= 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-                const loader = document.getElementById("loader");
-                if (loader) loader.classList.add('fade-out');
-            }, 300);
-        }
-    }, 150);
+    if (progressBar) {
+        let width = 0;
+        const interval = setInterval(() => {
+            width += 15;
+            progressBar.style.width = width + '%';
+            if (width >= 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    const loader = document.getElementById("loader");
+                    if (loader) loader.classList.add('fade-out');
+                }, 300);
+            }
+        }, 100);
+    }
 
-    // Eventos de Categorias
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat));
     });
 
+    verificarStatus();
     atualizarInterface();
     mostrarCategoria("hamburguer");
-    inicializarMapa();
+    
+    // Pequeno delay para o Leaflet não bugar no carregamento
+    setTimeout(inicializarMapa, 500);
 });
