@@ -1,7 +1,8 @@
 /**
- * BENIS BURGUER - Gourmet Logic Engine v5.1
+ * BENIS BURGUER - Gourmet Logic Engine v5.2
  * Sincronizado com: style.css (Elite Edition)
  * Localidade: Porto Velho, RO
+ * Ajuste: Busca por ID real (9 itens no menu de hambúrguer)
  */
 
 const cardapio = {
@@ -27,7 +28,6 @@ const cardapio = {
         { id: 204, name: "Dydyo 2L", preco: 9.00, desc: "Clássico de Porto Velho.", img: "dydyo.png" },
         { id: 205, name: "Coca Cola Lata", preco: 7.00, desc: "Refresco geladinho.", img: "cocalata.png" }
     ],
-    // Corrigido para "extras" para bater com o data-cat do seu HTML
     extras: [
         { id: 301, name: "Hambúrguer Extra", preco: 5.00, desc: "Turbine seu pedido.", img: "extra-meat.png" },
         { id: 302, name: "Cheddar", preco: 4.00, desc: "Cremosidade extra.", img: "extra-cheddar.png" },
@@ -59,10 +59,9 @@ function mostrarCategoria(categoria) {
             btn.classList.toggle('active', btn.getAttribute('data-cat') === categoria);
         });
 
-        // Verificação de segurança caso a categoria não exista
         const itens = cardapio[categoria] || [];
         
-        itens.forEach((item, index) => {
+        itens.forEach((item) => {
             const card = document.createElement("div");
             card.className = "card-item";
             card.innerHTML = `
@@ -74,7 +73,7 @@ function mostrarCategoria(categoria) {
                     <p>${item.desc}</p>
                     <span class="price-tag">${formatarMoeda(item.preco)}</span>
                 </div>
-                <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${index}, event)">
+                <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${item.id}, event)">
                     <i class="fas fa-plus"></i> ADICIONAR
                 </button>
             `;
@@ -131,16 +130,18 @@ function atualizarInterface() {
     }
 }
 
-function adicionarAoCarrinho(cat, index, event) {
-    const item = cardapio[cat][index];
-    const btn = event.currentTarget;
+function adicionarAoCarrinho(cat, id, event) {
+    // Busca o item pelo ID real dentro da categoria
+    const item = cardapio[cat].find(p => p.id === id);
+    if (!item) return;
 
+    const btn = event.currentTarget;
     const originalContent = btn.innerHTML;
+    
     btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
     btn.style.background = "#22c55e";
     btn.style.color = "#fff";
     
-    // Gerando ID como String para evitar problemas de precisão
     carrinho.push({ ...item, cartId: `id-${Date.now()}-${Math.random()}` });
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
     atualizarInterface();
@@ -187,7 +188,6 @@ function toggleCarrinho() {
     if (panel) panel.classList.toggle("open");
 }
 
-// --- STATUS DA LOJA ---
 function verificarStatus() {
     const dot = document.getElementById("statusLabel");
     const text = document.getElementById("statusText");
@@ -204,7 +204,6 @@ function verificarStatus() {
     }
 }
 
-// --- CONFIGURAÇÃO DO MAPA ---
 function inicializarMapa() {
     const mapElement = document.getElementById('mapaEntrega');
     if (!mapElement) return;
@@ -227,7 +226,6 @@ function inicializarMapa() {
         .openPopup();
 }
 
-// --- CHECKOUT WHATSAPP ---
 function checkout() {
     if (!carrinho.length) return;
 
@@ -250,7 +248,6 @@ function checkout() {
     window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
 }
 
-// --- INICIALIZAÇÃO ---
 document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.getElementById('progressBar');
     if (progressBar) {
@@ -276,6 +273,5 @@ document.addEventListener('DOMContentLoaded', () => {
     atualizarInterface();
     mostrarCategoria("hamburguer");
     
-    // Pequeno delay para o Leaflet não bugar no carregamento
     setTimeout(inicializarMapa, 500);
 });
