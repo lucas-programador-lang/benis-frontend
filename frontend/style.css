@@ -1,5 +1,5 @@
 /**
- * BENIS BURGUER - Gourmet Visual Engine v6.5 (Elite Edition)
+ * BENIS BURGUER - Gourmet Visual Engine v6.7 (Elite Edition)
  * Fusion: Dark Mode Premium + Glassmorphism Otimizado
  * Location: Porto Velho/RO - 2026
  */
@@ -222,68 +222,105 @@ body::before {
 
 .cart-fab:hover { transform: translateX(-50%) translateY(-5px); filter: brightness(1.1); }
 
-/* --- CARRINHO PANEL --- */
+/* --- 5. CARRINHO PANEL (SACOLA) CORRIGIDO --- */
 .cart-panel-elite {
-    position: fixed; top: 0; right: -100%; width: 100%; max-width: 450px; 
-    height: 100vh; background: #0d0d0d; z-index: 2000; 
-    transition: 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-    border-left: 1px solid var(--glass-border); display: flex; flex-direction: column;
-    box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+    position: fixed; 
+    top: 0; 
+    right: -100%; 
+    width: 100%; 
+    max-width: 420px; 
+    height: 100vh; 
+    background: #0a0a0b; /* Fundo Ultra Dark */
+    z-index: 5000; 
+    transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    border-left: 1px solid var(--glass-border); 
+    display: flex; 
+    flex-direction: column;
+    box-shadow: -25px 0 80px rgba(0,0,0,0.9);
 }
 
 .cart-panel-elite.open { right: 0; }
 
-/* Botão Fechar (X) do Carrinho */
-.btn-close-cart {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
+/* Header da Sacola Premium */
+.cart-header-elite {
+    padding: 30px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.cart-header-elite h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     color: #fff;
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
+}
+
+.cart-header-elite h2 i { color: var(--primary); }
+
+/* Botão Fechar (O NOVO "X" PROFISSIONAL) */
+.btn-close-cart {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    color: var(--text-dim);
+    width: 45px;
+    height: 45px;
+    border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: 0.3s;
+    transition: var(--transition-smooth);
 }
 
 .btn-close-cart:hover {
     background: var(--danger);
+    color: white;
     transform: rotate(90deg);
-    border-color: var(--danger);
+    border-color: transparent;
+    box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
 }
 
 .cart-content-scroll { 
     flex-grow: 1; 
     overflow-y: auto; 
-    padding: 25px; 
+    padding: 20px; 
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 }
 
-/* Item dentro do Carrinho */
-.cart-item-elite {
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(255,255,255,0.03); padding: 18px; border-radius: 20px; 
+/* Área de Cupom Otimizada */
+.coupon-wrapper {
+    margin: 10px 0 20px;
+    display: flex;
+    gap: 10px;
+    background: rgba(255,255,255,0.03);
+    padding: 8px;
+    border-radius: 18px;
     border: 1px solid var(--glass-border);
-    animation: slideIn 0.3s ease-out;
 }
 
-@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-.cart-item-info h4 { font-size: 1rem; color: #fff; margin-bottom: 4px; }
-.cart-item-info p { font-size: 0.9rem; color: var(--primary); font-weight: 700; }
-
-/* Botão Remover Item (Lixeira) */
-.btn-remove {
-    background: rgba(255, 77, 77, 0.1);
-    color: var(--danger);
+.coupon-wrapper input {
+    background: transparent;
     border: none;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+    padding: 10px 15px;
+    color: #fff;
+    flex-grow: 1;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.btn-apply-coupon {
+    background: var(--primary);
+    border: none;
+    color: #000;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     cursor: pointer;
     transition: 0.3s;
     display: flex;
@@ -291,36 +328,46 @@ body::before {
     justify-content: center;
 }
 
-.btn-remove:hover {
-    background: var(--danger);
-    color: #fff;
-    transform: scale(1.1);
-}
+.btn-apply-coupon:hover { transform: scale(1.05); filter: brightness(1.2); }
 
-/* Rodapé do Carrinho */
+/* Rodapé da Sacola Elite */
 .cart-footer-elite {
-    padding: 30px;
-    background: #0a0a0a;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(10px);
     border-top: 1px solid var(--glass-border);
 }
 
-.total-row.main {
+.total-details {
+    margin-bottom: 20px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.total-row.main span:first-child { color: var(--text-dim); font-weight: 600; }
-.total-row.main span:last-child { font-size: 1.8rem; font-weight: 800; color: #fff; }
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-dim);
+    font-size: 0.95rem;
+}
 
-/* Botão Pedir pelo WhatsApp */
+.detail-row.grand-total {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--glass-border);
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+/* Botão WhatsApp Com Efeito Glow e Animação */
 .checkout-btn {
     width: 100%;
     background: var(--success);
     color: #fff;
-    padding: 20px;
-    border-radius: 20px;
+    padding: 22px;
+    border-radius: 22px;
     border: none;
     font-weight: 800;
     font-size: 1.1rem;
@@ -329,17 +376,27 @@ body::before {
     align-items: center;
     justify-content: center;
     gap: 12px;
-    transition: 0.4s;
-    box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .checkout-btn:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(37, 211, 102, 0.5);
     background: #21ba5a;
-    box-shadow: 0 15px 30px rgba(37, 211, 102, 0.4);
 }
 
-.checkout-btn i { font-size: 1.4rem; }
+/* Item Individual na Sacola */
+.cart-item-elite {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255,255,255,0.03); padding: 18px; border-radius: 20px; 
+    border: 1px solid var(--glass-border);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
 /* --- MAPA --- */
 .location-section { padding: 60px 6%; }
