@@ -45,6 +45,7 @@ const formatarMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', curr
 function mostrarCategoria(categoria) {
     const menuContainer = document.getElementById("menu");
     if (!menuContainer) return;
+    
     menuContainer.style.opacity = "0";
     
     setTimeout(() => {
@@ -78,21 +79,31 @@ function mostrarCategoria(categoria) {
 function adicionarAoCarrinho(cat, index, event) {
     const item = cardapio[cat][index];
     const btn = event.currentTarget;
+    
+    // Feedback visual rápido
+    const originalIcon = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i>';
     btn.style.background = "#25d366";
     
-    carrinho.push({ ...item, cartId: Date.now() + Math.random() });
+    // Gera um cartId único baseado no timestamp + random para evitar bugs ao remover itens iguais
+    const itemParaAdicionar = { 
+        ...item, 
+        cartId: Date.now() + Math.floor(Math.random() * 1000) 
+    };
+    
+    carrinho.push(itemParaAdicionar);
     atualizarInterface();
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
 
     setTimeout(() => {
-        btn.innerHTML = '<i class="fas fa-plus"></i>';
+        btn.innerHTML = originalIcon;
         btn.style.background = "";
     }, 800);
 }
 
-function removerDoCarrinho(cartId) {
-    carrinho = carrinho.filter(i => i.cartId !== cartId);
+function removerDoCarrinho(idParaRemover) {
+    // Filtra para remover apenas o item específico clicado
+    carrinho = carrinho.filter(i => i.cartId !== idParaRemover);
     atualizarInterface();
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
 }
@@ -107,7 +118,11 @@ function atualizarInterface() {
     if (!cartList) return;
 
     if (carrinho.length === 0) {
-        cartList.innerHTML = `<div class="empty-cart-msg"><p>Sua sacola está vazia.</p></div>`;
+        cartList.innerHTML = `
+            <div style="text-align:center; padding: 40px 20px; color: rgba(255,255,255,0.3)">
+                <i class="fas fa-shopping-basket" style="font-size: 3rem; margin-bottom: 15px"></i>
+                <p>Sua sacola está vazia.</p>
+            </div>`;
         if (fabContainer) fabContainer.style.transform = "translateY(150%)";
     } else {
         cartList.innerHTML = "";
@@ -116,8 +131,8 @@ function atualizarInterface() {
             div.className = "cart-item-elite";
             div.innerHTML = `
                 <div class="cart-item-info">
-                    <strong>${item.name}</strong>
-                    <span>${formatarMoeda(item.preco)}</span>
+                    <strong style="display:block">${item.name}</strong>
+                    <span style="color: var(--primary)">${formatarMoeda(item.preco)}</span>
                 </div>
                 <button class="btn-remove-item" onclick="removerDoCarrinho(${item.cartId})">
                     <i class="fas fa-trash"></i>
@@ -129,7 +144,7 @@ function atualizarInterface() {
     }
 
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
-    const totalFinal = subtotal - (subtotal * descontoPercentual / 100);
+    const totalFinal = subtotal - (subtotal * (descontoPercentual / 100));
 
     if (countElement) countElement.innerText = carrinho.length;
     if (totalElement) totalElement.innerText = formatarMoeda(totalFinal);
@@ -137,24 +152,35 @@ function atualizarInterface() {
 }
 
 function toggleCarrinho() {
-    document.getElementById("cartPanel")?.classList.toggle("open");
+    const panel = document.getElementById("cartPanel");
+    if (panel) panel.classList.toggle("open");
 }
 
 function aplicarCupom() {
     const input = document.getElementById('cupom');
     const btn = document.getElementById('btnAplicarCupom');
+    if (!input || !btn) return;
+
     const codigo = input.value.toUpperCase().trim();
 
     if (CUPONS_VALIDOS[codigo]) {
         descontoPercentual = CUPONS_VALIDOS[codigo];
         cupomAtivo = codigo;
-        btn.innerHTML = `<i class="fas fa-check"></i> ${descontoPercentual}%`;
+        btn.innerHTML = `<i class="fas fa-check"></i> ${descontoPercentual}% OFF`;
         btn.style.background = "#22c55e";
         input.disabled = true;
         atualizarInterface();
     } else {
-        input.classList.add('error-shake');
-        setTimeout(() => input.classList.remove('error-shake'), 500);
+        // Efeito de erro no input
+        input.style.borderColor = "var(--danger)";
+        input.animate([
+            { transform: 'translateX(0)' },
+            { transform: 'translateX(5px)' },
+            { transform: 'translateX(-5px)' },
+            { transform: 'translateX(0)' }
+        ], { duration: 300 });
+        
+        setTimeout(() => input.style.borderColor = "", 1000);
     }
 }
 
@@ -162,36 +188,53 @@ function verificarStatusLoja() {
     const dot = document.getElementById("statusLabel");
     const text = document.getElementById("statusText");
     const timer = document.getElementById("statusTimer");
+    
     const agora = new Date();
     const hora = agora.getHours();
-    const dia = agora.getDay();
+    const dia = agora.getDay(); // 0 = Domingo, 1 = Segunda...
+    
+    // Aberto de Terça a Domingo das 18h às 00h
     const estaAberto = (dia !== 1 && hora >= 18 && hora < 24);
     
     if (dot && text) {
         dot.className = estaAberto ? "status-dot online" : "status-dot offline";
         text.innerText = estaAberto ? "Aceitando Pedidos" : "Fechado no momento";
-        if (timer) timer.innerText = estaAberto ? "Entrega estimada: 30-50 min" : "Abrimos às 18:00";
+        if (timer) {
+            timer.innerText = estaAberto ? "Entrega estimada: 30-50 min" : "Abrimos hoje às 18:00";
+        }
     }
 }
 
 function checkout() {
     if (carrinho.length === 0) return;
+
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
-    const totalFinal = subtotal - (subtotal * descontoPercentual / 100);
+    const totalFinal = subtotal - (subtotal * (descontoPercentual / 100));
+    
     let msg = "*🍔 NOVO PEDIDO - BENIS BURGUER*%0A━━━━━━━━━━━━━━━━━━━━%0A";
+    
     carrinho.forEach((item, index) => {
         msg += `*${index + 1}.* ${item.name} _(${formatarMoeda(item.preco)})_%0A`;
     });
+    
     msg += "━━━━━━━━━━━━━━━━━━━━%0A";
     if (cupomAtivo) msg += `*Cupom:* ${cupomAtivo} (-${descontoPercentual}%)%0A`;
-    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A📍 *Endereço:* `;
+    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A📍 *Por favor, informe seu endereço e forma de pagamento:*`;
+    
+    // Número do WhatsApp da Benis Burguer
     window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
 }
 
+// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
+    // Configura botões de categoria
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => mostrarCategoria(btn.getAttribute('data-cat')));
+        btn.addEventListener('click', () => {
+            const cat = btn.getAttribute('data-cat');
+            mostrarCategoria(cat);
+        });
     });
+
     verificarStatusLoja();
     atualizarInterface();
     mostrarCategoria("hamburguer");
