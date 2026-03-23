@@ -222,7 +222,7 @@ body::before {
 
 .cart-fab:hover { transform: translateX(-50%) translateY(-5px); filter: brightness(1.1); }
 
-/* --- 5. CARRINHO PANEL (SACOLA) --- */
+/* --- CARRINHO PANEL (SACOLA) --- */
 .cart-panel-elite {
     position: fixed; 
     top: 0; 
@@ -322,7 +322,7 @@ body::before {
     font-weight: 700;
 }
 
-/* BOTÃO DE REMOVER (O NOVO "X" DO ITEM) */
+/* BOTÃO DE REMOVER */
 .btn-remove {
     background: rgba(255, 77, 77, 0.05);
     border: 1px solid rgba(255, 77, 77, 0.1);
@@ -352,7 +352,7 @@ body::before {
     to { opacity: 1; transform: translateX(0); } 
 }
 
-/* --- ÁREA DE CUPOM & FOOTER --- */
+/* --- ÁREA DE CUPOM & FOOTER DA SACOLA --- */
 .coupon-wrapper {
     margin: 10px 0 20px;
     display: flex; gap: 10px;
@@ -382,6 +382,8 @@ body::before {
     border-top: 1px solid var(--glass-border);
 }
 
+.detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--text-dim); }
+
 .detail-row.grand-total {
     margin-top: 10px; padding-top: 10px;
     border-top: 1px solid var(--glass-border);
@@ -405,13 +407,25 @@ body::before {
     background: #21ba5a;
 }
 
-/* --- MAPA & MARCADOR --- */
+/* --- MAPA & LOCALIZAÇÃO --- */
 .location-section { padding: 60px 6%; }
-.map-card-wrapper { 
-    border-radius: 30px; overflow: hidden; height: 450px; 
+
+.map-card-wrapper {
+    height: 400px; /* Altura necessária para o Leaflet renderizar */
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 24px;
+    overflow: hidden;
     border: 1px solid var(--glass-border);
+    background: #111;
 }
-#mapaEntrega { height: 100%; width: 100%; filter: brightness(0.8) contrast(1.2); }
+
+#mapaEntrega { 
+    height: 100%; 
+    width: 100%; 
+    filter: brightness(0.8) contrast(1.2); 
+    z-index: 1;
+}
 
 .pin-center { width: 16px; height: 16px; background: var(--primary); border: 2px solid #fff; border-radius: 50%; position: relative; z-index: 2; }
 .pin-pulse { 
@@ -422,6 +436,29 @@ body::before {
 
 @keyframes pulsePin { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
 
+/* --- RODAPÉ OFICIAL --- */
+footer {
+    padding: 40px 6%;
+    background: #000;
+    border-top: 1px solid var(--glass-border);
+    text-align: left;
+}
+
+footer p {
+    font-size: 0.9rem;
+    color: #fff;
+    margin: 0;
+    font-weight: 600;
+}
+
+.footer-engine {
+    margin-top: 5px;
+    font-size: 0.7rem !important;
+    opacity: 0.5;
+    text-transform: none;
+    font-weight: 400;
+}
+
 /* --- MOBILE --- */
 @media (max-width: 768px) {
     .nav-container-glass { top: 70px; }
@@ -429,4 +466,5 @@ body::before {
     .hero-elite h1 { font-size: 2.4rem; }
     .menu-grid { grid-template-columns: 1fr; }
     .cart-panel-elite { max-width: 100%; }
+    .map-card-wrapper { height: 300px; }
 }
