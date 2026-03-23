@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Benis Burguer | Elite Edition</title>
     
-    <meta name="description" content="O melhor hambúrguer gourmet de Porto Velho/RO. Qualidade premium e sabor inconfundível.">
+    <meta name="description" content="O melhor hambúrguer gourmet de Porto Velho/RO. Qualidade premium e sabor inconfundível no Aponiã.">
     <meta name="theme-color" content="#0a0a0a">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,7 +22,7 @@
     <div id="loader" class="loader-wrapper">
         <img src="logo.png" class="loader-logo" alt="Carregando Benis Burguer" onerror="this.src='https://via.placeholder.com/120x120/ff8c00/ffffff?text=BENIS'">
         <div class="progress-container" style="width: 200px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-top: 20px;">
-            <div id="progressBar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.4s ease;"></div>
+            <div id="progressBar" style="width: 0%; height: 100%; background: #ff8c00; transition: width 0.4s ease;"></div>
         </div>
     </div>
 
@@ -83,9 +83,9 @@
         </section>
     </main>
 
-    <footer style="padding: 40px 6%; text-align: center; color: var(--text-dim); font-size: 0.8rem; border-top: 1px solid var(--glass-border); margin-top: 40px;">
+    <footer style="padding: 40px 6%; text-align: center; color: rgba(255,255,255,0.5); font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px;">
         <p>&copy; 2026 Benis Burguer - Porto Velho/RO</p>
-        <p style="margin-top: 5px;">Gourmet Visual Engine v6.1 Elite Edition</p>
+        <p style="margin-top: 5px;">Gourmet Visual Engine v6.3 Elite</p>
     </footer>
 
     <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="display: none;">
@@ -101,8 +101,8 @@
 
     <aside id="cartPanel" class="cart-panel-elite">
         <div class="cart-header-elite">
-            <h2 style="font-size: 1.4rem; color: #fff;">
-                <i class="fas fa-shopping-basket" style="color: var(--primary); margin-right: 10px;"></i>Sacola
+            <h2 style="font-size: 1.4rem; color: #fff; margin: 0;">
+                <i class="fas fa-shopping-basket" style="color: #ff8c00; margin-right: 10px;"></i>Sacola
             </h2>
             <button class="btn-close-cart" onclick="toggleCarrinho()" aria-label="Fechar carrinho">
                 <i class="fas fa-times"></i>
@@ -114,38 +114,39 @@
 
         <div class="cart-footer-elite">
             <div class="coupon-section" id="couponContainer" style="margin-bottom: 25px;">
-                <div style="display: flex; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 15px; padding: 5px; align-items: center;">
-                    <i class="fas fa-ticket-alt" style="margin-left: 15px; color: var(--text-dim);"></i>
+                <div style="display: flex; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 5px; align-items: center;">
+                    <i class="fas fa-ticket-alt" style="margin-left: 15px; color: rgba(255,255,255,0.3);"></i>
                     <input type="text" id="cupom" placeholder="CUPOM" style="background: transparent; border: none; color: #fff; padding: 12px; outline: none; flex-grow: 1; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">
-                    <button id="btnAplicarCupom" onclick="aplicarCupom()" style="background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s;">
+                    <button id="btnAplicarCupom" onclick="aplicarCupom()" style="background: #ff8c00; color: #000; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 800; cursor: pointer;">
                         <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
 
             <div class="total-summary" style="margin-bottom: 25px;">
-                <div style="display: flex; justify-content: space-between; color: var(--text-dim); margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; color: rgba(255,255,255,0.6); margin-bottom: 8px;">
                     <span>Subtotal</span>
                     <span id="subtotalValue">R$ 0,00</span>
                 </div>
-                <div id="discountRow" style="display: none; justify-content: space-between; color: var(--success); margin-bottom: 8px;">
+                <div id="discountRow" style="display: none; justify-content: space-between; color: #4ade80; margin-bottom: 8px;">
                     <span>Desconto</span>
                     <span id="discountValue">- R$ 0,00</span>
                 </div>
-                <div class="total-row main">
+                <div class="total-row main" style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.2rem; color: #fff; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
                     <span>Total</span>
                     <span id="totalValue">R$ 0,00</span>
                 </div>
             </div>
 
-            <button class="checkout-btn" onclick="checkout()">
-                <span>FINALIZAR NO WHATSAPP</span>
-                <i class="fab fa-whatsapp"></i>
+            <button class="checkout-btn" onclick="checkout()" style="width: 100%; padding: 18px; border-radius: 18px; background: #25d366; color: #fff; border: none; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: 0.3s;">
+                <span>PEDIR PELO WHATSAPP</span>
+                <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i>
             </button>
         </div>
     </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
     <script src="app.js"></script>
 </body>
 </html>
