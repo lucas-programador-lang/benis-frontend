@@ -83,16 +83,16 @@
         </section>
     </main>
 
-    <footer style="padding: 40px 6%; text-align: center; color: rgba(255,255,255,0.5); font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px;">
+    <footer>
         <p>&copy; 2026 Benis Burguer - Porto Velho/RO</p>
-        <p style="margin-top: 5px;">Gourmet Visual Engine v6.3 Elite</p>
+        <p style="margin-top: 5px;">Gourmet Visual Engine v6.7 Elite Edition</p>
     </footer>
 
     <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="display: none;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+        <div class="cart-fab-content" style="display: flex; align-items: center; gap: 12px;">
+            <div style="position: relative;">
                 <i class="fas fa-shopping-bag" style="font-size: 1.4rem;"></i>
-                <span id="cartCount" style="position: absolute; top: -8px; right: -10px; background: #fff; color: #000; font-size: 0.7rem; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">0</span>
+                <span id="cartCount">0</span>
             </div>
             <span id="cartFabTotal">Ver sacola (R$ 0,00)</span>
         </div>
@@ -101,10 +101,8 @@
 
     <aside id="cartPanel" class="cart-panel-elite">
         <div class="cart-header-elite">
-            <h2 style="font-size: 1.4rem; color: #fff; margin: 0;">
-                <i class="fas fa-shopping-basket" style="color: #ff8c00; margin-right: 10px;"></i>Sacola
-            </h2>
-            <button class="btn-close-cart" onclick="toggleCarrinho()" aria-label="Fechar carrinho">
+            <h2><i class="fas fa-shopping-basket"></i> Sacola</h2>
+            <button class="btn-close-cart" onclick="toggleCarrinho()" aria-label="Fechar sacola">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -113,40 +111,36 @@
             </div>
 
         <div class="cart-footer-elite">
-            <div class="coupon-section" id="couponContainer" style="margin-bottom: 25px;">
-                <div style="display: flex; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 5px; align-items: center;">
-                    <i class="fas fa-ticket-alt" style="margin-left: 15px; color: rgba(255,255,255,0.3);"></i>
-                    <input type="text" id="cupom" placeholder="CUPOM" style="background: transparent; border: none; color: #fff; padding: 12px; outline: none; flex-grow: 1; font-weight: 600; font-size: 0.8rem; text-transform: uppercase;">
-                    <button id="btnAplicarCupom" onclick="aplicarCupom()" style="background: #ff8c00; color: #000; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 800; cursor: pointer;">
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
+            <div class="coupon-wrapper">
+                <input type="text" id="cupom" placeholder="CUPOM DE DESCONTO">
+                <button class="btn-apply-coupon" onclick="aplicarCupom()">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
             </div>
 
-            <div class="total-summary" style="margin-bottom: 25px;">
-                <div style="display: flex; justify-content: space-between; color: rgba(255,255,255,0.6); margin-bottom: 8px;">
+            <div class="total-details">
+                <div class="detail-row">
                     <span>Subtotal</span>
                     <span id="subtotalValue">R$ 0,00</span>
                 </div>
-                <div id="discountRow" style="display: none; justify-content: space-between; color: #4ade80; margin-bottom: 8px;">
+                <div id="discountRow" class="detail-row" style="display: none; color: #25d366;">
                     <span>Desconto</span>
                     <span id="discountValue">- R$ 0,00</span>
                 </div>
-                <div class="total-row main" style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.2rem; color: #fff; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <div class="detail-row grand-total">
                     <span>Total</span>
                     <span id="totalValue">R$ 0,00</span>
                 </div>
             </div>
 
-            <button class="checkout-btn" onclick="checkout()" style="width: 100%; padding: 18px; border-radius: 18px; background: #25d366; color: #fff; border: none; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: 0.3s;">
+            <button class="checkout-btn" onclick="checkout()">
                 <span>PEDIR PELO WHATSAPP</span>
-                <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i>
+                <i class="fab fa-whatsapp"></i>
             </button>
         </div>
     </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
     <script src="app.js"></script>
 </body>
 </html>
