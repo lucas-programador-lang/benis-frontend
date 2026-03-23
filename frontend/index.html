@@ -9,18 +9,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    
     <link rel="stylesheet" href="style.css">
     
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="theme-color" content="#0a0a0a">
 </head>
 <body>
 
     <div id="loader" class="loader-wrapper">
         <div class="loader-content">
-            <img src="logo.png" alt="Benis Burguer" class="loader-logo">
+            <div class="loader-logo-container">
+                <img src="logo.png" alt="Benis Burguer" class="loader-logo" onerror="this.style.display='none'">
+            </div>
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
@@ -31,45 +33,66 @@
     <header class="glass-header">
         <div class="header-container">
             <div class="logo-area">
-                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img">
+                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/150?text=BENIS'">
             </div>
-            <div class="social-links">
-                <a href="#" class="social-btn btn-instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="social-btn btn-whatsapp"><i class="fab fa-whatsapp"></i></a>
+            <div class="header-actions">
+                <div class="social-links">
+                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="social-btn btn-instagram" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp" aria-label="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
 
-    <main>
+    <main class="container">
         <section class="hero-elite">
-            <span class="hero-badge">O Brabo de Porto Velho</span>
-            <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
-            
-            <div class="status-pill">
-                <span class="status-dot online"></span>
-                <span id="statusText">Estamos abertos!</span>
+            <div class="hero-content">
+                <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
+                <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
+                <div class="status-pill" id="statusContainer">
+                    <div class="status-indicator">
+                        <span id="statusLabel" class="status-dot"></span>
+                        <span id="statusText">Verificando brasa...</span>
+                    </div>
+                    <small id="statusTimer" class="timer-desc"></small>
+                </div>
             </div>
         </section>
 
         <div class="nav-container-glass">
             <nav class="categorias-elite">
-                <button class="tab-btn active" data-cat="burguers"><i class="fas fa-hamburger"></i> Burguers</button>
-                <button class="tab-btn" data-cat="porcoes"><i class="fas fa-cheese"></i> Porções</button>
-                <button class="tab-btn" data-cat="bebidas"><i class="fas fa-wine-glass"></i> Bebidas</button>
+                <button class="tab-btn active" data-cat="hamburguer"><i class="fas fa-hamburger"></i> <span>Burguers</span></button>
+                <button class="tab-btn" data-cat="porcoes"><i class="fas fa-cheese"></i> <span>Porções</span></button>
+                <button class="tab-btn" data-cat="adicionais"><i class="fas fa-plus-circle"></i> <span>Extras</span></button>
+                <button class="tab-btn" data-cat="bebidas"><i class="fas fa-wine-glass"></i> <span>Bebidas</span></button>
             </nav>
         </div>
 
-        <section id="menu" class="menu-grid">
-            </section>
+        <section id="menu" class="menu-grid"></section>
 
         <section class="location-section">
+            <div class="section-header-elite">
+                <span class="mini-badge">Localização</span>
+                <h2>Onde Estamos</h2>
+            </div>
             <div class="map-card-wrapper">
                 <div id="mapaEntrega"></div>
                 <div class="map-overlay-info">
-                    <div class="address-text">
-                        <p><i class="fas fa-map-marker-alt"></i> R. Paulo Fortes, 6245 - Aponiã</p>
+                    <div class="address-details">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="text-info">
+                            <strong>Benis Burguer</strong>
+                            <p>R. Paulo Fortes, 6245 - Aponiã</p>
+                        </div>
                     </div>
-                    <a href="https://www.google.com/maps/dir//-8.74015,-63.87498" target="_blank" class="route-link">Como chegar</a>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7397,-63.8735" target="_blank" class="btn-route-premium">
+                        <i class="fas fa-directions"></i>
+                        <span>Como chegar</span>
+                    </a>
                 </div>
             </div>
         </section>
@@ -81,7 +104,7 @@
                 <i class="fas fa-shopping-bag"></i>
                 <span id="cartCount" class="count-badge">0</span>
             </div>
-            <span id="cartFabTotal">Ver sacola (R$ 0,00)</span>
+            <div id="cartFabTotal" class="cart-fab-label">Ver sacola (R$ 0,00)</div>
         </div>
     </div>
 
@@ -89,32 +112,23 @@
         <div class="cart-inner">
             <div class="cart-header-elite">
                 <h3><i class="fas fa-shopping-cart"></i> Seu Pedido</h3>
-                <button onclick="toggleCarrinho()" class="close-btn"><i class="fas fa-times"></i></button>
+                <button onclick="toggleCarrinho()" class="close-btn" aria-label="Fechar Carrinho"><i class="fas fa-times"></i></button>
             </div>
 
             <div id="cartItems" class="cart-content-scroll">
-                <div class="cart-item-elite">
-                    <div class="item-info">
-                        <h4>X-Bauru</h4>
-                        <span class="item-price">R$ 8,00</span>
-                    </div>
-                    <button class="remove-btn"><i class="fas fa-trash-alt"></i></button>
                 </div>
-            </div>
 
             <div class="cart-footer-elite">
                 <div class="coupon-area">
                     <div class="input-group-glass">
                         <input type="text" id="cupom" placeholder="CUPOM">
-                        <button onclick="aplicarCupom()">Aplicar</button>
+                        <button id="btnAplicarCupom" onclick="aplicarCupom()">Aplicar</button>
                     </div>
                 </div>
-                
                 <div class="total-row">
                     <span>Total</span>
-                    <span id="totalValue">R$ 8,00</span>
+                    <span id="totalValue">R$ 0,00</span>
                 </div>
-
                 <button class="checkout-btn" onclick="checkout()">
                     <span>Finalizar Pedido</span> <i class="fab fa-whatsapp"></i>
                 </button>
@@ -123,14 +137,32 @@
     </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="app.js"></script> <script src="mapa.js"></script> <script>
-        // Loader Handler
+    <script src="app.js"></script>
+    <script src="mapa.js"></script>
+    <script>
         window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('fade-out');
-                if(typeof iniciarMapa === 'function') iniciarMapa();
-            }, 1000);
+            const bar = document.getElementById('progressBar');
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('loader').classList.add('fade-out');
+                        if(typeof iniciarMapa === 'function') {
+                            iniciarMapa();
+                        }
+                    }, 500);
+                } else {
+                    width += Math.random() * 20;
+                    if(width > 100) width = 100;
+                    bar.style.width = width + '%';
+                }
+            }, 80);
         });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log("SW error:", err));
+        }
     </script>
 </body>
 </html>
