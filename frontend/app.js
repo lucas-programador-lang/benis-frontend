@@ -74,7 +74,6 @@ function iniciarMapa() {
 
     mapa = L.map('mapaEntrega', { zoomControl: false, attributionControl: false }).setView(COORDS_LOJA, 15);
     
-    // Camada Dark Premium do CartoDB
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(mapa);
 
     const iconLoja = L.divIcon({
@@ -125,7 +124,6 @@ function adicionarAoCarrinho(cat, id, event) {
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
 
-    // Feedback visual no botão
     const btn = event.currentTarget;
     const originalContent = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
@@ -261,7 +259,7 @@ function checkout() {
     
     carrinho.forEach(item => {
         msg += `✅ *${item.quantidade}x ${item.name}*\n`;
-        msg += `   Subtotal: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
+        msg += `    Subtotal: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
     });
 
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
@@ -316,7 +314,7 @@ window.addEventListener('DOMContentLoaded', () => {
     mostrarCategoria("hamburguer");
     iniciarMapa();
 
-    // Fechar sacola ao clicar fora (em telas mobile)
+    // Fechar sacola ao clicar fora
     document.addEventListener('click', (e) => {
         const panel = document.getElementById("cartPanel");
         const cartToggle = document.getElementById("cartToggle");
