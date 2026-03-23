@@ -9,7 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    
     <link rel="stylesheet" href="style.css">
     
     <meta name="theme-color" content="#0a0a0a">
@@ -18,7 +20,7 @@
 
     <div id="loader" class="loader-wrapper">
         <div class="loader-content">
-            <img src="logo.png" alt="Benis Burguer" class="loader-logo">
+            <img src="logo.png" alt="Benis Burguer" class="loader-logo" onerror="this.src='https://via.placeholder.com/120?text=BENIS'">
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
@@ -29,12 +31,16 @@
     <header class="glass-header">
         <div class="header-container">
             <div class="logo-area">
-                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img">
+                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/45?text=LOGO'">
             </div>
             <div class="header-actions">
                 <div class="social-links">
-                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="social-btn btn-instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="social-btn btn-instagram" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -48,7 +54,7 @@
                 <div class="status-pill">
                     <div class="status-indicator">
                         <span id="statusLabel" class="status-dot"></span>
-                        <span id="statusText">Verificando...</span>
+                        <span id="statusText">Verificando brasa...</span>
                     </div>
                 </div>
             </div>
@@ -58,7 +64,7 @@
             <nav class="categorias-elite">
                 <button class="tab-btn active" data-cat="hamburguer"><i class="fas fa-hamburger"></i> <span>Burguers</span></button>
                 <button class="tab-btn" data-cat="porcoes"><i class="fas fa-cheese"></i> <span>Porções</span></button>
-                <button class="tab-btn" data-cat="adicionais"><i class="fas fa-plus-circle"></i> <span>Extras</span></button>
+                <button class="tab-btn" data-cat="extras"><i class="fas fa-plus-circle"></i> <span>Extras</span></button>
                 <button class="tab-btn" data-cat="bebidas"><i class="fas fa-wine-glass"></i> <span>Bebidas</span></button>
             </nav>
         </div>
@@ -80,7 +86,7 @@
                             <p>R. Paulo Fortes, 6245 - Aponiã</p>
                         </div>
                     </div>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7335,-63.8715" target="_blank" class="btn-route-premium">
+                    <a href="https://www.google.com/maps/dir//Benis+Burguer" target="_blank" class="btn-route-premium">
                         <i class="fas fa-directions"></i> <span>Como chegar</span>
                     </a>
                 </div>
@@ -103,14 +109,15 @@
                 <button onclick="toggleCarrinho()" class="close-btn"><i class="fas fa-times"></i></button>
             </div>
 
-            <div id="cartItems" class="cart-content-scroll"></div>
+            <div id="cartItems" class="cart-content-scroll">
+                </div>
 
             <div class="cart-footer-elite">
                 <div class="coupon-area">
                     <div class="input-group-modern">
                         <div class="input-wrapper">
                             <i class="fas fa-ticket-alt"></i>
-                            <input type="text" id="cupom" placeholder="CUPOM DE DESCONTO">
+                            <input type="text" id="cupom" placeholder="CUPOM">
                         </div>
                         <button id="btnAplicarCupom" onclick="aplicarCupom()">APLICAR</button>
                     </div>
@@ -126,13 +133,12 @@
                     </div>
                 </div>
                 <button class="checkout-btn" onclick="checkout()">
-                    <span>FINALIZAR PEDIDO</span> <i class="fab fa-whatsapp"></i>
+                    <span>ENVIAR PARA O WHATSAPP</span> <i class="fab fa-whatsapp"></i>
                 </button>
             </div>
         </div>
     </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="app.js"></script>
-</body>
+    <script src="script.js"></script> </body>
 </html>
