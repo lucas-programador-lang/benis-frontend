@@ -55,7 +55,7 @@ function mostrarCategoria(categoria) {
     setTimeout(() => {
         grid.innerHTML = "";
         
-        // Atualiza botões das tabs
+        // Atualiza botões das tabs (CSS cuida da centralização agora)
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-cat') === categoria);
         });
@@ -89,6 +89,7 @@ function mostrarCategoria(categoria) {
 function atualizarInterface() {
     const list = document.getElementById("cartItems");
     const totalValue = document.getElementById("totalValue");
+    const subtotalDisplay = document.getElementById("subtotalValue");
     const cartCount = document.getElementById("cartCount");
     const fabTotal = document.getElementById("cartFabTotal");
     const fabContainer = document.getElementById("cartToggle");
@@ -120,9 +121,18 @@ function atualizarInterface() {
     const totalFinal = subtotal - (subtotal * (descontoPercentual / 100));
 
     if (cartCount) cartCount.innerText = carrinho.length;
+    if (subtotalDisplay) subtotalDisplay.innerText = formatarMoeda(subtotal);
     if (totalValue) totalValue.innerText = formatarMoeda(totalFinal);
     if (fabTotal) fabTotal.innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
-    if (fabContainer) fabContainer.classList.toggle('active', carrinho.length > 0);
+    
+    // Mostra/Esconde a sacola flutuante
+    if (fabContainer) {
+        if (carrinho.length > 0) {
+            fabContainer.classList.add('active');
+        } else {
+            fabContainer.classList.remove('active');
+        }
+    }
 }
 
 function adicionarAoCarrinho(cat, index, event) {
@@ -192,6 +202,26 @@ function verificarStatus() {
     }
 }
 
+// --- CONFIGURAÇÃO DO MAPA (Porto Velho) ---
+function inicializarMapa() {
+    const coords = [-8.7410, -63.8745]; // Coordenadas Aponiã
+    const mapa = L.map('mapaEntrega', { zoomControl: false }).setView(coords, 16);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(mapa);
+
+    const iconCustom = L.icon({
+        iconUrl: 'logo.png',
+        iconSize: [45, 45],
+        className: 'map-marker-benis'
+    });
+
+    L.marker(coords, { icon: iconCustom }).addTo(mapa)
+        .bindPopup('<b>Benis Burguer</b><br>R. Paulo Fortes, 6245')
+        .openPopup();
+}
+
 // --- CHECKOUT WHATSAPP ---
 function checkout() {
     if (!carrinho.length) return;
@@ -218,7 +248,7 @@ function checkout() {
 // --- INICIALIZAÇÃO ---
 document.addEventListener('DOMContentLoaded', () => {
     // Loader progressivo
-    const progressBar = document.querySelector('.progress-bar');
+    const progressBar = document.getElementById('progressBar');
     let width = 0;
     const interval = setInterval(() => {
         width += 15;
@@ -226,7 +256,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (width >= 100) {
             clearInterval(interval);
             setTimeout(() => {
-                document.getElementById("loader").classList.add('fade-out');
+                const loader = document.getElementById("loader");
+                if (loader) loader.classList.add('fade-out');
             }, 300);
         }
     }, 100);
@@ -236,7 +267,9 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat));
     });
 
+    // Inicia Funções Core
     verificarStatus();
     atualizarInterface();
     mostrarCategoria("hamburguer");
+    inicializarMapa();
 });
