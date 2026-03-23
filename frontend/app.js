@@ -6,7 +6,7 @@
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
 let carrinho = [];
-let descontoAtivo = 0; // Valor em Reais
+let descontoAtivo = 0; 
 
 try {
     const savedCart = localStorage.getItem('benis_cart');
@@ -51,8 +51,12 @@ const cardapio = {
     ],
     extras: [
         { id: 301, name: "Hambúrguer Extra", preco: 5.00, desc: "Adicional de carne.", img: "carne.png" },
-        { id: 302, name: "Bacon Extra", preco: 3.00, desc: "Adicional de bacon.", img: "bacon.png" },
-        { id: 303, name: "Ovo Extra", preco: 2.00, desc: "Adicional de ovo.", img: "ovo.png" }
+        { id: 302, name: "Frango Extra", preco: 3.00, desc: "Adicional de frango.", img: "frango_extra.png" },
+        { id: 303, name: "Ovo Extra", preco: 2.00, desc: "Adicional de ovo.", img: "ovo.png" },
+        { id: 304, name: "Bacon Extra", preco: 3.00, desc: "Adicional de bacon.", img: "bacon.png" },
+        { id: 305, name: "Calabresa Extra", preco: 3.00, desc: "Adicional de calabresa.", img: "calabresa.png" },
+        { id: 306, name: "Cheddar Extra", preco: 4.00, desc: "Adicional de cheddar.", img: "cheddar.png" },
+        { id: 307, name: "Cebola Caramelizada", preco: 3.00, desc: "Adicional de cebola.", img: "cebola.png" }
     ]
 };
 
@@ -87,8 +91,7 @@ function adicionarAoCarrinho(cat, id, event) {
     const btn = event.currentTarget;
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
-    btn.classList.add('btn-success');
-
+    
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
         itemExistente.quantidade += 1;
@@ -97,10 +100,7 @@ function adicionarAoCarrinho(cat, id, event) {
     }
 
     salvarEAtualizar();
-    setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.classList.remove('btn-success');
-    }, 800);
+    setTimeout(() => { btn.innerHTML = originalText; }, 800);
 }
 
 function removerDoCarrinho(id) {
@@ -144,7 +144,6 @@ function atualizarInterface() {
     const totalFinal = Math.max(0, subtotal - descontoAtivo);
     const cartCount = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
 
-    // Atualização dos campos de valor
     if (document.getElementById("subtotalValue")) document.getElementById("subtotalValue").innerText = formatarMoeda(subtotal);
     if (document.getElementById("totalValue")) document.getElementById("totalValue").innerText = formatarMoeda(totalFinal);
     if (document.getElementById("cartCount")) document.getElementById("cartCount").innerText = cartCount;
@@ -159,22 +158,17 @@ function aplicarCupom() {
     const cupomInput = document.getElementById("cupom");
     const cupom = cupomInput.value.toUpperCase().trim();
     const discountRow = document.getElementById("discountRow");
-    const discountValue = document.getElementById("discountValue");
 
     if (cupom === "BENIS10") {
-        descontoAtivo = 10.00; // Desconto fixo de R$ 10
+        descontoAtivo = 10.00;
         if (discountRow) discountRow.style.display = "flex";
-        if (discountValue) discountValue.innerText = `- ${formatarMoeda(descontoAtivo)}`;
-        alert("Cupom BENIS10 aplicado com sucesso!");
-    } else if (cupom === "") {
-        descontoAtivo = 0;
-        if (discountRow) discountRow.style.display = "none";
+        document.getElementById("discountValue").innerText = `- ${formatarMoeda(descontoAtivo)}`;
+        alert("Cupom BENIS10 aplicado!");
     } else {
         alert("Cupom inválido.");
         descontoAtivo = 0;
         if (discountRow) discountRow.style.display = "none";
     }
-    
     salvarEAtualizar();
 }
 
@@ -193,7 +187,7 @@ function mostrarCategoria(categoria) {
         card.className = "card-item";
         card.innerHTML = `
             <div class="card-image-box">
-                <img src="img/${item.img}" onerror="this.src='https://via.placeholder.com/300x200?text=Burguer'">
+                <img src="img/${item.img}" onerror="this.src='https://via.placeholder.com/300x200/111/fff?text=${item.name}'">
             </div>
             <div class="card-info">
                 <h3>${item.name}</h3>
@@ -241,18 +235,15 @@ function verificarStatusLoja() {
     const agora = new Date();
     const diaSemana = agora.getDay();
     const hora = agora.getHours();
-    const minutos = agora.getMinutes();
-    const tempoAtual = (hora * 60) + minutos;
-
     const tempoAbertura = 19 * 60; 
     const tempoFechamento = (23 * 60) + 59; 
+    const tempoAtual = (hora * 60) + agora.getMinutes();
 
     const statusText = document.getElementById("statusText");
     const statusLabel = document.getElementById("statusLabel");
 
-    if (diaSemana === 1) { // Segunda-feira
+    if (diaSemana === 1) { // Segunda
         if (statusText) statusText.innerText = "Fechada • Abre Terça às 19:00";
-        statusLabel?.classList.remove("online");
     } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
         if (statusText) statusText.innerText = "Aberta • No Braseiro";
         statusLabel?.classList.add("online");
@@ -264,20 +255,16 @@ function verificarStatusLoja() {
 
 // --- BOOTSTRAP ---
 window.addEventListener('DOMContentLoaded', () => {
+    verificarStatusLoja();
+    atualizarInterface();
+    mostrarCategoria("hamburguer");
+    iniciarMapa();
+
     const loader = document.getElementById('loader');
-    const progressBar = document.getElementById('progressBar');
-
-    if (progressBar) progressBar.style.width = "100%";
-
-    setTimeout(() => {
-        if (loader) {
+    if (loader) {
+        setTimeout(() => {
             loader.style.opacity = "0";
             setTimeout(() => loader.style.display = "none", 800);
-        }
-        
-        verificarStatusLoja();
-        atualizarInterface();
-        mostrarCategoria("hamburguer");
-        iniciarMapa();
-    }, 1200);
+        }, 1200);
+    }
 });
