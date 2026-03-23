@@ -3,73 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benis Burguer | Elite Delivery Porto Velho</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Benis Burguer | Porto Velho</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    
     <link rel="stylesheet" href="style.css">
-    <meta name="theme-color" content="#0a0a0a">
 </head>
 <body>
 
     <div id="loader" class="loader-wrapper">
-        <div class="loader-content" style="text-align: center;">
-            <img src="logo.png" alt="Benis Burguer" class="loader-logo" onerror="this.src='https://via.placeholder.com/120?text=BENIS'">
-            <div class="progress-container">
-                <div id="progressBar" class="progress-bar" style="width: 0%;"></div>
-            </div>
-            <p class="loader-text" style="margin-top: 15px; font-weight: 500; color: #888;">Preparando a brasa...</p>
-        </div>
+        <img src="logo.png" class="loader-logo" onerror="this.src='https://via.placeholder.com/120?text=BENIS'">
+        <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
     </div>
 
     <header class="glass-header">
         <div class="header-container">
-            <div class="logo-area">
-                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/45?text=LOGO'">
-            </div>
-            <div class="header-actions">
-                <div class="social-links">
-                    <a href="https://www.instagram.com/obenisburguer" target="_blank" class="social-btn btn-instagram">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
-                </div>
+            <img src="logo.png" alt="Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/45?text=BENIS'">
+            <div class="social-links">
+                <a href="#" class="social-btn btn-instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/556993668336" class="social-btn btn-whatsapp"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
     </header>
 
     <main>
         <section class="hero-elite">
-            <div class="hero-content">
-                <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
-                <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
-                <div class="status-indicator">
-                    <span id="statusLabel" class="status-dot"></span>
-                    <span id="statusText">Verificando brasa...</span>
-                </div>
+            <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
+            <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
+            <div class="status-indicator">
+                <span id="statusLabel" class="status-dot"></span>
+                <span id="statusText">Carregando...</span>
             </div>
         </section>
 
         <div class="nav-container-glass">
             <nav class="categorias-elite">
                 <button class="tab-btn active" data-cat="hamburguer" onclick="mostrarCategoria('hamburguer')">
-                    <i class="fas fa-hamburger"></i> <span>Burguers</span>
+                    <i class="fas fa-hamburger"></i><span>Burguers</span>
                 </button>
                 <button class="tab-btn" data-cat="porcoes" onclick="mostrarCategoria('porcoes')">
-                    <i class="fas fa-cheese"></i> <span>Porções</span>
-                </button>
-                <button class="tab-btn" data-cat="extras" onclick="mostrarCategoria('extras')">
-                    <i class="fas fa-plus-circle"></i> <span>Extras</span>
+                    <i class="fas fa-fries"></i><span>Porções</span>
                 </button>
                 <button class="tab-btn" data-cat="bebidas" onclick="mostrarCategoria('bebidas')">
-                    <i class="fas fa-wine-glass"></i> <span>Bebidas</span>
+                    <i class="fas fa-glass-water"></i><span>Bebidas</span>
                 </button>
             </nav>
         </div>
@@ -77,32 +53,14 @@
         <section id="menu" class="menu-grid"></section>
 
         <section class="location-section">
-            <div class="section-header-elite" style="text-align: center; margin-bottom: 30px;">
-                <span class="hero-badge" style="font-size: 0.7rem;">Localização</span>
-                <h2 style="margin-top: 10px; color: white;">Onde Estamos</h2>
-            </div>
-            <div class="map-card-wrapper">
-                <div id="mapaEntrega"></div>
-                <div class="map-overlay-info">
-                    <div class="address-details" style="display: flex; align-items: center; gap: 15px;">
-                        <i class="fas fa-map-marker-alt" style="color: #ff9d00; font-size: 1.5rem;"></i>
-                        <div class="text-info">
-                            <strong style="display: block; color: white;">Benis Burguer</strong>
-                            <p style="font-size: 0.85rem; color: #aaa;">R. Paulo Fortes, 6245 - Aponiã</p>
-                        </div>
-                    </div>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.74015,-63.87498" target="_blank" class="btn-route-premium">
-                        <i class="fas fa-directions"></i> <span>Como chegar</span>
-                    </a>
-                </div>
-            </div>
+            <div id="mapaEntrega" class="map-card-wrapper"></div>
         </section>
     </main>
 
-    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="display: none;">
-        <div style="display: flex; align-items: center; gap: 15px;">
+    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()">
+        <div style="display: flex; align-items: center; gap: 12px;">
             <div style="position: relative;">
-                <i class="fas fa-shopping-bag" style="font-size: 1.2rem;"></i>
+                <i class="fas fa-shopping-bag"></i>
                 <span id="cartCount">0</span>
             </div>
             <span id="cartFabTotal">Ver sacola (R$ 0,00)</span>
@@ -110,34 +68,33 @@
         <i class="fas fa-chevron-right"></i>
     </div>
 
-    <aside class="cart-panel-elite" id="cartPanel">
+    <aside id="cartPanel" class="cart-panel-elite">
         <div class="cart-header-elite">
-            <h3 style="display: flex; align-items: center; gap: 12px; margin: 0; color: white;">
-                <i class="fas fa-shopping-cart" style="color: #ff9d00;"></i> Seu Pedido
-            </h3>
-            <button class="btn-close-cart" onclick="toggleCarrinho()">
-                <i class="fas fa-times"></i>
-            </button>
+            <h3><i class="fas fa-shopping-cart" style="color: var(--primary);"></i> Sua Sacola</h3>
+            <button class="btn-close-cart" onclick="toggleCarrinho()"><i class="fas fa-times"></i></button>
         </div>
 
-        <div id="cartItems" class="cart-content-scroll">
-            </div>
+        <div id="cartItems" class="cart-content-scroll"></div>
 
         <div class="cart-footer-elite">
-            <div class="input-group-modern">
-                <input type="text" id="cupom" placeholder="Tem um cupom?">
-                <button id="btnAplicarCupom" onclick="aplicarCupom()">APLICAR</button>
-            </div>
-            
-            <div class="total-summary">
-                <div class="total-row main">
-                    <span>Total do Pedido</span>
-                    <span id="totalValue">R$ 0,00</span>
+            <div class="coupon-section" id="couponContainer">
+                <div class="input-group-modern">
+                    <i class="fas fa-ticket-alt"></i>
+                    <input type="text" id="cupom" placeholder="CÓDIGO DO CUPOM">
+                    <button id="btnAplicarCupom" onclick="aplicarCupom()">APLICAR</button>
                 </div>
             </div>
-            
+
+            <div class="total-summary">
+                <div class="summary-row"><span>Subtotal</span><span id="subtotalValue">R$ 0,00</span></div>
+                <div class="summary-row discount" id="discountRow" style="display: none;">
+                    <span>Desconto</span><span id="discountValue">- R$ 0,00</span>
+                </div>
+                <div class="total-row main"><span>Total</span><span id="totalValue">R$ 0,00</span></div>
+            </div>
+
             <button class="checkout-btn" onclick="checkout()">
-                ENVIAR PARA O WHATSAPP <i class="fab fa-whatsapp"></i>
+                FINALIZAR PEDIDO <i class="fab fa-whatsapp"></i>
             </button>
         </div>
     </aside>
