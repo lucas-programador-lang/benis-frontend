@@ -12,7 +12,7 @@ let marcadorUsuario;
 window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)"; 
 
 const COORDS_LOJA = [-8.74015, -63.87498]; // Porto Velho - Aponiã
-const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
+const GOOGLE_MAPS_URL = `https://maps.app.goo.gl/rn4jwRprwGBP4jRk8`;
 
 // Inicialização segura do Carrinho via LocalStorage
 try {
