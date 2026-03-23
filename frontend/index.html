@@ -20,9 +20,7 @@
 
     <div id="loader" class="loader-wrapper">
         <div class="loader-content">
-            <div class="loader-logo-container">
-                <img src="logo.png" alt="Benis Burguer" class="loader-logo" onerror="this.style.display='none'">
-            </div>
+            <img src="logo.png" alt="Benis Burguer" class="loader-logo" onerror="this.style.display='none'">
             <div class="progress-container">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
@@ -58,7 +56,6 @@
                         <span id="statusLabel" class="status-dot"></span>
                         <span id="statusText">Verificando brasa...</span>
                     </div>
-                    <small id="statusTimer" class="timer-desc"></small>
                 </div>
             </div>
         </section>
@@ -89,7 +86,7 @@
                             <p>R. Paulo Fortes, 6245 - Aponiã</p>
                         </div>
                     </div>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7397,-63.8735" target="_blank" class="btn-route-premium">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7291081,-63.8741355" target="_blank" class="btn-route-premium">
                         <i class="fas fa-directions"></i>
                         <span>Como chegar</span>
                     </a>
@@ -115,8 +112,7 @@
                 <button onclick="toggleCarrinho()" class="close-btn" aria-label="Fechar Carrinho"><i class="fas fa-times"></i></button>
             </div>
 
-            <div id="cartItems" class="cart-content-scroll">
-                </div>
+            <div id="cartItems" class="cart-content-scroll"></div>
 
             <div class="cart-footer-elite">
                 <div class="coupon-area">
@@ -130,7 +126,7 @@
                     <span id="totalValue">R$ 0,00</span>
                 </div>
                 <button class="checkout-btn" onclick="checkout()">
-                    <span>Finalizar Pedido</span> <i class="fab fa-whatsapp"></i>
+                    <span>Finalizar no WhatsApp</span> <i class="fab fa-whatsapp"></i>
                 </button>
             </div>
         </div>
@@ -139,7 +135,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="app.js"></script>
     <script src="mapa.js"></script>
+    
     <script>
+        // Lógica de animação do Loader sincronizada com o CSS
         window.addEventListener('load', () => {
             const bar = document.getElementById('progressBar');
             let width = 0;
@@ -151,13 +149,13 @@
                         if(typeof iniciarMapa === 'function') {
                             iniciarMapa();
                         }
-                    }, 500);
+                    }, 400);
                 } else {
-                    width += Math.random() * 20;
+                    width += Math.random() * 25;
                     if(width > 100) width = 100;
                     bar.style.width = width + '%';
                 }
-            }, 80);
+            }, 100);
         });
 
         if ('serviceWorker' in navigator) {
