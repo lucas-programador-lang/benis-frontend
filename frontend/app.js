@@ -1,7 +1,7 @@
 /**
- * BENIS BURGUER - Gourmet Logic Engine v5.2 (Revised & Fixed)
- * Sincronizado com: style.css (Elite Edition)
- * Localidade: Porto Velho, RO - Aponiã
+ * BENIS BURGUER - Gourmet Logic Engine v5.5 (Elite Edition)
+ * Sincronizado com: style.css (Centralizado + UX Fix)
+ * Localidade: Porto Velho, RO - 2026
  */
 
 const cardapio = {
@@ -76,37 +76,60 @@ function atualizarInterface() {
     const cartCount = document.getElementById("cartCount");
     const fabTotal = document.getElementById("cartFabTotal");
     const fabContainer = document.getElementById("cartToggle");
+    
     if (!list) return;
-    list.innerHTML = carrinho.length ? "" : `<div style="text-align:center; padding: 40px 20px; opacity: 0.3;"><i class="fas fa-shopping-basket" style="font-size: 2.5rem; margin-bottom: 10px;"></i><p>Sua sacola está vazia.</p></div>`;
+
+    list.innerHTML = carrinho.length ? "" : `
+        <div style="text-align:center; padding: 40px 20px; opacity: 0.3;">
+            <i class="fas fa-shopping-basket" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
+            <p>Sua sacola está vazia.</p>
+        </div>`;
+
     carrinho.forEach(item => {
         const div = document.createElement("div");
         div.className = "cart-item-elite";
         div.innerHTML = `
-            <div class="item-main" style="flex-grow:1; text-align:left;"><h4 style="font-size: 0.95rem;">${item.name}</h4><span class="price" style="color: var(--primary); font-weight: 700;">${formatarMoeda(item.preco)}</span></div>
-            <button class="btn-remove" onclick="removerDoCarrinho('${item.cartId}')"><i class="fas fa-trash-alt"></i></button>
+            <div class="item-main" style="flex-grow:1; text-align:left;">
+                <h4 style="font-size: 0.95rem; margin-bottom: 4px;">${item.name}</h4>
+                <span class="price" style="color: var(--primary); font-weight: 700;">${formatarMoeda(item.preco)}</span>
+            </div>
+            <button class="btn-remove" onclick="removerDoCarrinho('${item.cartId}')">
+                <i class="fas fa-trash-alt"></i>
+            </button>
         `;
         list.appendChild(div);
     });
+
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
     const totalFinal = subtotal * (1 - (descontoPercentual / 100));
+
     if (cartCount) cartCount.innerText = carrinho.length;
     if (subtotalDisplay) subtotalDisplay.innerText = formatarMoeda(subtotal);
     if (totalValue) totalValue.innerText = formatarMoeda(totalFinal);
     if (fabTotal) fabTotal.innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
-    if (fabContainer) fabContainer.style.display = carrinho.length > 0 ? "flex" : "none";
+    
+    // Mostra/Esconde o botão flutuante
+    if (fabContainer) {
+        fabContainer.style.display = carrinho.length > 0 ? "flex" : "none";
+    }
 }
 
 function adicionarAoCarrinho(cat, id, event) {
     const item = cardapio[cat].find(p => p.id === id);
     if (!item) return;
+    
     const btn = event.currentTarget;
     const originalContent = btn.innerHTML;
+    
     btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
     btn.style.background = "#22c55e";
-    btn.style.color = "#fff";
+    btn.style.color = "#000";
+    
     carrinho.push({ ...item, cartId: `id-${Date.now()}-${Math.random()}` });
     localStorage.setItem('benis_cart', JSON.stringify(carrinho));
+    
     atualizarInterface();
+    
     setTimeout(() => {
         btn.innerHTML = originalContent;
         btn.style.background = "";
@@ -133,7 +156,12 @@ function aplicarCupom() {
         atualizarInterface();
     } else {
         input.style.borderColor = "#ff4d4d";
-        input.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(0)' }], { duration: 200 });
+        input.animate([
+            { transform: 'translateX(0)' }, 
+            { transform: 'translateX(5px)' }, 
+            { transform: 'translateX(-5px)' }, 
+            { transform: 'translateX(0)' }
+        ], { duration: 200 });
     }
 }
 
@@ -178,21 +206,9 @@ function checkout() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const progressBar = document.getElementById('progressBar');
-    const loader = document.getElementById("loader");
-    if (progressBar) {
-        let width = 0;
-        const interval = setInterval(() => {
-            width += Math.floor(Math.random() * 15) + 5;
-            if (width > 100) width = 100;
-            progressBar.style.width = width + '%';
-            if (width >= 100) {
-                clearInterval(interval);
-                setTimeout(() => { if (loader) loader.classList.add('fade-out'); }, 500);
-            }
-        }, 150);
-    } else { if (loader) loader.classList.add('fade-out'); }
-    document.querySelectorAll('.tab-btn').forEach(btn => { btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat)); });
+    document.querySelectorAll('.tab-btn').forEach(btn => { 
+        btn.addEventListener('click', () => mostrarCategoria(btn.dataset.cat)); 
+    });
     verificarStatus();
     atualizarInterface();
     mostrarCategoria("hamburguer");
