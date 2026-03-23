@@ -1,6 +1,7 @@
 /**
- * BENIS BURGUER - Gourmet Logic Engine v4.8
- * Sincronizado com: HTML v4.5 (Porto Velho)
+ * BENIS BURGUER - Gourmet Logic Engine v4.8.1
+ * Sincronizado com: HTML/CSS v4.5 (Porto Velho)
+ * Correções: Loader Sync, FAB Position & Animation Feedback
  */
 
 const cardapio = {
@@ -42,11 +43,14 @@ const CUPONS_VALIDOS = { "BENIS10": 10, "APONIA": 15, "PRIMEIRACOMPRA": 5 };
 
 const formatarMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+// --- GERENCIAMENTO DE INTERFACE ---
+
 function mostrarCategoria(categoria) {
     const menuContainer = document.getElementById("menu");
     if (!menuContainer) return;
     
     menuContainer.style.opacity = "0";
+    menuContainer.style.transform = "translateY(10px)";
     
     setTimeout(() => {
         menuContainer.innerHTML = "";
@@ -73,39 +77,8 @@ function mostrarCategoria(categoria) {
             menuContainer.appendChild(card);
         });
         menuContainer.style.opacity = "1";
+        menuContainer.style.transform = "translateY(0)";
     }, 250);
-}
-
-function adicionarAoCarrinho(cat, index, event) {
-    const item = cardapio[cat][index];
-    const btn = event.currentTarget;
-    
-    // Feedback visual rápido
-    const originalIcon = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-check"></i>';
-    btn.style.background = "#25d366";
-    
-    // Gera um cartId único baseado no timestamp + random para evitar bugs ao remover itens iguais
-    const itemParaAdicionar = { 
-        ...item, 
-        cartId: Date.now() + Math.floor(Math.random() * 1000) 
-    };
-    
-    carrinho.push(itemParaAdicionar);
-    atualizarInterface();
-    localStorage.setItem('benis_cart', JSON.stringify(carrinho));
-
-    setTimeout(() => {
-        btn.innerHTML = originalIcon;
-        btn.style.background = "";
-    }, 800);
-}
-
-function removerDoCarrinho(idParaRemover) {
-    // Filtra para remover apenas o item específico clicado
-    carrinho = carrinho.filter(i => i.cartId !== idParaRemover);
-    atualizarInterface();
-    localStorage.setItem('benis_cart', JSON.stringify(carrinho));
 }
 
 function atualizarInterface() {
@@ -119,28 +92,34 @@ function atualizarInterface() {
 
     if (carrinho.length === 0) {
         cartList.innerHTML = `
-            <div style="text-align:center; padding: 40px 20px; color: rgba(255,255,255,0.3)">
+            <div style="text-align:center; padding: 40px 20px; color: rgba(255,255,255,0.2)">
                 <i class="fas fa-shopping-basket" style="font-size: 3rem; margin-bottom: 15px"></i>
                 <p>Sua sacola está vazia.</p>
             </div>`;
-        if (fabContainer) fabContainer.style.transform = "translateY(150%)";
+        if (fabContainer) fabContainer.classList.remove('active');
     } else {
         cartList.innerHTML = "";
         carrinho.forEach(item => {
             const div = document.createElement("div");
             div.className = "cart-item-elite";
+            div.style.padding = "15px 0";
+            div.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+            div.style.display = "flex";
+            div.style.justifyContent = "space-between";
+            div.style.alignItems = "center";
+            
             div.innerHTML = `
-                <div class="cart-item-info">
-                    <strong style="display:block">${item.name}</strong>
-                    <span style="color: var(--primary)">${formatarMoeda(item.preco)}</span>
+                <div>
+                    <strong style="display:block; font-size: 0.95rem;">${item.name}</strong>
+                    <span style="color: var(--primary); font-weight: 600;">${formatarMoeda(item.preco)}</span>
                 </div>
-                <button class="btn-remove-item" onclick="removerDoCarrinho(${item.cartId})">
+                <button onclick="removerDoCarrinho(${item.cartId})" style="background:none; border:none; color:var(--danger); cursor:pointer; padding: 10px;">
                     <i class="fas fa-trash"></i>
                 </button>
             `;
             cartList.appendChild(div);
         });
-        if (fabContainer) fabContainer.style.transform = "translateY(0)";
+        if (fabContainer) fabContainer.classList.add('active');
     }
 
     const subtotal = carrinho.reduce((acc, i) => acc + i.preco, 0);
@@ -148,7 +127,41 @@ function atualizarInterface() {
 
     if (countElement) countElement.innerText = carrinho.length;
     if (totalElement) totalElement.innerText = formatarMoeda(totalFinal);
-    if (fabTotal) fabTotal.innerText = `Ver sacola (${formatarMoeda(totalFinal)})`;
+    if (fabTotal) fabTotal.innerText = `Ver sacola • ${formatarMoeda(totalFinal)}`;
+}
+
+// --- LÓGICA DO CARRINHO ---
+
+function adicionarAoCarrinho(cat, index, event) {
+    const item = cardapio[cat][index];
+    const btn = event.currentTarget;
+    
+    // Feedback visual premium
+    const originalIcon = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i>';
+    btn.style.background = "#25d366";
+    btn.style.transform = "scale(1.1)";
+    
+    const itemParaAdicionar = { 
+        ...item, 
+        cartId: Date.now() + Math.floor(Math.random() * 1000) 
+    };
+    
+    carrinho.push(itemParaAdicionar);
+    localStorage.setItem('benis_cart', JSON.stringify(carrinho));
+    atualizarInterface();
+
+    setTimeout(() => {
+        btn.innerHTML = originalIcon;
+        btn.style.background = "";
+        btn.style.transform = "";
+    }, 800);
+}
+
+function removerDoCarrinho(idParaRemover) {
+    carrinho = carrinho.filter(i => i.cartId !== idParaRemover);
+    localStorage.setItem('benis_cart', JSON.stringify(carrinho));
+    atualizarInterface();
 }
 
 function toggleCarrinho() {
@@ -158,20 +171,22 @@ function toggleCarrinho() {
 
 function aplicarCupom() {
     const input = document.getElementById('cupom');
-    const btn = document.getElementById('btnAplicarCupom');
-    if (!input || !btn) return;
+    const btn = document.querySelector('.input-group-glass button');
+    if (!input) return;
 
     const codigo = input.value.toUpperCase().trim();
 
     if (CUPONS_VALIDOS[codigo]) {
         descontoPercentual = CUPONS_VALIDOS[codigo];
         cupomAtivo = codigo;
-        btn.innerHTML = `<i class="fas fa-check"></i> ${descontoPercentual}% OFF`;
-        btn.style.background = "#22c55e";
+        if (btn) {
+            btn.innerHTML = `<i class="fas fa-check"></i>`;
+            btn.style.background = "#22c55e";
+        }
         input.disabled = true;
+        input.style.borderColor = "#22c55e";
         atualizarInterface();
     } else {
-        // Efeito de erro no input
         input.style.borderColor = "var(--danger)";
         input.animate([
             { transform: 'translateX(0)' },
@@ -179,10 +194,11 @@ function aplicarCupom() {
             { transform: 'translateX(-5px)' },
             { transform: 'translateX(0)' }
         ], { duration: 300 });
-        
-        setTimeout(() => input.style.borderColor = "", 1000);
+        setTimeout(() => input.style.borderColor = "", 1500);
     }
 }
+
+// --- UTILITÁRIOS E STATUS ---
 
 function verificarStatusLoja() {
     const dot = document.getElementById("statusLabel");
@@ -191,9 +207,9 @@ function verificarStatusLoja() {
     
     const agora = new Date();
     const hora = agora.getHours();
-    const dia = agora.getDay(); // 0 = Domingo, 1 = Segunda...
+    const dia = agora.getDay(); 
     
-    // Aberto de Terça a Domingo das 18h às 00h
+    // Porto Velho: Terça a Domingo das 18h às 00h
     const estaAberto = (dia !== 1 && hora >= 18 && hora < 24);
     
     if (dot && text) {
@@ -219,15 +235,37 @@ function checkout() {
     
     msg += "━━━━━━━━━━━━━━━━━━━━%0A";
     if (cupomAtivo) msg += `*Cupom:* ${cupomAtivo} (-${descontoPercentual}%)%0A`;
-    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A📍 *Por favor, informe seu endereço e forma de pagamento:*`;
+    msg += `*TOTAL: ${formatarMoeda(totalFinal)}*%0A%0A📍 *Endereço de entrega:*%0A💰 *Forma de pagamento:*`;
     
-    // Número do WhatsApp da Benis Burguer
     window.open(`https://wa.me/556993668336?text=${msg}`, "_blank");
 }
 
-// Inicialização
+// --- LOADER & INIT ---
+
+function inicializarSistema() {
+    const progressBar = document.getElementById('progressBar');
+    const loader = document.getElementById('loader');
+    let width = 0;
+
+    const interval = setInterval(() => {
+        width += Math.random() * 30;
+        if (width > 100) width = 100;
+        if (progressBar) progressBar.style.width = width + '%';
+
+        if (width >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                if (loader) loader.classList.add('fade-out');
+                verificarStatusLoja();
+                atualizarInterface();
+                mostrarCategoria("hamburguer");
+            }, 500);
+        }
+    }, 150);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Configura botões de categoria
+    // Escuta abas
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const cat = btn.getAttribute('data-cat');
@@ -235,7 +273,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    verificarStatusLoja();
-    atualizarInterface();
-    mostrarCategoria("hamburguer");
+    inicializarSistema();
 });
