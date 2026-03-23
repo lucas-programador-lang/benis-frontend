@@ -1,29 +1,30 @@
 /**
- * BENIS BURGUER - GeoEngine v4.3
- * Módulo: Localização e Experiência do Cliente (Porto Velho - RO)
- * Sincronizado com Loader e Layout Premium
+ * BENIS BURGUER - GeoEngine v4.4 (Ultimate Sync)
+ * Módulo: Localização, Distância e Experiência do Cliente
+ * Local: Porto Velho - RO (Bairro Aponiã)
  */
 
 let mapa;
 let marcadorUsuario;
 let marcadorLoja;
+let distanciaClienteKm = 0;
 
-// Coordenadas exatas da Benis Burguer (Bairro Aponiã, R. Paulo Fortes)
+// Coordenadas exatas da Benis Burguer (R. Paulo Fortes, Aponiã)
 const COORDS_LOJA = [-8.74015, -63.87498]; 
 
 function iniciarMapa() {
     const mapElement = document.getElementById('mapaEntrega');
     if (!mapElement) return;
 
-    // Inicializa o mapa focado na brasa
+    // Inicializa o mapa com foco na Benis
     mapa = L.map('mapaEntrega', {
         zoomControl: false, 
         scrollWheelZoom: false,
-        dragging: true,
-        tap: L.Browser.mobile ? false : true
+        dragging: !L.Browser.mobile, // Melhora UX mobile para não "prender" o scroll
+        tap: !L.Browser.mobile
     }).setView(COORDS_LOJA, 16);
 
-    // Camada Dark Mode Premium
+    // Camada Dark Mode Premium (OpenStreetMap com Filtro CSS)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© Benis Burguer',
         className: 'map-tiles-dark' 
@@ -41,7 +42,7 @@ function iniciarMapa() {
         iconAnchor: [20, 20]
     });
 
-    // Marcador da Loja com Popup Elite
+    // Marcador da Loja
     marcadorLoja = L.marker(COORDS_LOJA, { icon: iconLoja })
         .addTo(mapa)
         .bindPopup(`
@@ -59,42 +60,48 @@ function iniciarMapa() {
                 const { latitude, longitude } = posicao.coords;
                 const coordsUser = [latitude, longitude];
 
+                // Cálculo de distância simples (Haversine formula via Leaflet)
+                const pontoLoja = L.latLng(COORDS_LOJA);
+                const pontoUser = L.latLng(coordsUser);
+                distanciaClienteKm = (pontoLoja.distanceTo(pontoUser) / 1000).toFixed(1);
+
                 if (!marcadorUsuario) {
                     marcadorUsuario = L.circleMarker(coordsUser, {
                         radius: 8,
-                        fillColor: "#3b82f6", // Azul para destacar o cliente
+                        fillColor: "#3b82f6", // Azul destaque
                         color: "#fff",
                         weight: 3,
                         opacity: 1,
                         fillOpacity: 1
-                    }).addTo(mapa).bindPopup("Você está aqui!");
+                    }).addTo(mapa).bindPopup(`<b>Você está aqui!</b><br>A ${distanciaClienteKm}km da brasa.`);
                 }
 
-                // Ajusta o zoom para mostrar a distância entre o cliente e a Benis
+                // Ajusta o zoom para enquadrar ambos
                 const bounds = L.latLngBounds([COORDS_LOJA, coordsUser]);
-                mapa.fitBounds(bounds, { padding: [50, 50], animate: true });
+                mapa.fitBounds(bounds, { padding: [70, 70], animate: true });
+                
+                console.log(`[GEO] Cliente localizado a ${distanciaClienteKm}km`);
             },
             () => {
-                console.warn("GPS: Acesso negado. Mantendo foco na loja.");
+                console.warn("GPS: Acesso negado ou erro. Mantendo foco na loja.");
                 mapa.setView(COORDS_LOJA, 16);
             },
-            { enableHighAccuracy: true, timeout: 5000 }
+            { enableHighAccuracy: true, timeout: 10000 }
         );
     }
 
-    // CRITICAL: Força o Leaflet a renderizar após o Loader sumir
+    // Garante que o Leaflet recalcule o tamanho após o DOM estabilizar
     setTimeout(() => {
         mapa.invalidateSize();
-    }, 1500);
+    }, 1000);
 }
 
-// Estilos dinâmicos para manter o arquivo CSS limpo
+// Injeta estilos específicos do mapa para não poluir o CSS principal
 const styleMap = document.createElement("style");
 styleMap.innerText = `
     .map-tiles-dark {
         filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%) !important;
     }
-    
     .pin-wrapper { position: relative; display: flex; justify-content: center; align-items: center; width: 40px; height: 40px; }
     .pin-pulse { 
         position: absolute; width: 100%; height: 100%; 
@@ -106,29 +113,25 @@ styleMap.innerText = `
         border: 2px solid #fff; border-radius: 50%; z-index: 2; 
         box-shadow: 0 0 15px rgba(255, 140, 0, 0.8); 
     }
-    
     .leaflet-popup-content-wrapper {
         background: rgba(10, 10, 10, 0.9) !important;
-        backdrop-filter: blur(8px);
-        color: #fff !important;
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 15px !important;
-        padding: 5px;
+        backdrop-filter: blur(10px); color: #fff !important;
+        border: 1px solid rgba(255,255,255,0.1); border-radius: 20px !important;
     }
     .leaflet-popup-tip { background: rgba(10, 10, 10, 0.9) !important; }
-    .map-popup-custom { text-align: center; font-family: 'Poppins', sans-serif; padding: 5px; }
-    .map-popup-custom strong { color: #ff8c00; display: block; font-size: 1.1rem; }
-    .map-popup-custom small { opacity: 0.7; }
-
-    @keyframes pulseMap {
-        0% { transform: scale(0.5); opacity: 1; }
-        100% { transform: scale(2.8); opacity: 0; }
-    }
+    .map-popup-custom { text-align: center; font-family: 'Poppins', sans-serif; padding: 10px; }
+    .map-popup-custom strong { color: #ff8c00; display: block; font-size: 1rem; }
+    @keyframes pulseMap { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
 `;
 document.head.appendChild(styleMap);
 
-// Inicializa o mapa após o carregamento da página
-document.addEventListener("DOMContentLoaded", () => {
-    // Pequeno delay para garantir que o container #mapaEntrega já tenha dimensões
-    setTimeout(iniciarMapa, 300);
+// Inicialização inteligente
+window.addEventListener("load", () => {
+    // Se você tem um Loader, espere ele começar a sumir
+    const loader = document.querySelector('.loader-wrapper');
+    if (loader) {
+        setTimeout(iniciarMapa, 1000);
+    } else {
+        iniciarMapa();
+    }
 });
