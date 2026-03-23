@@ -67,6 +67,8 @@ function iniciarMapa() {
                 const coordsUser = [pos.coords.latitude, pos.coords.longitude];
                 
                 // Marcador azul para o usuário
+                if (marcadorUsuario) mapa.removeLayer(marcadorUsuario);
+                
                 marcadorUsuario = L.circleMarker(coordsUser, {
                     radius: 8,
                     fillColor: "#3b82f6", 
@@ -81,13 +83,18 @@ function iniciarMapa() {
             },
             (error) => {
                 console.warn("Geolocalização recusada ou indisponível.");
+                // Caso falhe, mantém o foco na loja
+                mapa.setView(COORDS_LOJA, 16);
             },
             { enableHighAccuracy: true }
         );
     }
 
-    // 7. Força o redimensionamento após o load
+    // 7. Força o redimensionamento após o load para evitar áreas cinzas
     setTimeout(() => { 
         mapa.invalidateSize(); 
     }, 500);
 }
+
+// Inicialização automática se o script for carregado isoladamente
+document.addEventListener('DOMContentLoaded', iniciarMapa);
