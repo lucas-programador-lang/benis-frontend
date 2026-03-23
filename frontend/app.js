@@ -1,5 +1,5 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v6.8 (Elite Edition)
+ * BENIS BURGUER - Gourmet Logic & Map Engine v6.9 (Elite Edition)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
  */
@@ -72,25 +72,26 @@ function iniciarMapa() {
     const mapElement = document.getElementById('mapaEntrega');
     if (!mapElement) return;
 
-    mapa = L.map('mapaEntrega', { zoomControl: false, attributionControl: false }).setView(COORDS_LOJA, 16);
+    mapa = L.map('mapaEntrega', { zoomControl: false, attributionControl: false }).setView(COORDS_LOJA, 15);
+    
+    // Camada Dark Premium do CartoDB
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(mapa);
 
     const iconLoja = L.divIcon({
         className: 'custom-pin-container',
-        html: `<div class="pin-wrapper"><div class="pin-pulse"></div><div class="pin-center"></div></div>`,
+        html: `<div class="pin-wrapper"><div class="pin-pulse"></div><div class="pin-center" style="background:#ff8c00; border:2px solid #fff; border-radius:50%; width:12px; height:12px;"></div></div>`,
         iconSize: [40, 40], iconAnchor: [20, 20]
     });
 
     L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa)
-        .bindPopup(`<strong style="color:#ff8c00;">Benis Burguer</strong><br>Aponiã - Porto Velho`);
+        .bindPopup(`<strong style="color:#ff8c00;">Benis Burguer</strong><br>Aponiã - Porto Velho`).openPopup();
 
-    // Evento de clique para definir entrega
     mapa.on('click', (e) => processarLocalizacao(e.latlng.lat, e.latlng.lng));
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
             processarLocalizacao(pos.coords.latitude, pos.coords.longitude, true);
-        });
+        }, (err) => console.warn("Geolocalização negada. Use o clique no mapa."));
     }
 
     setTimeout(() => mapa.invalidateSize(), 500);
@@ -100,18 +101,19 @@ async function processarLocalizacao(lat, lng, centralizar = false) {
     if (marcadorUsuario) mapa.removeLayer(marcadorUsuario);
     
     marcadorUsuario = L.circleMarker([lat, lng], {
-        radius: 10, fillColor: "#3b82f6", color: "#fff", weight: 3, fillOpacity: 1
+        radius: 8, fillColor: "#3b82f6", color: "#fff", weight: 2, fillOpacity: 0.9
     }).addTo(mapa);
 
     if (centralizar) {
-        const bounds = L.latLngBounds([COORDS_LOJA, [lat, lng]]);
-        mapa.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+        mapa.setView([lat, lng], 16);
     }
 
     try {
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
         const data = await res.json();
-        window.enderecoEntrega = `${data.address.road || 'Rua não identificada'}, ${data.address.house_number || 'S/N'} - ${data.address.suburb || 'Aponiã'}`;
+        const rua = data.address.road || data.address.pedestrian || 'Rua não identificada';
+        const bairro = data.address.suburb || data.address.neighbourhood || 'Bairro não identificado';
+        window.enderecoEntrega = `${rua}, ${data.address.house_number || 'S/N'} - ${bairro}`;
         marcadorUsuario.bindPopup(`<b>Entregar aqui:</b><br>${window.enderecoEntrega}`).openPopup();
     } catch (e) {
         window.enderecoEntrega = `Coordenadas: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
@@ -123,10 +125,12 @@ function adicionarAoCarrinho(cat, id, event) {
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
 
+    // Feedback visual no botão
     const btn = event.currentTarget;
-    const originalText = btn.innerHTML;
+    const originalContent = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> ADICIONADO';
     btn.style.background = "#22c55e";
+    btn.style.color = "#fff";
     
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
@@ -136,10 +140,12 @@ function adicionarAoCarrinho(cat, id, event) {
     }
 
     salvarEAtualizar();
+    
     setTimeout(() => { 
-        btn.innerHTML = originalText;
+        btn.innerHTML = originalContent;
         btn.style.background = "";
-    }, 800);
+        btn.style.color = "";
+    }, 1000);
 }
 
 function removerDoCarrinho(id) {
@@ -163,7 +169,7 @@ function atualizarInterface() {
     const list = document.getElementById("cartItems");
     if (!list) return;
 
-    list.innerHTML = carrinho.length ? "" : `<div style="text-align:center; padding:40px; opacity:0.5;">Sua sacola está vazia.</div>`;
+    list.innerHTML = carrinho.length ? "" : `<div style="text-align:center; padding:40px; opacity:0.5; font-size:0.9rem;">Sua sacola está vazia.</div>`;
 
     carrinho.forEach(item => {
         const div = document.createElement("div");
@@ -186,23 +192,29 @@ function atualizarInterface() {
     if (document.getElementById("subtotalValue")) document.getElementById("subtotalValue").innerText = formatarMoeda(subtotal);
     if (document.getElementById("totalValue")) document.getElementById("totalValue").innerText = formatarMoeda(totalFinal);
     if (document.getElementById("cartCount")) document.getElementById("cartCount").innerText = cartCount;
-    if (document.getElementById("cartFabTotal")) document.getElementById("cartFabTotal").innerText = `Ver sacola • ${formatarMoeda(totalFinal)}`;
-
-    const cartToggle = document.getElementById("cartToggle");
-    if (cartToggle) cartToggle.style.display = carrinho.length > 0 ? "flex" : "none";
+    
+    const cartFab = document.getElementById("cartToggle");
+    if (cartFab) {
+        cartFab.style.display = carrinho.length > 0 ? "flex" : "none";
+        const fabTotal = document.getElementById("cartFabTotal");
+        if (fabTotal) fabTotal.innerText = `Ver sacola • ${formatarMoeda(totalFinal)}`;
+    }
 }
 
 // --- 4. SISTEMA DE CUPOM ---
 function aplicarCupom() {
     const cupomInput = document.getElementById("cupom");
+    if (!cupomInput) return;
+    
     const cupom = cupomInput.value.toUpperCase().trim();
     const discountRow = document.getElementById("discountRow");
 
     if (cupom === "BENIS10") {
         descontoAtivo = 10.00;
         if (discountRow) discountRow.style.display = "flex";
-        document.getElementById("discountValue").innerText = `- ${formatarMoeda(descontoAtivo)}`;
-        alert("Cupom BENIS10 aplicado com sucesso!");
+        const discVal = document.getElementById("discountValue");
+        if (discVal) discVal.innerText = `- ${formatarMoeda(descontoAtivo)}`;
+        alert("Cupom BENIS10 aplicado: R$ 10,00 de desconto!");
     } else {
         alert("Cupom inválido ou expirado.");
         descontoAtivo = 0;
@@ -226,7 +238,7 @@ function mostrarCategoria(categoria) {
         card.className = "card-item";
         card.innerHTML = `
             <div class="card-image-box">
-                <img src="img/${item.img}" onerror="this.src='https://via.placeholder.com/300x200/111/fff?text=${item.name}'">
+                <img src="img/${item.img}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300/111/fff?text=${item.name}'">
             </div>
             <div class="card-info">
                 <h3>${item.name}</h3>
@@ -234,13 +246,13 @@ function mostrarCategoria(categoria) {
                 <span class="price-tag">${formatarMoeda(item.preco)}</span>
             </div>
             <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${item.id}, event)">
-                <i class="fas fa-plus"></i> ADICIONAR
+                <i class="fas fa-plus"></i> <span>ADICIONAR</span>
             </button>`;
         grid.appendChild(card);
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP (INTEGRADO COM MAPA) ---
+// --- 6. CHECKOUT WHATSAPP ---
 function checkout() {
     if (!carrinho.length) return;
     
@@ -249,7 +261,7 @@ function checkout() {
     
     carrinho.forEach(item => {
         msg += `✅ *${item.quantidade}x ${item.name}*\n`;
-        msg += `    Subtotal: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
+        msg += `   Subtotal: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
     });
 
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
@@ -261,7 +273,7 @@ function checkout() {
     
     msg += "📍 *ENDEREÇO DE ENTREGA:* \n";
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
-    msg += "_(Confirme o número da casa/apartamento ao enviar)_";
+    msg += "*Observação:* (Informe o número da casa e ponto de referência aqui)";
 
     const fone = "556993668336"; 
     window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, "_blank");
@@ -277,21 +289,23 @@ function verificarStatusLoja() {
     const agora = new Date();
     const diaSemana = agora.getDay();
     const hora = agora.getHours();
+    const minutos = agora.getMinutes();
     const tempoAbertura = 19 * 60; // 19:00
     const tempoFechamento = (23 * 60) + 59; // 23:59
-    const tempoAtual = (hora * 60) + agora.getMinutes();
+    const tempoAtual = (hora * 60) + minutos;
 
     const statusText = document.getElementById("statusText");
-    const statusLabel = document.getElementById("statusLabel");
+    const statusDot = document.querySelector(".status-dot");
 
     if (diaSemana === 1) { // Segunda fechado
-        if (statusText) statusText.innerText = "Fechada • Abre Terça às 19:00";
+        if (statusText) statusText.innerText = "Fechado • Abre Terça às 19:00";
+        statusDot?.classList.remove("online");
     } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
-        if (statusText) statusText.innerText = "Aberta • No Braseiro";
-        statusLabel?.classList.add("online");
+        if (statusText) statusText.innerText = "Aberto • No Braseiro";
+        statusDot?.classList.add("online");
     } else {
-        if (statusText) statusText.innerText = `Fechada • Abre às 19:00`;
-        statusLabel?.classList.remove("online");
+        if (statusText) statusText.innerText = `Fechado • Abre às 19h`;
+        statusDot?.classList.remove("online");
     }
 }
 
@@ -302,11 +316,20 @@ window.addEventListener('DOMContentLoaded', () => {
     mostrarCategoria("hamburguer");
     iniciarMapa();
 
+    // Fechar sacola ao clicar fora (em telas mobile)
+    document.addEventListener('click', (e) => {
+        const panel = document.getElementById("cartPanel");
+        const cartToggle = document.getElementById("cartToggle");
+        if (panel && panel.classList.contains("open") && !panel.contains(e.target) && !cartToggle.contains(e.target)) {
+            toggleCarrinho();
+        }
+    });
+
     const loader = document.getElementById('loader');
     if (loader) {
         setTimeout(() => {
             loader.style.opacity = "0";
             setTimeout(() => loader.style.display = "none", 800);
-        }, 1200);
+        }, 1000);
     }
 });
