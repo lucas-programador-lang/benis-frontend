@@ -6,23 +6,34 @@
     <title>Benis Burguer | Elite Edition</title>
     
     <meta name="description" content="O melhor hambúrguer gourmet de Porto Velho/RO. Qualidade premium e sabor inconfundível no Aponiã.">
+    <meta name="keywords" content="hamburguer, porto velho, delivery, gourmet, benis burguer">
+    <meta name="author" content="Benis Burguer">
     <meta name="theme-color" content="#0a0a0a">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Benis Burguer | Elite Edition">
+    <meta property="og:description" content="Peça o brabo de Porto Velho direto pelo nosso app!">
+    <meta property="og:image" content="logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="loader" class="loader-wrapper">
-        <img src="logo.png" class="loader-logo" alt="Carregando Benis Burguer" onerror="this.src='https://via.placeholder.com/120x120/ff8c00/ffffff?text=BENIS'">
-        <div class="progress-container" style="width: 200px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-top: 20px;">
-            <div id="progressBar" style="width: 30%; height: 100%; background: var(--primary); transition: width 0.4s ease;"></div>
+        <div class="loader-content">
+            <img src="logo.png" class="loader-logo" alt="Logo Benis Burguer" onerror="this.src='https://via.placeholder.com/120x120/ff8c00/ffffff?text=BENIS'">
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar-fill"></div>
+            </div>
+            <p class="loader-text">Preparando o braseiro...</p>
         </div>
     </div>
 
@@ -31,56 +42,55 @@
             <div class="logo-wrapper">
                 <img src="logo.png" alt="Benis Burguer Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/45x45/ff8c00/ffffff?text=B'">
             </div>
-            <div class="social-links">
-                <a href="https://www.instagram.com/" target="_blank" class="social-btn btn-instagram" aria-label="Instagram">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp" aria-label="WhatsApp">
-                    <i class="fab fa-whatsapp"></i>
-                </a>
+            <div class="header-actions">
+                <div class="social-links">
+                    <a href="https://www.instagram.com/" target="_blank" class="social-btn btn-instagram" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp" aria-label="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
 
     <main>
         <section class="hero-elite">
-            <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
-            <h1>Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
-            
-            <div style="margin-top: 20px; margin-bottom: 10px;">
-                <a href="benis-burguer.apk" download="BenisBurguer.apk" style="
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 10px;
-                    background: linear-gradient(135deg, #FF9500 0%, #FF5500 100%);
-                    color: #000;
-                    padding: 12px 25px;
-                    text-decoration: none;
-                    font-weight: 800;
-                    border-radius: 12px;
-                    font-size: 0.9rem;
-                    box-shadow: 0 10px 20px rgba(255, 85, 0, 0.3);
-                    transition: transform 0.3s ease;">
-                    <i class="fab fa-android" style="font-size: 1.2rem;"></i>
-                    BAIXAR NOSSO APP OFICIAL
-                </a>
-            </div>
+            <div class="container">
+                <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
+                <h1 class="hero-title">Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
+                
+                <div class="app-download-area">
+                    <a href="benis-burguer.apk" download="BenisBurguer.apk" class="btn-download-app">
+                        <div class="btn-icon">
+                            <i class="fab fa-android"></i>
+                        </div>
+                        <div class="btn-text">
+                            <span>Baixar App Oficial</span>
+                            <small>Instale no seu Android</small>
+                        </div>
+                    </a>
+                </div>
 
-            <div class="status-indicator">
-                <span id="statusLabel" class="status-dot"></span>
-                <span id="statusText">Verificando braseiro...</span>
-            </div>
-            
-            <div class="gps-action-wrapper" style="margin-top: 25px;">
-                <a href="https://maps.google.com/?q=R.+Paulo+Fortes,+6245+-+Aponiã" target="_blank" class="btn-gps-elite">
-                    <i class="fas fa-location-arrow"></i>
-                    ABRIR NO GPS
-                </a>
+                <div class="status-container">
+                    <div class="status-indicator">
+                        <span id="statusLabel" class="status-dot"></span>
+                        <span id="statusText">Verificando braseiro...</span>
+                    </div>
+                </div>
+                
+                <div class="gps-action-wrapper">
+                    <a href="https://www.google.com/maps/search/?api=1&query=R.+Paulo+Fortes,+6245+-+Aponiã" target="_blank" class="btn-gps-elite">
+                        <i class="fas fa-location-arrow"></i>
+                        ABRIR NO GPS
+                    </a>
+                </div>
             </div>
         </section>
 
         <div class="nav-container-glass">
-            <nav class="categorias-elite">
+            <nav class="categorias-elite" id="categoryNav">
                 <button class="tab-btn active" data-cat="hamburguer" onclick="mostrarCategoria('hamburguer')">
                     <i class="fas fa-hamburger"></i>
                     <span>Burguers</span>
@@ -100,57 +110,63 @@
             </nav>
         </div>
 
-        <section id="menu" class="menu-grid">
-        </section>
+        <section id="menu" class="menu-grid container">
+            </section>
 
-        <section class="location-section">
-            <div class="hero-badge" style="margin-bottom: 30px; display: table; margin-inline: auto;">
-                <i class="fas fa-map-marker-alt"></i> Onde estamos
+        <section class="location-section container">
+            <div class="section-title">
+                <span class="hero-badge"><i class="fas fa-map-marker-alt"></i> Onde estamos</span>
             </div>
+            
             <div class="map-card-wrapper">
-                <div id="mapaEntrega"></div>
-                <div style="text-align: center; margin-top: 15px;">
-                    <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 10px;">R. Paulo Fortes, 6245 - Aponiã</p>
-                    <a href="https://maps.google.com/?q=R.+Paulo+Fortes,+6245+-+Aponiã" target="_blank" class="link-mapa-direto">
-                        Ver no Google Maps <i class="fas fa-external-link-alt"></i>
+                <div id="mapaEntrega" class="map-canvas"></div>
+                <div class="map-info">
+                    <p class="address-text">R. Paulo Fortes, 6245 - Aponiã</p>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7454,-63.8732" target="_blank" class="link-mapa-direto">
+                        Como chegar <i class="fas fa-external-link-alt"></i>
                     </a>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer>
-        <p>© 2026 Benis Burguer - Porto Velho/RO</p>
+    <footer class="main-footer">
+        <div class="container">
+            <p>© 2026 Benis Burguer - Porto Velho/RO</p>
+            <small>Elite Edition v2.0</small>
+        </div>
     </footer>
 
-    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="display: none;">
-        <div class="cart-fab-content" style="display: flex; align-items: center; gap: 12px;">
-            <div style="position: relative;">
-                <i class="fas fa-shopping-bag" style="font-size: 1.4rem;"></i>
-                <span id="cartCount" style="position: absolute; top: -8px; right: -8px; background: #fff; color: #000; font-size: 0.7rem; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">0</span>
+    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()">
+        <div class="cart-fab-content">
+            <div class="cart-icon-wrapper">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cartCount" class="cart-badge">0</span>
             </div>
-            <span id="cartFabTotal">Ver sacola (R$ 0,00)</span>
+            <span id="cartFabTotal" class="cart-fab-price">Ver sacola (R$ 0,00)</span>
         </div>
         <i class="fas fa-chevron-right"></i>
     </div>
 
     <aside id="cartPanel" class="cart-panel-elite">
         <div class="cart-header-elite">
-            <h2><i class="fas fa-shopping-basket"></i> Sacola</h2>
-            <button class="btn-close-cart" onclick="toggleCarrinho()" aria-label="Fechar sacola">
+            <h2><i class="fas fa-shopping-basket"></i> Minha Sacola</h2>
+            <button class="btn-close-cart" onclick="toggleCarrinho()">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
         <div id="cartItems" class="cart-content-scroll">
-        </div>
+            </div>
 
         <div class="cart-footer-elite">
-            <div class="coupon-wrapper">
-                <input type="text" id="cupom" placeholder="CUPOM DE DESCONTO">
-                <button class="btn-apply-coupon" onclick="aplicarCupom()">
-                    <i class="fas fa-arrow-right"></i>
-                </button>
+            <div class="coupon-section">
+                <div class="coupon-wrapper">
+                    <input type="text" id="cupom" placeholder="CUPOM DE DESCONTO">
+                    <button class="btn-apply-coupon" onclick="aplicarCupom()">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="total-details">
@@ -158,7 +174,7 @@
                     <span>Subtotal</span>
                     <span id="subtotalValue">R$ 0,00</span>
                 </div>
-                <div id="discountRow" class="detail-row" style="display: none; color: var(--success);">
+                <div id="discountRow" class="detail-row discount" style="display: none;">
                     <span>Desconto</span>
                     <span id="discountValue">- R$ 0,00</span>
                 </div>
@@ -169,15 +185,16 @@
             </div>
 
             <button class="checkout-btn" onclick="checkout()">
-                <span>PEDIR PELO WHATSAPP</span>
+                <span>FINALIZAR PEDIDO</span>
                 <i class="fab fa-whatsapp"></i>
             </button>
         </div>
     </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="js/mapa.js" defer></script>
-    <script src="app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="js/mapa.js" defer></script>
+    <script src="app.js" defer></script>
 </body>
 </html>
