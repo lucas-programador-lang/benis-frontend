@@ -1,6 +1,7 @@
 /**
- * BENIS BURGUER - Map Engine v1.4 (Elite Edition)
+ * BENIS BURGUER - Map Engine v1.5 (Elite Edition)
  * Focado na região do Aponiã - Porto Velho/RO
+ * Desenvolvedor: Jose Lucas
  */
 
 let mapa;
@@ -9,6 +10,7 @@ window.enderecoEntrega = "Não selecionado no mapa";
 
 // Coordenadas precisas para R. Paulo Fortes, 6245 - Aponiã
 const COORDS_LOJA = [-8.73953, -63.86025]; 
+// Correção na URL do Google Maps para mobile e desktop
 const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
 function iniciarMapa() {
@@ -25,12 +27,14 @@ function iniciarMapa() {
     mapa = L.map('mapaEntrega', {
         zoomControl: true, 
         scrollWheelZoom: false,
-        attributionControl: false
+        attributionControl: false,
+        tap: true // Melhora interação em dispositivos mobile
     }).setView(COORDS_LOJA, 16);
 
     // Camada de mapa estilo Dark (CartoDB)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
+        maxZoom: 19,
+        subdomains: 'abcd'
     }).addTo(mapa);
 
     // Ícone personalizado para a Loja (Pin com pulso)
@@ -52,7 +56,8 @@ function iniciarMapa() {
         <div onclick="window.open('${GOOGLE_MAPS_URL}', '_blank')" style="cursor: pointer; text-align:center; font-family: 'Poppins', sans-serif; padding: 5px;">
             <strong style="color: #ff8c00; font-size: 1.1rem;">Benis Burguer</strong><br>
             <span style="color: #333; font-size: 0.9rem;">📍 Unidade Aponiã</span><br>
-            <small style="color: #3b82f6; font-weight: 600;">➔ Tocar para GPS</small>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 8px 0;">
+            <small style="color: #3b82f6; font-weight: 600;">➔ Tocar para GPS (Google Maps)</small>
         </div>
     `, { closeButton: false }).openPopup();
 
@@ -63,8 +68,10 @@ function iniciarMapa() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (pos) => processarLocalizacao(pos.coords.latitude, pos.coords.longitude, true),
-            () => { console.warn("GPS negado ou indisponível."); },
-            { enableHighAccuracy: true }
+            (err) => { 
+                console.warn("GPS negado ou indisponível:", err.message); 
+            },
+            { enableHighAccuracy: true, timeout: 5000 }
         );
     }
 }
@@ -73,7 +80,7 @@ async function processarLocalizacao(lat, lng, centralizar = false) {
     // Remove marcador anterior se existir
     if (marcadorUsuario) mapa.removeLayer(marcadorUsuario);
     
-    // Marcador de localização do usuário
+    // Marcador de localização do usuário (Azul Elite)
     marcadorUsuario = L.circleMarker([lat, lng], {
         radius: 8, 
         fillColor: "#3b82f6", 
@@ -86,21 +93,25 @@ async function processarLocalizacao(lat, lng, centralizar = false) {
         mapa.setView([lat, lng], 16);
     }
 
-    // Geocodificação reversa (Transforma lat/lng em nome de rua)
+    // Geocodificação reversa via Nominatim (OpenStreetMap)
     try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        // Adicionado User-Agent amigável para evitar bloqueios na API
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+            headers: { 'Accept-Language': 'pt-BR' }
+        });
         const data = await response.json();
         
-        const rua = data.address.road || "Rua não identificada";
-        const bairro = data.address.suburb || data.address.neighbourhood || "Porto Velho";
+        const rua = data.address.road || data.address.pedestrian || "Rua não identificada";
+        const bairro = data.address.suburb || data.address.neighbourhood || data.address.city_district || "Porto Velho";
         const numero = data.address.house_number || 'S/N';
         
         window.enderecoEntrega = `${rua}, ${numero} - ${bairro}`;
 
         marcadorUsuario.bindPopup(`
-            <div style="font-family: 'Poppins', sans-serif;">
-                <b style="color: #3b82f6;">Entregar aqui:</b><br>
-                <span style="color: #555;">${window.enderecoEntrega}</span>
+            <div style="font-family: 'Poppins', sans-serif; min-width: 150px;">
+                <b style="color: #3b82f6; font-size: 0.9rem;">📍 Entregar aqui:</b><br>
+                <span style="color: #444; font-size: 0.85rem;">${window.enderecoEntrega}</span><br>
+                <small style="color: #999; display: block; margin-top: 4px;">Arraste ou clique para ajustar</small>
             </div>
         `).openPopup();
         
@@ -110,7 +121,7 @@ async function processarLocalizacao(lat, lng, centralizar = false) {
     }
 }
 
-// Inicialização segura
+// Inicialização segura com suporte a carregamento dinâmico
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', iniciarMapa);
 } else {
