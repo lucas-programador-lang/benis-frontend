@@ -1,7 +1,8 @@
 /**
- * BENIS BURGUER - Gourmet Visual Engine v6.7 (Elite Edition)
+ * BENIS BURGUER - Gourmet Visual Engine v7.0 (Elite Edition)
  * Fusion: Dark Mode Premium + Glassmorphism Otimizado
  * Location: Porto Velho/RO - 2026
+ * Desenvolvedor: Jose Lucas (Estácio)
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
@@ -213,6 +214,16 @@ body::before {
     gap: 30px; padding: 40px 6%; max-width: 1400px; margin: 0 auto; 
 }
 
+/* Animação para surgimento dos cards */
+.anim-slide-up {
+    animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .card-item { 
     background: var(--bg-card); border: 1px solid var(--glass-border); 
     border-radius: var(--card-radius); overflow: hidden; 
@@ -224,7 +235,7 @@ body::before {
     box-shadow: var(--shadow-premium); background: rgba(255, 255, 255, 0.06);
 }
 
-.card-image-box { width: 100%; height: 240px; overflow: hidden; background: #111; }
+.card-image-box { width: 100%; height: 240px; overflow: hidden; background: #111; position: relative; }
 .card-image-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s; }
 .card-item:hover .card-image-box img { transform: scale(1.1); }
 
@@ -240,6 +251,9 @@ body::before {
     border-top: 1px solid var(--glass-border); text-transform: uppercase;
 }
 .add-btn:hover { background: var(--primary); color: #000; }
+
+/* Feedback Adicionado */
+.btn-success-anim { background: var(--success) !important; color: white !important; }
 
 /* --- CARRINHO FAB --- */
 .cart-fab {
@@ -322,6 +336,15 @@ body::before {
 }
 
 /* --- ITENS NA SACOLA --- */
+.anim-fade-in {
+    animation: fadeInItem 0.4s ease-out forwards;
+}
+
+@keyframes fadeInItem {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 .cart-item-elite {
     display: flex; 
     justify-content: space-between; 
@@ -331,7 +354,6 @@ body::before {
     border-radius: 20px; 
     border: 1px solid var(--glass-border);
     transition: var(--transition-smooth);
-    animation: slideIn 0.3s ease-out forwards;
 }
 
 .cart-item-elite:hover {
@@ -352,7 +374,6 @@ body::before {
     font-weight: 700;
 }
 
-/* BOTÃO DE REMOVER */
 .btn-remove {
     background: rgba(255, 77, 77, 0.05);
     border: 1px solid rgba(255, 77, 77, 0.1);
@@ -373,11 +394,6 @@ body::before {
     transform: scale(1.1) rotate(8deg);
     border-color: transparent;
     box-shadow: 0 8px 20px rgba(255, 77, 77, 0.4);
-}
-
-@keyframes slideIn { 
-    from { opacity: 0; transform: translateX(20px); } 
-    to { opacity: 1; transform: translateX(0); } 
 }
 
 /* --- ÁREA DE CUPOM & FOOTER --- */
@@ -456,14 +472,16 @@ body::before {
     width: 100%; 
 }
 
-/* Leaflet Pin Pulse Animation */
-@keyframes pulsePin { 
-    0% { transform: scale(0.5); opacity: 1; } 
-    100% { transform: scale(2); opacity: 0; } 
+/* Pin Pulse Animation Custom */
+.pin-pulse { 
+    position: absolute; width: 40px; height: 40px; 
+    background: rgba(255, 140, 0, 0.4); border-radius: 50%; 
+    animation: pulse 2s infinite ease-out; 
 }
 
-.pin-pulse { 
-    animation: pulsePin 2s infinite ease-out; 
+@keyframes pulse { 
+    0% { transform: scale(0.5); opacity: 1; } 
+    100% { transform: scale(2.5); opacity: 0; } 
 }
 
 /* --- RODAPÉ --- */
@@ -489,7 +507,6 @@ footer p {
     font-weight: 400;
 }
 
-/* Link Mapa Direto */
 .link-mapa-direto {
     color: var(--primary);
     text-decoration: none;
@@ -512,4 +529,9 @@ footer p {
     .cart-panel-elite { max-width: 100%; }
     .map-card-wrapper { height: 300px; }
     .cart-fab { width: 90%; bottom: 20px; padding: 14px 20px; font-size: 0.9rem; }
+    
+    .tab-btn {
+        min-width: 85px;
+        padding: 10px;
+    }
 }
