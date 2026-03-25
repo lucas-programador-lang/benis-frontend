@@ -1,7 +1,8 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v6.9 (Elite Edition)
+ * BENIS BURGUER - Gourmet Logic & Map Engine v7.0 (Elite Edition)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
+ * Desenvolvedor: Jose Lucas (Estácio)
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -11,8 +12,9 @@ let mapa;
 let marcadorUsuario;
 window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)"; 
 
-const COORDS_LOJA = [-8.73953, -63.86025]; // Coordenadas exatas R. Paulo Fortes, 6245
-const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
+const COORDS_LOJA = [-8.73953, -63.86025]; 
+const TELEFONE_WHATSAPP = "556993668336";
+const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
 // Inicialização segura do Carrinho via LocalStorage
 try {
@@ -66,14 +68,13 @@ const cardapio = {
 
 const formatarMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-// --- 2. ENGINE DO MAPA (COM GEOCODIFICAÇÃO) ---
+// --- 2. ENGINE DO MAPA ---
 function iniciarMapa() {
     if (mapa) return;
     const mapElement = document.getElementById('mapaEntrega');
     if (!mapElement) return;
 
     mapa = L.map('mapaEntrega', { zoomControl: false, attributionControl: false }).setView(COORDS_LOJA, 15);
-    
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(mapa);
 
     const iconLoja = L.divIcon({
@@ -97,10 +98,8 @@ function iniciarMapa() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
             processarLocalizacao(pos.coords.latitude, pos.coords.longitude, true);
-        }, (err) => console.warn("Geolocalização negada. Use o clique no mapa."));
+        }, (err) => console.warn("Geolocalização negada."));
     }
-
-    setTimeout(() => mapa.invalidateSize(), 500);
 }
 
 async function processarLocalizacao(lat, lng, centralizar = false) {
@@ -110,9 +109,7 @@ async function processarLocalizacao(lat, lng, centralizar = false) {
         radius: 8, fillColor: "#3b82f6", color: "#fff", weight: 2, fillOpacity: 0.9
     }).addTo(mapa);
 
-    if (centralizar) {
-        mapa.setView([lat, lng], 16);
-    }
+    if (centralizar) mapa.setView([lat, lng], 16);
 
     try {
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
@@ -131,17 +128,15 @@ function adicionarAoCarrinho(cat, id, event) {
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
 
-    // Feedback visual no botão
     const btn = event.currentTarget;
     const span = btn.querySelector('span');
     const icon = btn.querySelector('i');
-    
-    const originalText = span.innerText;
-    const originalIcon = icon.className;
+    const originalText = span ? span.innerText : '';
+    const originalIcon = icon ? icon.className : '';
 
-    span.innerText = 'ADICIONADO';
-    icon.className = 'fas fa-check';
-    btn.classList.add('btn-success-anim'); // Opcional: adicionar classe CSS para cor verde
+    if(span) span.innerText = 'ADICIONADO';
+    if(icon) icon.className = 'fas fa-check';
+    btn.classList.add('btn-success-anim');
     
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
@@ -153,8 +148,8 @@ function adicionarAoCarrinho(cat, id, event) {
     salvarEAtualizar();
     
     setTimeout(() => { 
-        span.innerText = originalText;
-        icon.className = originalIcon;
+        if(span) span.innerText = originalText;
+        if(icon) icon.className = originalIcon;
         btn.classList.remove('btn-success-anim');
     }, 1000);
 }
@@ -184,7 +179,7 @@ function atualizarInterface() {
 
     carrinho.forEach(item => {
         const div = document.createElement("div");
-        div.className = "cart-item-elite";
+        div.className = "cart-item-elite anim-fade-in";
         div.innerHTML = `
             <div class="cart-item-info">
                 <h4>${item.quantidade}x ${item.name}</h4>
@@ -230,9 +225,9 @@ function aplicarCupom() {
             Swal.fire({ title: 'Cupom Aplicado!', text: 'R$ 10,00 de desconto garantido.', icon: 'success', background: '#1a1a1a', color: '#fff' });
         }
     } else {
-        alert("Cupom inválido ou expirado.");
         descontoAtivo = 0;
         if (discountRow) discountRow.style.display = "none";
+        alert("Cupom inválido ou expirado.");
     }
     salvarEAtualizar();
 }
@@ -249,7 +244,7 @@ function mostrarCategoria(categoria) {
 
     cardapio[categoria].forEach(item => {
         const card = document.createElement("div");
-        card.className = "card-item";
+        card.className = "card-item anim-slide-up";
         card.innerHTML = `
             <div class="card-image-box">
                 <img src="img/${item.img}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300/111/fff?text=${item.name}'">
@@ -287,28 +282,18 @@ function checkout() {
     
     msg += "📍 *ENDEREÇO DE ENTREGA:* \n";
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
-    msg += "*Observação:* (Informe número e ponto de referência aqui)";
+    msg += "*Observação:* (Número da casa e Ponto de Referência)";
 
-    const fone = "556993668336"; 
-    window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, "_blank");
+    window.open(`https://wa.me/${TELEFONE_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
 
-    // Limpeza Pós-Pedido
     carrinho = [];
     descontoAtivo = 0;
     localStorage.removeItem('benis_cart');
-    
     atualizarInterface();
-    toggleCarrinho();
+    if(document.getElementById("cartPanel")) document.getElementById("cartPanel").classList.remove("open");
 
     if (window.Swal) {
-        Swal.fire({
-            title: 'Pedido Enviado!',
-            text: 'Sua sacola foi limpa e o pedido enviado para o WhatsApp.',
-            icon: 'success',
-            background: '#1a1a1a',
-            color: '#fff',
-            confirmButtonColor: '#ff8c00'
-        });
+        Swal.fire({ title: 'Pedido Enviado!', text: 'Sua sacola foi limpa e o pedido enviado.', icon: 'success', background: '#1a1a1a', color: '#fff' });
     }
 }
 
@@ -323,14 +308,14 @@ function verificarStatusLoja() {
     const diaSemana = agora.getDay();
     const hora = agora.getHours();
     const minutos = agora.getMinutes();
+    const tempoAtual = (hora * 60) + minutos;
     const tempoAbertura = 19 * 60; 
     const tempoFechamento = (23 * 60) + 59; 
-    const tempoAtual = (hora * 60) + minutos;
 
     const statusText = document.getElementById("statusText");
     const statusDot = document.getElementById("statusLabel");
 
-    if (diaSemana === 1) { // Segunda-feira fechado
+    if (diaSemana === 1) { 
         if (statusText) statusText.innerText = "Fechado • Abre Terça às 19:00";
         statusDot?.classList.remove("online");
     } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
@@ -349,11 +334,10 @@ window.addEventListener('DOMContentLoaded', () => {
     mostrarCategoria("hamburguer");
     iniciarMapa();
 
-    // Fecha o carrinho ao clicar fora dele
     document.addEventListener('click', (e) => {
         const panel = document.getElementById("cartPanel");
         const cartToggle = document.getElementById("cartToggle");
-        if (panel && panel.classList.contains("open") && !panel.contains(e.target) && !cartToggle.contains(e.target)) {
+        if (panel && panel.classList.contains("open") && !panel.contains(e.target) && !cartToggle?.contains(e.target)) {
             toggleCarrinho();
         }
     });
