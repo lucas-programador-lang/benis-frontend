@@ -1,7 +1,7 @@
 /**
- * BENIS BURGUER - Gourmet Visual Engine v7.1 (APK & Mobile Optimized)
+ * BENIS BURGUER - Gourmet Visual Engine v7.2 (APK & Mobile Optimized)
  * Fusion: Dark Mode Premium + Glassmorphism Otimizado
- * Fix: Área de Toque do Botão Remover & Responsividade de Sacola
+ * Fix: Área de Toque do Botão Remover & Responsividade de Sacola (APK Fix)
  * Location: Porto Velho/RO - 2026
  */
 
@@ -361,7 +361,7 @@ body::before {
     background: #0d0d0d;
 }
 
-/* ITEM DO CARRINHO - REESTILIZADO PARA APK */
+/* ITEM DO CARRINHO - REESTILIZADO PARA APK (FIX DE BOTÃO ESMAGADO) */
 .cart-item-elite {
     display: flex;
     justify-content: space-between;
@@ -371,6 +371,7 @@ body::before {
     border-radius: 20px;
     border: 1px solid var(--glass-border);
     animation: slideIn 0.3s ease-out;
+    min-height: 85px; /* Altura mínima garantida */
 }
 
 @keyframes slideIn {
@@ -378,27 +379,33 @@ body::before {
     to { transform: translateX(0); opacity: 1; }
 }
 
-.cart-item-info { flex: 1; }
-.cart-item-info h4 { font-size: 1.05rem; color: #fff; margin-bottom: 5px; font-weight: 600; }
+.cart-item-info { 
+    flex: 1; 
+    min-width: 0; /* Permite que o texto quebre ou use ellipsis se necessário */
+    padding-right: 10px;
+}
+.cart-item-info h4 { font-size: 1.05rem; color: #fff; margin-bottom: 5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cart-item-info p { color: var(--primary); font-weight: 800; font-size: 1rem; }
 
-/* BOTÃO REMOVER - TOQUE OTIMIZADO PARA ANDROID */
+/* BOTÃO REMOVER - TOQUE OTIMIZADO & FIX DE LARGURA */
 .btn-remove {
     background: rgba(255, 71, 87, 0.15) !important;
     color: #ff4757 !important;
     border: 1px solid rgba(255, 71, 87, 0.2) !important;
-    width: 46px; /* Área de clique maior */
-    height: 46px;
+    width: 48px !important; /* Tamanho fixo para não esmagar no APK */
+    height: 48px !important;
+    min-width: 48px !important; /* Garante que o flexbox não diminua o botão */
     border-radius: 14px;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-left: 10px;
+    margin-left: 15px;
+    flex-shrink: 0; /* Impede o encolhimento no WebView */
 }
 
-.btn-remove i { font-size: 1.2rem; }
+.btn-remove i { font-size: 1.2rem; pointer-events: none; }
 .btn-remove:active { transform: scale(0.9); background: #ff4757 !important; color: white !important; }
 
 /* ÁREA DE CUPOM */
