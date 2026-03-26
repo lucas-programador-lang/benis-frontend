@@ -37,10 +37,34 @@
             outline: none !important;
         }
 
-        /* GARANTE QUE O BOTÃO DE REMOVER SEJA CLICÁVEL MESMO EM TELAS PEQUENAS */
+        /* FIX APK: GARANTE QUE O BOTÃO DE REMOVER SEJA CLICÁVEL E ACESSÍVEL */
         .btn-remove {
             cursor: pointer !important;
             touch-action: manipulation !important;
+            position: relative !important;
+            z-index: 99 !important; /* Prioridade total de clique */
+            pointer-events: auto !important;
+            min-width: 44px !important; /* Tamanho recomendado pelo Google para toque */
+            min-height: 44px !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 77, 77, 0.1);
+            border-radius: 8px;
+            color: #ff4d4d;
+            border: none;
+        }
+
+        /* Impede que o ícone interno "roube" o evento de clique do botão no WebView */
+        .btn-remove i {
+            pointer-events: none !important;
+        }
+
+        /* Ajuste na rolagem do carrinho para não travar no Android */
+        .cart-content-scroll {
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            flex: 1;
         }
     </style>
 </head>
@@ -139,7 +163,7 @@
                 <div id="mapaEntrega" class="map-canvas"></div>
                 <div class="map-info">
                     <p class="address-text">R. Paulo Fortes, 6245 - Aponiã</p>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7297,-63.8732" target="_blank" class="link-mapa-direto">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7400,-63.8700" target="_blank" class="link-mapa-direto">
                         Como chegar <i class="fas fa-external-link-alt"></i>
                     </a>
                 </div>
@@ -240,12 +264,17 @@
                 target: 'body',
                 didOpen: () => {
                     Swal.showLoading();
-                    // A lógica real de validação deve estar no app.js
                     setTimeout(() => {
                         if(typeof window.validarCupomApp === 'function'){
                              window.validarCupomApp(inputCupom);
                         } else {
-                             Swal.fire('Erro', 'Sistema de cupons não carregado.', 'error');
+                             Swal.fire({
+                                title: 'Erro',
+                                text: 'Sistema de cupons não inicializado no app.js.',
+                                icon: 'error',
+                                background: '#1a1a1a',
+                                color: '#fff'
+                             });
                         }
                     }, 1000);
                 }
