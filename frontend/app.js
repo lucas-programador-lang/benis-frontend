@@ -1,8 +1,8 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v7.8 (Final Stable)
+ * BENIS BURGUER - Gourmet Logic & Map Engine v7.9 (APK Optimized)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
- * FIX APK DEFINITIVO: Forçamento de Intent para abertura externa
+ * FIX APK DEFINITIVO: Interceptação de Intent e Correção de Remoção
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -154,17 +154,19 @@ function adicionarAoCarrinho(cat, id, event) {
     }, 1000);
 }
 
+// CORREÇÃO: Função de remover ajustada para APK
 function removerDoCarrinho(id) {
     vibrar(30); 
-    const index = carrinho.findIndex(i => i.id === id);
-    if (index !== -1) {
-        if (carrinho[index].quantidade > 1) {
-            carrinho[index].quantidade -= 1;
+    const itemIndex = carrinho.findIndex(i => i.id === id);
+    
+    if (itemIndex !== -1) {
+        if (carrinho[itemIndex].quantidade > 1) {
+            carrinho[itemIndex].quantidade -= 1;
         } else {
-            carrinho.splice(index, 1);
+            carrinho.splice(itemIndex, 1);
         }
+        salvarEAtualizar();
     }
-    salvarEAtualizar();
 }
 
 function salvarEAtualizar() {
@@ -268,7 +270,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP (FIX ABSOLUTO PARA APK) ---
+// --- 6. CHECKOUT WHATSAPP (FIX APK DEFINITIVO) ---
 function checkout() {
     if (!carrinho.length) return;
     vibrar(100); 
@@ -292,23 +294,19 @@ function checkout() {
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
     msg += "*Observação:* (Informe número da casa e ponto de referência)";
 
-    /**
-     * MUDANÇA PARA APK: 
-     * Alguns apps de "converter site em apk" bloqueiam links https que deveriam abrir apps.
-     * Vamos usar uma tag <a> invisível e simular o clique, que é o método mais aceito por WebViews.
-     */
-    const link = document.createElement('a');
-    link.href = `https://api.whatsapp.com/send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
-    link.target = "_blank";
-    link.rel = "noopener";
-    
-    // Fallback: Se estiver em APK, tenta mudar o href direto da janela caso o clique falhe
+    // FIX APK: Uso de whatsapp:// em vez de https para forçar o app nativo no Android
+    const whatsappUrl = `whatsapp://send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
+    const backupUrl = `https://api.whatsapp.com/send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
+
     try {
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        window.location.href = whatsappUrl;
+        
+        // Se a página não mudar em 500ms, tenta o link reserva
+        setTimeout(() => {
+            if (document.hasFocus()) window.location.href = backupUrl;
+        }, 500);
     } catch (e) {
-        window.location.href = link.href;
+        window.location.href = backupUrl;
     }
 
     // Limpeza após envio
@@ -394,4 +392,3 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 100);
     }
 });
-
