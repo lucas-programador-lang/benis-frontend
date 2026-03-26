@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Benis Burguer | Elite Delivery</title>
     
     <meta name="description" content="O melhor hambúrguer gourmet de Porto Velho/RO. Qualidade premium e sabor inconfundível no Aponiã.">
@@ -25,9 +25,22 @@
             z-index: 999999 !important; 
         }
         
-        /* FIX DE SOBREPOSIÇÃO PARA ELEMENTOS CLICÁVEIS NO WEBVIEW */
+        /* FIX DE SOBREPOSIÇÃO E CLIQUE PARA WEBVIEW ANDROID */
         .cart-panel-elite {
             pointer-events: auto !important;
+            touch-action: pan-y !important;
+        }
+
+        /* EVITA O FLASH AZUL AO TOCAR EM BOTÕES NO ANDROID */
+        button, a, .cart-fab {
+            -webkit-tap-highlight-color: transparent !important;
+            outline: none !important;
+        }
+
+        /* GARANTE QUE O BOTÃO DE REMOVER SEJA CLICÁVEL MESMO EM TELAS PEQUENAS */
+        .btn-remove {
+            cursor: pointer !important;
+            touch-action: manipulation !important;
         }
     </style>
 </head>
@@ -78,7 +91,7 @@
                         </div>
                     </a>
 
-                    <a href="https://www.google.com/maps/search/?api=1&query=Benis+Burguer+Porto+Velho" target="_blank" class="btn-gps-elite-v2" style="text-decoration: none; justify-content: center;">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Benis+Burguer+Porto+Velho" target="_blank" class="btn-gps-elite-v2" style="text-decoration: none; display: flex; justify-content: center; align-items: center;">
                         <i class="fas fa-location-dot"></i>
                         <span>VER NO MAPA / LOCALIZAR-ME</span>
                     </a>
@@ -126,7 +139,7 @@
                 <div id="mapaEntrega" class="map-canvas"></div>
                 <div class="map-info">
                     <p class="address-text">R. Paulo Fortes, 6245 - Aponiã</p>
-                    <a href="geo:-8.7297,-63.8732?q=R.+Paulo+Fortes,+6245+-+Aponiã" target="_blank" class="link-mapa-direto">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7297,-63.8732" target="_blank" class="link-mapa-direto">
                         Como chegar <i class="fas fa-external-link-alt"></i>
                     </a>
                 </div>
@@ -141,7 +154,7 @@
         </div>
     </footer>
 
-    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="cursor: pointer;">
+    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="cursor: pointer; display: none;">
         <div class="cart-fab-content">
             <div class="cart-icon-wrapper">
                 <i class="fas fa-shopping-bag"></i>
@@ -217,7 +230,6 @@
                 return;
             }
 
-            // Correção para o SweetAlert aparecer sobre tudo no Android
             Swal.fire({
                 title: 'Verificando...',
                 text: 'Validando seu cupom no sistema.',
@@ -225,7 +237,18 @@
                 background: '#1a1a1a',
                 color: '#fff',
                 confirmButtonColor: '#ff8c00',
-                target: 'body'
+                target: 'body',
+                didOpen: () => {
+                    Swal.showLoading();
+                    // A lógica real de validação deve estar no app.js
+                    setTimeout(() => {
+                        if(typeof window.validarCupomApp === 'function'){
+                             window.validarCupomApp(inputCupom);
+                        } else {
+                             Swal.fire('Erro', 'Sistema de cupons não carregado.', 'error');
+                        }
+                    }, 1000);
+                }
             });
         }
     </script>
