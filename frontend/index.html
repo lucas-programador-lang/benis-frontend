@@ -32,7 +32,7 @@
     </div>
 
     <header class="glass-header">
-        <div class="header-container">
+        <div class="header-container container">
             <div class="logo-wrapper">
                 <img src="logo.png" alt="Benis Burguer Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/45x45/ff8c00/ffffff?text=B'">
             </div>
@@ -82,7 +82,7 @@
         </section>
 
         <div class="nav-container-glass">
-            <nav class="categorias-elite" id="categoryNav">
+            <nav class="categorias-elite container" id="categoryNav">
                 <button class="tab-btn active" data-cat="hamburguer" onclick="mostrarCategoria('hamburguer')">
                     <i class="fas fa-hamburger"></i>
                     <span>Burguers</span>
@@ -114,7 +114,7 @@
                 <div id="mapaEntrega" class="map-canvas"></div>
                 <div class="map-info">
                     <p class="address-text">R. Paulo Fortes, 6245 - Aponiã</p>
-                    <a href="https://maps.google.com" target="_blank" class="link-mapa-direto">
+                    <a href="geo:-8.7297,-63.8732?q=R.+Paulo+Fortes,+6245+-+Aponiã" target="_blank" class="link-mapa-direto">
                         Como chegar <i class="fas fa-external-link-alt"></i>
                     </a>
                 </div>
@@ -174,7 +174,7 @@
                 </div>
                 <div class="detail-row grand-total">
                     <span>Total</span>
-                    <span id="totalValue" style="color: var(--primary);">R$ 0,00</span>
+                    <span id="totalValue" style="color: #ff8c00;">R$ 0,00</span>
                 </div>
             </div>
 
@@ -190,4 +190,3 @@
     <script src="app.js" defer></script>
 </body>
 </html>
-
