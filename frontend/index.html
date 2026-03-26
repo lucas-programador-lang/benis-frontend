@@ -3,28 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benis Burguer | Elite Edition</title>
+    <title>Benis Burguer | Elite Delivery</title>
     
     <meta name="description" content="O melhor hambúrguer gourmet de Porto Velho/RO. Qualidade premium e sabor inconfundível no Aponiã.">
-    <meta name="keywords" content="hamburguer, porto velho, delivery, gourmet, benis burguer">
     <meta name="theme-color" content="#0a0a0a">
     
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Benis Burguer | Elite Edition">
-    <meta property="og:description" content="Peça o brabo de Porto Velho direto pelo nosso app!">
-    <meta property="og:image" content="logo.png">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="style.css">
+    
     <link rel="manifest" href="manifest.json">
-
 </head>
 <body>
 
@@ -62,16 +55,21 @@
                 <span class="hero-badge"><i class="fas fa-crown"></i> O Brabo de Porto Velho</span>
                 <h1 class="hero-title">Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
                 
-                <div class="app-download-area">
-                    <a href="benis-burguer.apk" download="BenisBurguer.apk" class="btn-download-app">
-                        <div class="btn-icon">
+                <div class="action-buttons-stack">
+                    <a href="benis-burguer.apk" download="BenisBurguer.apk" class="btn-download-app-premium">
+                        <div class="btn-inner">
                             <i class="fab fa-android"></i>
-                        </div>
-                        <div class="btn-text">
-                            <span>Baixar App Oficial</span>
-                            <small>Instale no seu Android</small>
+                            <div class="btn-text-content">
+                                <span class="top-text">Baixar App Oficial</span>
+                                <span class="bottom-text">Instale no seu Android</span>
+                            </div>
                         </div>
                     </a>
+
+                    <button class="btn-gps-elite-v2" onclick="iniciarMapa()">
+                        <i class="fas fa-location-dot"></i>
+                        <span>VER NO MAPA / LOCALIZAR-ME</span>
+                    </button>
                 </div>
 
                 <div class="status-container">
@@ -79,13 +77,6 @@
                         <span id="statusDot" class="status-dot"></span>
                         <span id="statusText">Verificando braseiro...</span>
                     </div>
-                </div>
-                
-                <div class="gps-action-wrapper">
-                    <button class="btn-gps-elite" onclick="iniciarMapa()">
-                        <i class="fas fa-location-arrow"></i>
-                        VER NO MAPA / LOCALIZAR-ME
-                    </button>
                 </div>
             </div>
         </section>
@@ -123,7 +114,7 @@
                 <div id="mapaEntrega" class="map-canvas"></div>
                 <div class="map-info">
                     <p class="address-text">R. Paulo Fortes, 6245 - Aponiã</p>
-                    <a href="https://www.google.com/maps?q=-8.73953,-63.86025" target="_blank" class="link-mapa-direto">
+                    <a href="https://maps.google.com/?q=Benis+Burguer" target="_blank" class="link-mapa-direto">
                         Como chegar <i class="fas fa-external-link-alt"></i>
                     </a>
                 </div>
@@ -138,7 +129,7 @@
         </div>
     </footer>
 
-    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="display: none;">
+    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()">
         <div class="cart-fab-content">
             <div class="cart-icon-wrapper">
                 <i class="fas fa-shopping-bag"></i>
@@ -192,9 +183,8 @@
         </div>
     </aside>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
     <script src="app.js" defer></script>
 </body>
 </html>
