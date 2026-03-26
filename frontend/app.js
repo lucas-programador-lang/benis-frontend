@@ -183,18 +183,16 @@ function atualizarInterface() {
     carrinho.forEach(item => {
         const div = document.createElement("div");
         div.className = "cart-item-elite anim-fade-in";
-        // Botão remover com classe específica e tratamento de pointer-events para o APK
+        
+        // CORREÇÃO APK: Classe btn-remove padronizada com style.css e garantia de clique
         div.innerHTML = `
             <div class="cart-item-info" style="flex: 1; min-width: 0;">
                 <h4 style="margin:0; font-size: 1rem; color: #fff;">${item.quantidade}x ${item.name}</h4>
                 <p style="margin:4px 0 0 0; color: #ff8c00; font-weight: bold;">${formatarMoeda(item.preco * item.quantidade)}</p>
             </div>
-            <button class="btn-remove-item" onclick="removerDoCarrinho(${item.id})" aria-label="Remover" 
-                style="width: 44px !important; height: 44px !important; flex: 0 0 44px !important; 
-                margin-left: 12px; display: flex; align-items: center; justify-content: center; 
-                background: rgba(255, 68, 68, 0.1); border: 1.5px solid #ff4444; border-radius: 10px; color: #ff4444;
-                pointer-events: auto !important; cursor: pointer !important; position: relative; z-index: 10;">
-                <i class="fas fa-trash-alt" style="font-size: 18px; pointer-events: none;"></i>
+            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" aria-label="Remover" 
+                style="pointer-events: auto !important; cursor: pointer !important; position: relative; z-index: 10;">
+                <i class="fas fa-trash-alt" style="pointer-events: none;"></i>
             </button>`;
         list.appendChild(div);
     });
@@ -250,7 +248,7 @@ function aplicarCupom() {
                 icon: 'success', 
                 background: '#1a1a1a', 
                 color: '#fff',
-                target: 'body', // ESSA LINHA RESOLVE O PRINT 3
+                target: 'body',
                 confirmButtonColor: '#ff8c00'
             });
         }
@@ -264,7 +262,7 @@ function aplicarCupom() {
                 icon: 'error', 
                 background: '#1a1a1a', 
                 color: '#fff',
-                target: 'body', // ESSA LINHA RESOLVE O PRINT 3
+                target: 'body',
                 confirmButtonColor: '#6c5ce7'
             });
         }
