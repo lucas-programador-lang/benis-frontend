@@ -1,8 +1,8 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v7.0 (Elite Edition)
+ * BENIS BURGUER - Gourmet Logic & Map Engine v7.8 (Final Stable)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
- * FIX: Sistema de Overlay e Trava de Scroll no Carrinho
+ * FIX: Checkout compatível com APK, Cardápio Completo e Interface Alinhada
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -89,14 +89,7 @@ function iniciarMapa() {
     });
 
     L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa)
-        .bindPopup(`
-            <div onclick="window.open('${GOOGLE_MAPS_URL}', '_blank')" style="cursor:pointer; text-align:center; padding: 5px; font-family: 'Poppins';">
-                <strong style="color:#ff8c00; font-size: 14px;">Benis Burguer</strong><br>
-                <span style="color:#333;">Aponiã - Porto Velho</span><br>
-                <hr style="border: 0; border-top: 1px solid #ddd; margin: 5px 0;">
-                <small style="color:#3b82f6; font-weight: 700;">➔ Abrir no Google Maps</small>
-            </div>
-        `).openPopup();
+        .bindPopup(`<b>Benis Burguer</b><br>Aponiã - Porto Velho`).openPopup();
 
     mapa.on('click', (e) => {
         vibrar(30);
@@ -134,7 +127,6 @@ async function processarLocalizacao(lat, lng, centralizar = false) {
 // --- 3. LÓGICA DO CARRINHO ---
 function adicionarAoCarrinho(cat, id, event) {
     vibrar(50); 
-    
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
 
@@ -278,7 +270,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP ---
+// --- 6. CHECKOUT WHATSAPP (FIX APK) ---
 function checkout() {
     if (!carrinho.length) return;
     vibrar(100); 
@@ -302,20 +294,21 @@ function checkout() {
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
     msg += "*Observação:* (Informe número da casa e ponto de referência)";
 
-    window.open(`https://wa.me/${TELEFONE_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+    // Uso de api.whatsapp.com para maior compatibilidade com WebView de APKs
+    const url = `https://api.whatsapp.com/send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank");
 
     carrinho = [];
     descontoAtivo = 0;
     localStorage.removeItem('benis_cart');
     atualizarInterface();
-    toggleCarrinho(); // Fecha o carrinho após finalizar
+    toggleCarrinho();
 
     if (window.Swal) {
-        Swal.fire({ title: 'Pedido Enviado!', text: 'Sua sacola foi limpa e o pedido enviado.', icon: 'success', background: '#1a1a1a', color: '#fff' });
+        Swal.fire({ title: 'Pedido Enviado!', text: 'Sua sacola foi limpa.', icon: 'success', background: '#1a1a1a', color: '#fff' });
     }
 }
 
-// --- CORREÇÃO: FUNÇÃO TOGGLE COM OVERLAY E TRAVA DE SCROLL ---
 function toggleCarrinho() {
     vibrar(25);
     const panel = document.getElementById('cartPanel');
@@ -326,7 +319,6 @@ function toggleCarrinho() {
     panel.classList.toggle('open');
     overlay.classList.toggle('active');
     
-    // Impede o scroll do fundo quando o carrinho está aberto
     if (panel.classList.contains('open')) {
         document.body.style.overflow = 'hidden';
     } else {
@@ -359,14 +351,13 @@ function verificarStatusLoja() {
     }
 }
 
-// --- BOOTSTRAP COM ANIMAÇÃO DE BARRA DE PROGRESSO ---
+// --- BOOTSTRAP ---
 window.addEventListener('DOMContentLoaded', () => {
     verificarStatusLoja();
     atualizarInterface();
     mostrarCategoria("hamburguer");
     iniciarMapa();
 
-    // Lógica do Loader
     const loader = document.getElementById('loader');
     const fill = document.querySelector('.progress-bar-fill');
     
@@ -377,7 +368,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 loader.style.opacity = "0";
                 loader.style.visibility = "hidden";
                 setTimeout(() => { loader.style.display = "none"; }, 800);
-            }, 2000); 
+            }, 1000); 
         }, 100);
     }
 });
