@@ -18,6 +18,22 @@
     <link rel="stylesheet" href="style.css">
     
     <link rel="manifest" href="manifest.json">
+
+    <style>
+        /* CORREÇÃO PARA O BOTÃO REMOVER NO APK */
+        .btn-remove-item {
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            z-index: 9999 !important;
+            padding: 10px !important;
+            position: relative !important;
+        }
+
+        /* GARANTIA DE QUE O CUPOM NÃO FIQUE ESCONDIDO (PRINT 3) */
+        .swal2-container {
+            z-index: 999999 !important; /* Maior que o cart-panel-elite */
+        }
+    </style>
 </head>
 <body>
 
@@ -103,11 +119,11 @@
         </div>
 
         <section id="menu" class="menu-grid container">
-            </section>
+        </section>
 
         <section class="location-section container">
             <div class="section-title">
-                <span class="hero-badge"><i class="fas fa-map-marker-alt"></i> Onde estamos</span>
+                <span class="hero-badge"><i class="fas fa-marker-alt"></i> Onde estamos</span>
             </div>
             
             <div class="map-card-wrapper">
@@ -151,7 +167,7 @@
         </div>
 
         <div id="cartItems" class="cart-content-scroll">
-            </div>
+        </div>
 
         <div class="cart-footer-elite">
             <div class="coupon-section">
@@ -188,5 +204,35 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="app.js" defer></script>
+
+    <script>
+        function aplicarCupom() {
+            const inputCupom = document.getElementById('cupom').value.trim().toUpperCase();
+            
+            if (inputCupom === "") {
+                Swal.fire({
+                    title: 'Ops!',
+                    text: 'Digite um cupom antes de verificar.',
+                    icon: 'warning',
+                    background: '#1a1a1a',
+                    color: '#fff',
+                    confirmButtonColor: '#ff8c00'
+                });
+                return;
+            }
+
+            // Exemplo de erro (PRINT 3) que agora aparecerá na frente de tudo
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Cupom inválido.',
+                icon: 'error',
+                background: '#1a1a1a',
+                color: '#fff',
+                confirmButtonColor: '#6c5ce7',
+                // Essa linha abaixo garante que o SweetAlert saia do fluxo da sacola
+                target: 'body'
+            });
+        }
+    </script>
 </body>
 </html>
