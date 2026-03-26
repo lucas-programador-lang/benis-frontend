@@ -2,7 +2,6 @@
  * BENIS BURGUER - Gourmet Visual Engine v7.0 (Elite Edition)
  * Fusion: Dark Mode Premium + Glassmorphism Otimizado
  * Location: Porto Velho/RO - 2026
- * Desenvolvedor: Jose Lucas (Estácio)
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
@@ -55,7 +54,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* Background Estilizado Fixed (O seu toque especial!) */
+/* Background Estilizado Fixed */
 body::before {
     content: ""; 
     position: fixed; 
@@ -70,21 +69,30 @@ body::before {
     pointer-events: none;
 }
 
-/* --- LOADER (Sua animação original de pulso) --- */
+/* --- LOADER (CORRIGIDO PARA CENTRALIZAÇÃO TOTAL) --- */
 .loader-wrapper {
     position: fixed; 
     inset: 0; 
     background: var(--bg-dark);
     z-index: 10000; 
     display: flex; 
-    flex-direction: column; 
     justify-content: center; 
     align-items: center;
     transition: opacity 0.8s ease, visibility 0.8s ease;
 }
 
+/* Container interno para alinhar logo, barra e texto verticalmente */
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 20px;
+}
+
 .loader-logo { 
-    width: 120px; 
+    width: 140px; /* Aumentado levemente para destaque */
     height: auto; 
     filter: drop-shadow(0 0 15px var(--primary));
     animation: pulseLogo 2s infinite ease-in-out; 
@@ -96,14 +104,30 @@ body::before {
 }
 
 .progress-bar-container {
-    width: 200px; height: 4px; background: rgba(255,255,255,0.1);
-    border-radius: 10px; margin-top: 25px; overflow: hidden;
+    width: 220px; 
+    height: 6px; 
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px; 
+    overflow: hidden;
+    position: relative;
 }
+
 .progress-bar-fill {
-    width: 0%; height: 100%; background: var(--primary);
+    width: 0%; 
+    height: 100%; 
+    background: var(--primary);
+    box-shadow: 0 0 10px var(--primary);
     animation: loadingFill 2s forwards ease-in-out;
 }
+
 @keyframes loadingFill { to { width: 100%; } }
+
+.loader-text {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
 
 /* --- HEADER & NAVIGATION --- */
 .glass-header {
@@ -139,7 +163,7 @@ body::before {
 .btn-whatsapp:hover { background: var(--whatsapp); color: #000; transform: translateY(-3px); border-color: var(--whatsapp); box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); }
 .btn-instagram:hover { background: var(--instagram); transform: translateY(-3px); border-color: transparent; }
 
-/* CATEGORIAS (Seu design em coluna que fica ótimo no mobile) */
+/* CATEGORIAS */
 .nav-container-glass { 
     position: sticky; 
     top: 80px; 
@@ -248,14 +272,14 @@ body::before {
 }
 .add-btn:hover { background: var(--primary); color: #000; }
 
-/* --- CARRINHO FAB (Botão flutuante dinâmico) --- */
+/* --- CARRINHO FAB --- */
 .cart-fab {
     position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
     background: var(--primary); color: #000; padding: 16px 35px; 
     border-radius: 100px; z-index: 999; display: flex; align-items: center; 
     gap: 15px; box-shadow: 0 15px 30px rgba(255, 140, 0, 0.4); 
     cursor: pointer; transition: 0.3s; font-weight: 800; border: none;
-    display: none; /* JS vai mostrar quando houver itens */
+    display: none; 
 }
 
 .cart-fab:hover { transform: translateX(-50%) translateY(-5px); filter: brightness(1.1); }
