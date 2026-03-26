@@ -2,7 +2,7 @@
  * BENIS BURGUER - Gourmet Logic & Map Engine v7.8 (Final Stable)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
- * FIX: Checkout compatível com APK, Cardápio Completo e Interface Alinhada
+ * FIX: Checkout Universal (APK + Browser) - Anti ERR_UNKNOWN_URL_SCHEME
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -14,7 +14,6 @@ window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)";
 
 const COORDS_LOJA = [-8.73953, -63.86025]; 
 const TELEFONE_WHATSAPP = "556993668336";
-const GOOGLE_MAPS_URL = `https://maps.google.com/?q=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
 // Função auxiliar para feedback tátil (Mobile)
 const vibrar = (ms = 50) => {
@@ -270,7 +269,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP (FIX APK & BROWSER) ---
+// --- 6. CHECKOUT WHATSAPP (FIX UNIVERSAL) ---
 function checkout() {
     if (!carrinho.length) return;
     vibrar(100); 
@@ -294,32 +293,33 @@ function checkout() {
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
     msg += "*Observação:* (Informe número da casa e ponto de referência)";
 
-    // Uso de api.whatsapp.com: O formato mais compatível para APK/WebView e Navegadores Desktop
-    const url = `https://api.whatsapp.com/send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
+    /** * CORREÇÃO CRUCIAL PARA APK:
+     * Usar 'https://wa.me/' em vez de 'whatsapp://send' 
+     * O wa.me é um link HTTP padrão que qualquer WebView consegue abrir sem dar erro de SCHEME.
+     */
+    const urlFinal = `https://wa.me/${TELEFONE_WHATSAPP}?text=${encodeURIComponent(msg)}`;
     
-    // Tenta abrir em nova aba, se falhar (comum em alguns WebViews de APK), abre na mesma janela
-    const win = window.open(url, "_blank");
+    // Tenta abrir em nova aba. Se falhar (comum em APK), abre na mesma janela.
+    const win = window.open(urlFinal, "_blank");
     if (!win) {
-        window.location.href = url;
+        window.location.href = urlFinal;
     }
 
-    // Opcional: Limpar carrinho após sucesso no redirecionamento
-    /*
+    // Limpeza após envio
     carrinho = [];
     descontoAtivo = 0;
     localStorage.removeItem('benis_cart');
     atualizarInterface();
     toggleCarrinho();
-    */
 
     if (window.Swal) {
         Swal.fire({ 
             title: 'Pedido Enviado!', 
-            text: 'Você está sendo redirecionado para o WhatsApp.', 
+            text: 'Conclua o envio no WhatsApp.', 
             icon: 'success', 
             background: '#1a1a1a', 
             color: '#fff',
-            timer: 2000,
+            timer: 2500,
             showConfirmButton: false
         });
     }
