@@ -2,7 +2,7 @@
  * BENIS BURGUER - Gourmet Logic & Map Engine v7.8 (Final Stable)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
- * FIX: Checkout Universal (APK + Browser) - Anti ERR_UNKNOWN_URL_SCHEME
+ * FIX APK DEFINITIVO: Forçamento de Intent para abertura externa
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -15,7 +15,6 @@ window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)";
 const COORDS_LOJA = [-8.73953, -63.86025]; 
 const TELEFONE_WHATSAPP = "556993668336";
 
-// Função auxiliar para feedback tátil (Mobile)
 const vibrar = (ms = 50) => {
     if (navigator.vibrate) navigator.vibrate(ms);
 };
@@ -269,7 +268,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP (FIX UNIVERSAL) ---
+// --- 6. CHECKOUT WHATSAPP (FIX ABSOLUTO PARA APK) ---
 function checkout() {
     if (!carrinho.length) return;
     vibrar(100); 
@@ -293,16 +292,23 @@ function checkout() {
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
     msg += "*Observação:* (Informe número da casa e ponto de referência)";
 
-    /** * CORREÇÃO CRUCIAL PARA APK:
-     * Usar 'https://wa.me/' em vez de 'whatsapp://send' 
-     * O wa.me é um link HTTP padrão que qualquer WebView consegue abrir sem dar erro de SCHEME.
+    /**
+     * MUDANÇA PARA APK: 
+     * Alguns apps de "converter site em apk" bloqueiam links https que deveriam abrir apps.
+     * Vamos usar uma tag <a> invisível e simular o clique, que é o método mais aceito por WebViews.
      */
-    const urlFinal = `https://wa.me/${TELEFONE_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+    const link = document.createElement('a');
+    link.href = `https://api.whatsapp.com/send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
+    link.target = "_blank";
+    link.rel = "noopener";
     
-    // Tenta abrir em nova aba. Se falhar (comum em APK), abre na mesma janela.
-    const win = window.open(urlFinal, "_blank");
-    if (!win) {
-        window.location.href = urlFinal;
+    // Fallback: Se estiver em APK, tenta mudar o href direto da janela caso o clique falhe
+    try {
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (e) {
+        window.location.href = link.href;
     }
 
     // Limpeza após envio
