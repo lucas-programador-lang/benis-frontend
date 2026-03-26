@@ -2,7 +2,6 @@
  * BENIS BURGUER - Gourmet Logic & Map Engine v7.0 (Elite Edition)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
- * Desenvolvedor: Jose Lucas (Estácio)
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -15,6 +14,11 @@ window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)";
 const COORDS_LOJA = [-8.73953, -63.86025]; 
 const TELEFONE_WHATSAPP = "556993668336";
 const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
+
+// Função auxiliar para feedback tátil (Mobile)
+const vibrar = (ms = 50) => {
+    if (navigator.vibrate) navigator.vibrate(ms);
+};
 
 // Inicialização segura do Carrinho via LocalStorage
 try {
@@ -93,7 +97,10 @@ function iniciarMapa() {
             </div>
         `).openPopup();
 
-    mapa.on('click', (e) => processarLocalizacao(e.latlng.lat, e.latlng.lng));
+    mapa.on('click', (e) => {
+        vibrar(30);
+        processarLocalizacao(e.latlng.lat, e.latlng.lng);
+    });
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
@@ -125,6 +132,8 @@ async function processarLocalizacao(lat, lng, centralizar = false) {
 
 // --- 3. LÓGICA DO CARRINHO ---
 function adicionarAoCarrinho(cat, id, event) {
+    vibrar(50); // FEEDBACK TÁTIL
+    
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
 
@@ -155,6 +164,7 @@ function adicionarAoCarrinho(cat, id, event) {
 }
 
 function removerDoCarrinho(id) {
+    vibrar(30); // FEEDBACK TÁTIL
     const index = carrinho.findIndex(i => i.id === id);
     if (index !== -1) {
         if (carrinho[index].quantidade > 1) {
@@ -209,6 +219,7 @@ function atualizarInterface() {
 
 // --- 4. SISTEMA DE CUPOM ---
 function aplicarCupom() {
+    vibrar(40);
     const cupomInput = document.getElementById("cupom");
     if (!cupomInput) return;
     
@@ -227,13 +238,18 @@ function aplicarCupom() {
     } else {
         descontoAtivo = 0;
         if (discountRow) discountRow.style.display = "none";
-        alert("Cupom inválido ou expirado.");
+        if(window.Swal) {
+            Swal.fire({ title: 'Erro!', text: 'Cupom inválido.', icon: 'error', background: '#1a1a1a', color: '#fff' });
+        } else {
+            alert("Cupom inválido.");
+        }
     }
     salvarEAtualizar();
 }
 
 // --- 5. CATEGORIAS ---
 function mostrarCategoria(categoria) {
+    vibrar(20);
     const grid = document.getElementById("menu");
     if (!grid) return;
     grid.innerHTML = "";
@@ -266,6 +282,7 @@ function mostrarCategoria(categoria) {
 // --- 6. CHECKOUT WHATSAPP ---
 function checkout() {
     if (!carrinho.length) return;
+    vibrar(100); // Vibração mais longa para finalizar
     
     let msg = "🍔 *NOVO PEDIDO - BENIS BURGUER* 🍔\n";
     msg += "━━━━━━━━━━━━━━━━━━━━━━\n\n";
@@ -300,6 +317,7 @@ function checkout() {
 }
 
 function toggleCarrinho() { 
+    vibrar(25);
     const panel = document.getElementById("cartPanel");
     if (panel) panel.classList.toggle("open");
 }
