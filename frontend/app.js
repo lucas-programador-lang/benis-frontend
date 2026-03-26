@@ -2,7 +2,7 @@
  * BENIS BURGUER - Gourmet Logic & Map Engine v7.8 (Final Stable)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
- * FIX: Checkout compatível com APK, Cardápio Completo e Interface Alinhada
+ * FIX: Checkout compatível com APK (via HTTPS) e interface alinhada
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -14,19 +14,16 @@ window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)";
 
 const COORDS_LOJA = [-8.73953, -63.86025]; 
 const TELEFONE_WHATSAPP = "556993668336";
-const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
-// Função auxiliar para feedback tátil (Mobile)
 const vibrar = (ms = 50) => {
     if (navigator.vibrate) navigator.vibrate(ms);
 };
 
-// Inicialização segura do Carrinho via LocalStorage
+// Inicialização segura do Carrinho
 try {
     const savedCart = localStorage.getItem('benis_cart');
     carrinho = savedCart ? JSON.parse(savedCart) : [];
 } catch (e) {
-    console.error("Erro ao carregar carrinho:", e);
     carrinho = [];
 }
 
@@ -82,89 +79,43 @@ function iniciarMapa() {
     mapa = L.map('mapaEntrega', { zoomControl: false, attributionControl: false }).setView(COORDS_LOJA, 15);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(mapa);
 
-    const iconLoja = L.divIcon({
-        className: 'custom-pin-container',
-        html: `<div class="pin-wrapper"><div class="pin-pulse"></div><div class="pin-center" style="background:#ff8c00; border:2px solid #fff; border-radius:50%; width:12px; height:12px;"></div></div>`,
-        iconSize: [40, 40], iconAnchor: [20, 20]
-    });
-
-    L.marker(COORDS_LOJA, { icon: iconLoja }).addTo(mapa)
-        .bindPopup(`<b>Benis Burguer</b><br>Aponiã - Porto Velho`).openPopup();
+    L.marker(COORDS_LOJA).addTo(mapa).bindPopup(`<b>Benis Burguer</b>`).openPopup();
 
     mapa.on('click', (e) => {
         vibrar(30);
         processarLocalizacao(e.latlng.lat, e.latlng.lng);
     });
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
-            processarLocalizacao(pos.coords.latitude, pos.coords.longitude, true);
-        }, (err) => console.warn("Geolocalização negada."));
-    }
 }
 
-async function processarLocalizacao(lat, lng, centralizar = false) {
+async function processarLocalizacao(lat, lng) {
     if (marcadorUsuario) mapa.removeLayer(marcadorUsuario);
-    
-    marcadorUsuario = L.circleMarker([lat, lng], {
-        radius: 8, fillColor: "#3b82f6", color: "#fff", weight: 2, fillOpacity: 0.9
-    }).addTo(mapa);
-
-    if (centralizar) mapa.setView([lat, lng], 16);
-
+    marcadorUsuario = L.circleMarker([lat, lng], { radius: 8, fillColor: "#3b82f6", color: "#fff", weight: 2 }).addTo(mapa);
     try {
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
         const data = await res.json();
-        const rua = data.address.road || data.address.pedestrian || 'Rua não identificada';
-        const bairro = data.address.suburb || data.address.neighbourhood || 'Bairro não identificado';
-        window.enderecoEntrega = `${rua}, ${data.address.house_number || 'S/N'} - ${bairro}`;
-        marcadorUsuario.bindPopup(`<b>Entregar aqui:</b><br>${window.enderecoEntrega}`).openPopup();
+        window.enderecoEntrega = `${data.address.road || 'Rua'}, ${data.address.house_number || 'S/N'}`;
+        marcadorUsuario.bindPopup(`<b>Entregar em:</b><br>${window.enderecoEntrega}`).openPopup();
     } catch (e) {
-        window.enderecoEntrega = `Coordenadas: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        window.enderecoEntrega = "Localização manual via mapa";
     }
 }
 
 // --- 3. LÓGICA DO CARRINHO ---
 function adicionarAoCarrinho(cat, id, event) {
-    vibrar(50); 
+    vibrar(50);
     const itemOriginal = cardapio[cat].find(p => p.id === id);
-    if (!itemOriginal) return;
-
-    const btn = event.currentTarget;
-    const span = btn.querySelector('span');
-    const icon = btn.querySelector('i');
-    const originalText = span ? span.innerText : '';
-    const originalIcon = icon ? icon.className : '';
-
-    if(span) span.innerText = 'ADICIONADO';
-    if(icon) icon.className = 'fas fa-check';
-    btn.classList.add('btn-success-anim');
-    
     const itemExistente = carrinho.find(i => i.id === id);
-    if (itemExistente) {
-        itemExistente.quantidade += 1;
-    } else {
-        carrinho.push({ ...itemOriginal, quantidade: 1 });
-    }
-
+    if (itemExistente) itemExistente.quantidade += 1;
+    else carrinho.push({ ...itemOriginal, quantidade: 1 });
     salvarEAtualizar();
-    
-    setTimeout(() => { 
-        if(span) span.innerText = originalText;
-        if(icon) icon.className = originalIcon;
-        btn.classList.remove('btn-success-anim');
-    }, 1000);
 }
 
 function removerDoCarrinho(id) {
-    vibrar(30); 
+    vibrar(30);
     const index = carrinho.findIndex(i => i.id === id);
     if (index !== -1) {
-        if (carrinho[index].quantidade > 1) {
-            carrinho[index].quantidade -= 1;
-        } else {
-            carrinho.splice(index, 1);
-        }
+        if (carrinho[index].quantidade > 1) carrinho[index].quantidade -= 1;
+        else carrinho.splice(index, 1);
     }
     salvarEAtualizar();
 }
@@ -177,188 +128,85 @@ function salvarEAtualizar() {
 function atualizarInterface() {
     const list = document.getElementById("cartItems");
     if (!list) return;
-
-    list.innerHTML = carrinho.length ? "" : `<div style="text-align:center; padding:40px; opacity:0.5; font-size:0.9rem;">Sua sacola está vazia.</div>`;
-
+    list.innerHTML = carrinho.length ? "" : `<div style="text-align:center; padding:40px; opacity:0.5;">Sua sacola está vazia.</div>`;
     carrinho.forEach(item => {
         const div = document.createElement("div");
-        div.className = "cart-item-elite anim-fade-in";
+        div.className = "cart-item-elite";
         div.innerHTML = `
-            <div class="cart-item-info">
-                <h4>${item.quantidade}x ${item.name}</h4>
-                <p>${formatarMoeda(item.preco * item.quantidade)}</p>
-            </div>
-            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" aria-label="Remover">
-                <i class="fas fa-trash-alt"></i>
-            </button>`;
+            <div class="cart-item-info"><h4>${item.quantidade}x ${item.name}</h4><p>${formatarMoeda(item.preco * item.quantidade)}</p></div>
+            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})"><i class="fas fa-trash-alt"></i></button>`;
         list.appendChild(div);
     });
-
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
     const totalFinal = Math.max(0, subtotal - descontoAtivo);
-    const cartCount = carrinho.reduce((acc, i) => acc + i.quantidade, 0);
-
     if (document.getElementById("subtotalValue")) document.getElementById("subtotalValue").innerText = formatarMoeda(subtotal);
     if (document.getElementById("totalValue")) document.getElementById("totalValue").innerText = formatarMoeda(totalFinal);
-    if (document.getElementById("cartCount")) document.getElementById("cartCount").innerText = cartCount;
-    
     const cartFab = document.getElementById("cartToggle");
     if (cartFab) {
         cartFab.style.display = carrinho.length > 0 ? "flex" : "none";
-        const fabTotal = document.getElementById("cartFabTotal");
-        if (fabTotal) fabTotal.innerText = `Ver sacola • ${formatarMoeda(totalFinal)}`;
+        document.getElementById("cartFabTotal").innerText = `Ver sacola • ${formatarMoeda(totalFinal)}`;
     }
 }
 
 // --- 4. SISTEMA DE CUPOM ---
 function aplicarCupom() {
-    vibrar(40);
-    const cupomInput = document.getElementById("cupom");
-    if (!cupomInput) return;
-    
-    const cupom = cupomInput.value.toUpperCase().trim();
-    const discountRow = document.getElementById("discountRow");
-
+    const cupom = document.getElementById("cupom").value.toUpperCase().trim();
     if (cupom === "BENIS10") {
         descontoAtivo = 10.00;
-        if (discountRow) discountRow.style.display = "flex";
-        const discVal = document.getElementById("discountValue");
-        if (discVal) discVal.innerText = `- ${formatarMoeda(descontoAtivo)}`;
-        
-        if(window.Swal) {
-            Swal.fire({ title: 'Cupom Aplicado!', text: 'R$ 10,00 de desconto garantido.', icon: 'success', background: '#1a1a1a', color: '#fff' });
-        }
+        document.getElementById("discountRow").style.display = "flex";
+        document.getElementById("discountValue").innerText = `- ${formatarMoeda(descontoAtivo)}`;
+        Swal.fire({ title: 'Cupom Aplicado!', icon: 'success', background: '#1a1a1a', color: '#fff' });
     } else {
-        descontoAtivo = 0;
-        if (discountRow) discountRow.style.display = "none";
-        if(window.Swal) {
-            Swal.fire({ title: 'Erro!', text: 'Cupom inválido.', icon: 'error', background: '#1a1a1a', color: '#fff' });
-        }
+        Swal.fire({ title: 'Erro!', text: 'Cupom inválido.', icon: 'error', background: '#1a1a1a', color: '#fff' });
     }
     salvarEAtualizar();
 }
 
 // --- 5. CATEGORIAS ---
 function mostrarCategoria(categoria) {
-    vibrar(20);
     const grid = document.getElementById("menu");
     if (!grid) return;
     grid.innerHTML = "";
-    
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.cat === categoria);
-    });
-
-    if(!cardapio[categoria]) return;
-
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.cat === categoria));
     cardapio[categoria].forEach(item => {
         const card = document.createElement("div");
-        card.className = "card-item anim-slide-up";
+        card.className = "card-item";
         card.innerHTML = `
-            <div class="card-image-box">
-                <img src="img/${item.img}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300/111/fff?text=${item.name}'">
-            </div>
-            <div class="card-info">
-                <h3>${item.name}</h3>
-                <p>${item.desc}</p>
-                <span class="price-tag">${formatarMoeda(item.preco)}</span>
-            </div>
-            <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${item.id}, event)">
-                <i class="fas fa-plus"></i> <span>ADICIONAR</span>
-            </button>`;
+            <div class="card-image-box"><img src="img/${item.img}" loading="lazy"></div>
+            <div class="card-info"><h3>${item.name}</h3><p>${item.desc}</p><span class="price-tag">${formatarMoeda(item.preco)}</span></div>
+            <button class="add-btn" onclick="adicionarAoCarrinho('${categoria}', ${item.id}, event)"><i class="fas fa-plus"></i> ADICIONAR</button>`;
         grid.appendChild(card);
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP (FIX APK) ---
+// --- 6. CHECKOUT WHATSAPP (CORREÇÃO FINAL PARA APK E WEB) ---
 function checkout() {
     if (!carrinho.length) return;
-    vibrar(100); 
+    let msg = "🍔 *NOVO PEDIDO - BENIS BURGUER* 🍔\n\n";
+    carrinho.forEach(item => { msg += `✅ ${item.quantidade}x ${item.name}\n`; });
+    const total = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0) - descontoAtivo;
+    msg += `\n💰 *TOTAL:* ${formatarMoeda(total)}\n📍 *ENDEREÇO:* ${window.enderecoEntrega}`;
     
-    let msg = "🍔 *NOVO PEDIDO - BENIS BURGUER* 🍔\n";
-    msg += "━━━━━━━━━━━━━━━━━━━━━━\n\n";
-    
-    carrinho.forEach(item => {
-        msg += `✅ *${item.quantidade}x ${item.name}*\n`;
-        msg += `    Subtotal: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
-    });
-
-    const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
-    const totalFinal = Math.max(0, subtotal - descontoAtivo);
-    
-    msg += "━━━━━━━━━━━━━━━━━━━━━━\n";
-    if (descontoAtivo > 0) msg += `🎁 *DESCONTO:* - ${formatarMoeda(descontoAtivo)}\n`;
-    msg += `💰 *TOTAL DO PEDIDO:* ${formatarMoeda(totalFinal)}\n\n`;
-    
-    msg += "📍 *ENDEREÇO DE ENTREGA:* \n";
-    msg += `🗺️ ${window.enderecoEntrega}\n\n`;
-    msg += "*Observação:* (Informe número da casa e ponto de referência)";
-
-    // Uso de api.whatsapp.com para maior compatibilidade com WebView de APKs
+    // USANDO API OFICIAL PARA EVITAR ERRO DE ESQUEMA NO APK
     const url = `https://api.whatsapp.com/send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
     window.open(url, "_blank");
-
-    carrinho = [];
-    descontoAtivo = 0;
-    localStorage.removeItem('benis_cart');
-    atualizarInterface();
-    toggleCarrinho();
-
-    if (window.Swal) {
-        Swal.fire({ title: 'Pedido Enviado!', text: 'Sua sacola foi limpa.', icon: 'success', background: '#1a1a1a', color: '#fff' });
-    }
 }
 
 function toggleCarrinho() {
-    vibrar(25);
     const panel = document.getElementById('cartPanel');
     const overlay = document.getElementById('cartOverlay');
-    
-    if (!panel || !overlay) return;
-
     panel.classList.toggle('open');
     overlay.classList.toggle('active');
-    
-    if (panel.classList.contains('open')) {
-        document.body.style.overflow = 'hidden';
-    } else {
-        document.body.style.overflow = 'auto';
-    }
+    document.body.style.overflow = panel.classList.contains('open') ? 'hidden' : 'auto';
 }
 
-// --- 7. CONTROLE DE HORÁRIO ---
-function verificarStatusLoja() {
-    const agora = new Date();
-    const diaSemana = agora.getDay();
-    const hora = agora.getHours();
-    const minutos = agora.getMinutes();
-    const tempoAtual = (hora * 60) + minutos;
-    const tempoAbertura = 19 * 60; 
-    const tempoFechamento = (23 * 60) + 59; 
-
-    const statusText = document.getElementById("statusText");
-    const statusDot = document.getElementById("statusDot");
-
-    if (diaSemana === 1) { 
-        if (statusText) statusText.innerText = "Fechado • Abre Terça às 19:00";
-        statusDot?.classList.remove("online");
-    } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
-        if (statusText) statusText.innerText = "Aberto • No Braseiro";
-        statusDot?.classList.add("online");
-    } else {
-        if (statusText) statusText.innerText = `Fechado • Abre às 19h`;
-        statusDot?.classList.remove("online");
-    }
-}
-
-// --- BOOTSTRAP ---
 window.addEventListener('DOMContentLoaded', () => {
-    verificarStatusLoja();
     atualizarInterface();
     mostrarCategoria("hamburguer");
     iniciarMapa();
+});
 
-    const loader = document.getElementById('loader');
+  const loader = document.getElementById('loader');
     const fill = document.querySelector('.progress-bar-fill');
     
     if (loader && fill) {
