@@ -13,7 +13,7 @@ window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)";
 
 const COORDS_LOJA = [-8.73953, -63.86025]; 
 const TELEFONE_WHATSAPP = "556993668336";
-const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
+const GOOGLE_MAPS_URL = `https://www.google.com/maps?q=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
 // Função auxiliar para feedback tátil (Mobile)
 const vibrar = (ms = 50) => {
@@ -132,7 +132,7 @@ async function processarLocalizacao(lat, lng, centralizar = false) {
 
 // --- 3. LÓGICA DO CARRINHO ---
 function adicionarAoCarrinho(cat, id, event) {
-    vibrar(50); // FEEDBACK TÁTIL
+    vibrar(50); 
     
     const itemOriginal = cardapio[cat].find(p => p.id === id);
     if (!itemOriginal) return;
@@ -164,7 +164,7 @@ function adicionarAoCarrinho(cat, id, event) {
 }
 
 function removerDoCarrinho(id) {
-    vibrar(30); // FEEDBACK TÁTIL
+    vibrar(30); 
     const index = carrinho.findIndex(i => i.id === id);
     if (index !== -1) {
         if (carrinho[index].quantidade > 1) {
@@ -240,8 +240,6 @@ function aplicarCupom() {
         if (discountRow) discountRow.style.display = "none";
         if(window.Swal) {
             Swal.fire({ title: 'Erro!', text: 'Cupom inválido.', icon: 'error', background: '#1a1a1a', color: '#fff' });
-        } else {
-            alert("Cupom inválido.");
         }
     }
     salvarEAtualizar();
@@ -282,7 +280,7 @@ function mostrarCategoria(categoria) {
 // --- 6. CHECKOUT WHATSAPP ---
 function checkout() {
     if (!carrinho.length) return;
-    vibrar(100); // Vibração mais longa para finalizar
+    vibrar(100); 
     
     let msg = "🍔 *NOVO PEDIDO - BENIS BURGUER* 🍔\n";
     msg += "━━━━━━━━━━━━━━━━━━━━━━\n\n";
@@ -347,13 +345,15 @@ function verificarStatusLoja() {
     }
 }
 
-// --- BOOTSTRAP ---
+// --- BOOTSTRAP COM ANIMAÇÃO DE BARRA DE PROGRESSO ---
 window.addEventListener('DOMContentLoaded', () => {
+    // Inicializa funções básicas
     verificarStatusLoja();
     atualizarInterface();
     mostrarCategoria("hamburguer");
     iniciarMapa();
 
+    // Fecha carrinho ao clicar fora
     document.addEventListener('click', (e) => {
         const panel = document.getElementById("cartPanel");
         const cartToggle = document.getElementById("cartToggle");
@@ -362,11 +362,26 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Lógica da Barra de Carregamento Fluida
     const loader = document.getElementById('loader');
-    if (loader) {
+    const fill = document.querySelector('.progress-bar-fill');
+    
+    if (loader && fill) {
+        // Garantir que a barra chegue a 100% suavemente
         setTimeout(() => {
-            loader.style.opacity = "0";
-            setTimeout(() => loader.style.display = "none", 800);
-        }, 1000);
+            fill.style.width = "100%";
+            
+            // Aguarda a transição de preenchimento (2s no CSS) terminar
+            setTimeout(() => {
+                loader.style.opacity = "0";
+                loader.style.visibility = "hidden";
+                
+                // Remove do DOM após o fade-out
+                setTimeout(() => {
+                    loader.style.display = "none";
+                }, 800);
+            }, 2000); 
+        }, 100);
     }
 });
+
