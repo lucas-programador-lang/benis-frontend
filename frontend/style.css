@@ -1,5 +1,5 @@
 /**
- * BENIS BURGUER - Gourmet Visual Engine v8.1 (APK & Mobile Optimized)
+ * BENIS BURGUER - Gourmet Visual Engine v8.2 (APK & Mobile Optimized)
  * Fusion: Dark Mode Premium + Glassmorphism Otimizado
  * Fix: Área de Toque do Botão Remover & Responsividade de Sacola (APK Fix)
  * Location: Porto Velho/RO - 2026
@@ -33,7 +33,7 @@
     padding: 0; 
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
-    -webkit-tap-highlight-color: transparent; /* Remove o flash azul ao clicar no Android */
+    -webkit-tap-highlight-color: transparent; 
 }
 
 ::-webkit-scrollbar { width: 6px; }
@@ -366,7 +366,7 @@ body::before {
 /* ITEM DO CARRINHO - FIX APK: GRID PARA EVITAR SOBREPOSIÇÃO */
 .cart-item-elite {
     display: grid;
-    grid-template-columns: 1fr 50px; /* Coluna 1: Info do lanche | Coluna 2: Botão Remover */
+    grid-template-columns: 1fr 50px; 
     align-items: center;
     padding: 18px;
     background: rgba(255, 255, 255, 0.03);
@@ -382,34 +382,44 @@ body::before {
 }
 
 .cart-item-info { 
-    min-width: 0; /* Permite que o texto quebre ou use ellipsis se necessário */
+    min-width: 0; 
 }
 .cart-item-info h4 { font-size: 1.05rem; color: #fff; margin-bottom: 5px; font-weight: 600; }
 .cart-item-info p { color: var(--primary); font-weight: 800; font-size: 1rem; }
 
-/* BOTÃO REMOVER - FIX DEFINITIVO PARA APK (IDÊNTICO AO PRINT 1) */
+/* BOTÃO REMOVER - FIX DEFINITIVO PARA APK */
 .btn-remove {
     background: rgba(255, 71, 87, 0.1) !important;
     color: #ff4757 !important;
     border: 1.5px solid rgba(255, 71, 87, 0.3) !important;
-    width: 46px !important;
-    height: 46px !important;
-    min-width: 46px !important;
-    max-width: 46px !important;
+    width: 48px !important; /* Tamanho de toque padrão mobile */
+    height: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
     flex-shrink: 0 !important;
     border-radius: 12px;
     display: flex !important;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: pointer !important;
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     margin: 0 !important;
     padding: 0 !important;
-    pointer-events: auto !important;
+    pointer-events: auto !important; /* Crucial para o toque ser detectado */
+    z-index: 10;
 }
 
-.btn-remove i { font-size: 1.1rem; pointer-events: none; }
-.btn-remove:active { transform: scale(0.9); background: #ff4757 !important; color: white !important; border-color: transparent !important; }
+.btn-remove i { 
+    font-size: 1.2rem; 
+    pointer-events: none; 
+}
+
+.btn-remove:active { 
+    transform: scale(0.9); 
+    background: #ff4757 !important; 
+    color: white !important; 
+    border-color: transparent !important; 
+}
 
 /* ÁREA DE CUPOM */
 .coupon-wrapper {
