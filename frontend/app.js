@@ -1,5 +1,5 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v8.0 (APK & WebView Optimized)
+ * BENIS BURGUER - Gourmet Logic & Map Engine v8.1 (APK & WebView Optimized)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
  * FIX APK DEFINITIVO: Correção de Layout de Remoção e Protocolo WhatsApp
@@ -173,7 +173,7 @@ function salvarEAtualizar() {
     atualizarInterface();
 }
 
-// FIX DEFINITIVO APK: Ajuste de HTML dinâmico para evitar distorção do botão remover
+// FIX DEFINITIVO APK: Ajuste de HTML dinâmico para garantir que o botão remover seja clicável
 function atualizarInterface() {
     const list = document.getElementById("cartItems");
     if (!list) return;
@@ -183,17 +183,18 @@ function atualizarInterface() {
     carrinho.forEach(item => {
         const div = document.createElement("div");
         div.className = "cart-item-elite anim-fade-in";
-        // Estilo injetado diretamente para blindar o botão contra o WebView do APK
+        // Botão remover com classe específica e tratamento de pointer-events para o APK
         div.innerHTML = `
             <div class="cart-item-info" style="flex: 1; min-width: 0;">
                 <h4 style="margin:0; font-size: 1rem; color: #fff;">${item.quantidade}x ${item.name}</h4>
                 <p style="margin:4px 0 0 0; color: #ff8c00; font-weight: bold;">${formatarMoeda(item.preco * item.quantidade)}</p>
             </div>
-            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" aria-label="Remover" 
-                style="width: 42px !important; height: 42px !important; flex: 0 0 42px !important; 
+            <button class="btn-remove-item" onclick="removerDoCarrinho(${item.id})" aria-label="Remover" 
+                style="width: 44px !important; height: 44px !important; flex: 0 0 44px !important; 
                 margin-left: 12px; display: flex; align-items: center; justify-content: center; 
-                background: rgba(255, 68, 68, 0.15); border: 1px solid #ff4444; border-radius: 8px; color: #ff4444;">
-                <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
+                background: rgba(255, 68, 68, 0.1); border: 1.5px solid #ff4444; border-radius: 10px; color: #ff4444;
+                pointer-events: auto !important; cursor: pointer !important; position: relative; z-index: 10;">
+                <i class="fas fa-trash-alt" style="font-size: 18px; pointer-events: none;"></i>
             </button>`;
         list.appendChild(div);
     });
@@ -214,7 +215,7 @@ function atualizarInterface() {
     }
 }
 
-// --- 4. SISTEMA DE CUPOM ---
+// --- 4. SISTEMA DE CUPOM (FIX Z-INDEX DEFINITIVO) ---
 function aplicarCupom() {
     vibrar(40);
     const cupomInput = document.getElementById("cupom");
@@ -223,7 +224,18 @@ function aplicarCupom() {
     const cupom = cupomInput.value.toUpperCase().trim();
     const discountRow = document.getElementById("discountRow");
 
-    if (cupom === "") return; // Evita erro ao clicar sem digitar nada
+    if (cupom === "") {
+         Swal.fire({ 
+            title: 'Ops!', 
+            text: 'Informe um cupom.', 
+            icon: 'warning', 
+            background: '#1a1a1a', 
+            color: '#fff',
+            target: 'body',
+            backdrop: 'rgba(0,0,0,0.8)'
+        });
+        return;
+    }
 
     if (cupom === "BENIS10") {
         descontoAtivo = 10.00;
@@ -232,13 +244,29 @@ function aplicarCupom() {
         if (discVal) discVal.innerText = `- ${formatarMoeda(descontoAtivo)}`;
         
         if(window.Swal) {
-            Swal.fire({ title: 'Cupom Aplicado!', text: 'R$ 10,00 de desconto garantido.', icon: 'success', background: '#1a1a1a', color: '#fff' });
+            Swal.fire({ 
+                title: 'Cupom Aplicado!', 
+                text: 'R$ 10,00 de desconto garantido.', 
+                icon: 'success', 
+                background: '#1a1a1a', 
+                color: '#fff',
+                target: 'body', // ESSA LINHA RESOLVE O PRINT 3
+                confirmButtonColor: '#ff8c00'
+            });
         }
     } else {
         descontoAtivo = 0;
         if (discountRow) discountRow.style.display = "none";
         if(window.Swal) {
-            Swal.fire({ title: 'Erro!', text: 'Cupom inválido.', icon: 'error', background: '#1a1a1a', color: '#fff' });
+            Swal.fire({ 
+                title: 'Cupom Inválido', 
+                text: 'Tente outro código.', 
+                icon: 'error', 
+                background: '#1a1a1a', 
+                color: '#fff',
+                target: 'body', // ESSA LINHA RESOLVE O PRINT 3
+                confirmButtonColor: '#6c5ce7'
+            });
         }
     }
     salvarEAtualizar();
@@ -300,7 +328,6 @@ function checkout() {
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
     msg += "*Observação:* (Informe número da casa e ponto de referência)";
 
-    // FIX APK DEFINITIVO: Uso do link universal api.whatsapp para evitar ERR_UNKNOWN_URL_SCHEME no Android WebView
     const backupUrl = `https://api.whatsapp.com/send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
 
     try {
@@ -324,7 +351,8 @@ function checkout() {
             background: '#1a1a1a', 
             color: '#fff',
             timer: 2500,
-            showConfirmButton: false
+            showConfirmButton: false,
+            target: 'body'
         });
     }
 }
