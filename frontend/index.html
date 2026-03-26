@@ -114,7 +114,7 @@
                 <div id="mapaEntrega" class="map-canvas"></div>
                 <div class="map-info">
                     <p class="address-text">R. Paulo Fortes, 6245 - Aponiã</p>
-                    <a href="https://maps.google.com/?q=Benis+Burguer" target="_blank" class="link-mapa-direto">
+                    <a href="https://maps.google.com" target="_blank" class="link-mapa-direto">
                         Como chegar <i class="fas fa-external-link-alt"></i>
                     </a>
                 </div>
@@ -140,10 +140,12 @@
         <i class="fas fa-chevron-right"></i>
     </div>
 
+    <div id="cartOverlay" class="cart-overlay" onclick="toggleCarrinho()"></div>
+
     <aside id="cartPanel" class="cart-panel-elite">
         <div class="cart-header-elite">
             <h2><i class="fas fa-shopping-basket"></i> Minha Sacola</h2>
-            <button class="btn-close-cart" onclick="toggleCarrinho()">
+            <button class="btn-close-cart" onclick="toggleCarrinho()" aria-label="Fechar">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -154,7 +156,7 @@
         <div class="cart-footer-elite">
             <div class="coupon-section">
                 <div class="coupon-wrapper">
-                    <input type="text" id="cupom" placeholder="CUPOM DE DESCONTO">
+                    <input type="text" id="cupom" placeholder="CUPOM DE DESCONTO" autocomplete="off">
                     <button class="btn-apply-coupon" onclick="aplicarCupom()">
                         <i class="fas fa-check"></i>
                     </button>
@@ -166,18 +168,18 @@
                     <span>Subtotal</span>
                     <span id="subtotalValue">R$ 0,00</span>
                 </div>
-                <div id="discountRow" class="detail-row discount" style="display: none;">
+                <div id="discountRow" class="detail-row discount" style="display: none; color: #25d366;">
                     <span>Desconto</span>
                     <span id="discountValue">- R$ 0,00</span>
                 </div>
                 <div class="detail-row grand-total">
                     <span>Total</span>
-                    <span id="totalValue">R$ 0,00</span>
+                    <span id="totalValue" style="color: var(--primary);">R$ 0,00</span>
                 </div>
             </div>
 
             <button class="checkout-btn" onclick="checkout()">
-                <span>FINALIZAR PEDIDO</span>
+                <span>FINALIZAR NO WHATSAPP</span>
                 <i class="fab fa-whatsapp"></i>
             </button>
         </div>
