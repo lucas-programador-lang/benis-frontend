@@ -183,14 +183,17 @@ function atualizarInterface() {
     carrinho.forEach(item => {
         const div = document.createElement("div");
         div.className = "cart-item-elite anim-fade-in";
-        // Estilo inline no botão para garantir flexibilidade zero no WebView do APK
+        // Estilo injetado diretamente para blindar o botão contra o WebView do APK
         div.innerHTML = `
-            <div class="cart-item-info" style="flex: 1;">
-                <h4>${item.quantidade}x ${item.name}</h4>
-                <p>${formatarMoeda(item.preco * item.quantidade)}</p>
+            <div class="cart-item-info" style="flex: 1; min-width: 0;">
+                <h4 style="margin:0; font-size: 1rem; color: #fff;">${item.quantidade}x ${item.name}</h4>
+                <p style="margin:4px 0 0 0; color: #ff8c00; font-weight: bold;">${formatarMoeda(item.preco * item.quantidade)}</p>
             </div>
-            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" aria-label="Remover" style="width: 45px; height: 45px; flex-shrink: 0; margin-left: 10px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-trash-alt"></i>
+            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" aria-label="Remover" 
+                style="width: 42px !important; height: 42px !important; flex: 0 0 42px !important; 
+                margin-left: 12px; display: flex; align-items: center; justify-content: center; 
+                background: rgba(255, 68, 68, 0.15); border: 1px solid #ff4444; border-radius: 8px; color: #ff4444;">
+                <i class="fas fa-trash-alt" style="font-size: 18px;"></i>
             </button>`;
         list.appendChild(div);
     });
@@ -219,6 +222,8 @@ function aplicarCupom() {
     
     const cupom = cupomInput.value.toUpperCase().trim();
     const discountRow = document.getElementById("discountRow");
+
+    if (cupom === "") return; // Evita erro ao clicar sem digitar nada
 
     if (cupom === "BENIS10") {
         descontoAtivo = 10.00;
@@ -295,13 +300,13 @@ function checkout() {
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
     msg += "*Observação:* (Informe número da casa e ponto de referência)";
 
-    // FIX APK DEFINITIVO: Uso do link universal api.whatsapp para evitar ERR_UNKNOWN_URL_SCHEME
+    // FIX APK DEFINITIVO: Uso do link universal api.whatsapp para evitar ERR_UNKNOWN_URL_SCHEME no Android WebView
     const backupUrl = `https://api.whatsapp.com/send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
 
     try {
-        window.location.href = backupUrl;
+        window.open(backupUrl, '_blank');
     } catch (e) {
-        console.error("Erro ao redirecionar:", e);
+        window.location.href = backupUrl;
     }
 
     // Limpeza após envio
