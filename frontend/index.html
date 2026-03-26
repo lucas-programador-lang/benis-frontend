@@ -2,20 +2,15 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Benis Burguer | Elite Edition</title>
     
     <meta name="description" content="O melhor hambúrguer gourmet de Porto Velho/RO. Qualidade premium e sabor inconfundível no Aponiã.">
     <meta name="keywords" content="hamburguer, porto velho, delivery, gourmet, benis burguer">
-    <meta name="author" content="Benis Burguer">
+    <meta name="author" content="Jose Lucas - Estácio">
     <meta name="theme-color" content="#0a0a0a">
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Benis Burguer">
-
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://benis-burguer-app.pages.dev/">
     <meta property="og:title" content="Benis Burguer | Elite Edition">
     <meta property="og:description" content="Peça o brabo de Porto Velho direto pelo nosso app!">
     <meta property="og:image" content="logo.png">
@@ -27,15 +22,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
     <link rel="stylesheet" href="style.css">
-
-    <link rel="shortcut icon" href="logo.png" type="image/png">
 </head>
 <body>
 
-    <div id="loader" class="loader-wrapper" aria-hidden="true">
+    <div id="loader" class="loader-wrapper">
         <div class="loader-content">
-            <img src="logo.png" class="loader-logo" alt="Carregando Benis Burguer" onerror="this.src='https://via.placeholder.com/120x120/ff8c00/ffffff?text=BENIS'">
+            <img src="logo.png" class="loader-logo" alt="Logo Benis Burguer" onerror="this.src='https://via.placeholder.com/120x120/ff8c00/ffffff?text=BENIS'">
             <div class="progress-bar-container">
                 <div id="progressBar" class="progress-bar-fill"></div>
             </div>
@@ -46,15 +40,15 @@
     <header class="glass-header">
         <div class="header-container">
             <div class="logo-wrapper">
-                <img src="logo.png" alt="Benis Burguer" class="logo-img" onerror="this.src='https://via.placeholder.com/45x45/ff8c00/ffffff?text=B'">
+                <img src="logo.png" alt="Benis Burguer Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/45x45/ff8c00/ffffff?text=B'">
             </div>
             <div class="header-actions">
                 <div class="social-links">
-                    <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="social-btn btn-instagram" aria-label="Acompanhe no Instagram">
-                        <i class="fab fa-instagram" aria-hidden="true"></i>
+                    <a href="https://www.instagram.com/" target="_blank" class="social-btn btn-instagram" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
                     </a>
-                    <a href="https://wa.me/556993668336" target="_blank" rel="noopener" class="social-btn btn-whatsapp" aria-label="Chamar no WhatsApp">
-                        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                    <a href="https://wa.me/556993668336" target="_blank" class="social-btn btn-whatsapp" aria-label="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
                     </a>
                 </div>
             </div>
@@ -68,7 +62,7 @@
                 <h1 class="hero-title">Sabor que vicia, <br><span class="text-gradient">qualidade que conquista.</span></h1>
                 
                 <div class="app-download-area">
-                    <a href="benis-burguer.apk" download="BenisBurguer.apk" class="btn-download-app" title="Baixar aplicativo para Android">
+                    <a href="benis-burguer.apk" download="BenisBurguer.apk" class="btn-download-app">
                         <div class="btn-icon">
                             <i class="fab fa-android"></i>
                         </div>
@@ -81,37 +75,42 @@
 
                 <div class="status-container">
                     <div class="status-indicator">
-                        <span id="statusLabel" class="status-dot"></span>
+                        <span id="statusDot" class="status-dot"></span>
                         <span id="statusText">Verificando braseiro...</span>
                     </div>
                 </div>
                 
                 <div class="gps-action-wrapper">
-                    <a href="https://www.google.com/maps/search/?api=1&query=Benis+Burguer+Aponia" target="_blank" rel="noopener" class="btn-gps-elite">
-                        <i class="fas fa-location-arrow"></i> ABRIR NO GPS
-                    </a>
+                    <button class="btn-gps-elite" onclick="iniciarMapa()">
+                        <i class="fas fa-location-arrow"></i>
+                        VER NO MAPA / LOCALIZAR-ME
+                    </button>
                 </div>
             </div>
         </section>
 
         <div class="nav-container-glass">
-            <nav class="categorias-elite" id="categoryNav" role="tablist">
-                <button class="tab-btn active" role="tab" aria-selected="true" data-cat="hamburguer" onclick="mostrarCategoria('hamburguer')">
-                    <i class="fas fa-hamburger"></i> <span>Burguers</span>
+            <nav class="categorias-elite" id="categoryNav">
+                <button class="tab-btn active" data-cat="hamburguer" onclick="mostrarCategoria('hamburguer')">
+                    <i class="fas fa-hamburger"></i>
+                    <span>Burguers</span>
                 </button>
-                <button class="tab-btn" role="tab" aria-selected="false" data-cat="porcoes" onclick="mostrarCategoria('porcoes')">
-                    <i class="fas fa-drumstick-bite"></i> <span>Porções</span>
+                <button class="tab-btn" data-cat="porcoes" onclick="mostrarCategoria('porcoes')">
+                    <i class="fas fa-drumstick-bite"></i>
+                    <span>Porções</span>
                 </button>
-                <button class="tab-btn" role="tab" aria-selected="false" data-cat="bebidas" onclick="mostrarCategoria('bebidas')">
-                    <i class="fas fa-bottle-water"></i> <span>Bebidas</span>
+                <button class="tab-btn" data-cat="bebidas" onclick="mostrarCategoria('bebidas')">
+                    <i class="fas fa-bottle-water"></i>
+                    <span>Bebidas</span>
                 </button>
-                <button class="tab-btn" role="tab" aria-selected="false" data-cat="extras" onclick="mostrarCategoria('extras')">
-                    <i class="fas fa-plus-circle"></i> <span>Extras</span>
+                <button class="tab-btn" data-cat="extras" onclick="mostrarCategoria('extras')">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Extras</span>
                 </button>
             </nav>
         </div>
 
-        <section id="menu" class="menu-grid container" aria-live="polite">
+        <section id="menu" class="menu-grid container">
             </section>
 
         <section class="location-section container">
@@ -120,10 +119,10 @@
             </div>
             
             <div class="map-card-wrapper">
-                <div id="mapaEntrega" class="map-canvas" title="Mapa de localização"></div>
+                <div id="mapaEntrega" class="map-canvas"></div>
                 <div class="map-info">
-                    <address class="address-text">R. Paulo Fortes, 6245 - Aponiã</address>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=-8.7300,-63.8700" target="_blank" rel="noopener" class="link-mapa-direto">
+                    <p class="address-text">R. Paulo Fortes, 6245 - Aponiã</p>
+                    <a href="https://www.google.com/maps?q=-8.73953,-63.86025" target="_blank" class="link-mapa-direto">
                         Como chegar <i class="fas fa-external-link-alt"></i>
                     </a>
                 </div>
@@ -134,17 +133,17 @@
     <footer class="main-footer">
         <div class="container">
             <p>© 2026 Benis Burguer - Porto Velho/RO</p>
-            <small>Elite Edition v2.0</small>
+            <small>Desenvolvido por Jose Lucas (Estácio)</small>
         </div>
     </footer>
 
-    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" role="button" aria-label="Ver sacola">
+    <div id="cartToggle" class="cart-fab" onclick="toggleCarrinho()" style="display: none;">
         <div class="cart-fab-content">
             <div class="cart-icon-wrapper">
                 <i class="fas fa-shopping-bag"></i>
                 <span id="cartCount" class="cart-badge">0</span>
             </div>
-            <span id="cartFabTotal" class="cart-fab-price">Ver sacola (R$ 0,00)</span>
+            <span id="cartFabTotal" class="cart-fab-price">Ver sacola</span>
         </div>
         <i class="fas fa-chevron-right"></i>
     </div>
@@ -152,18 +151,19 @@
     <aside id="cartPanel" class="cart-panel-elite">
         <div class="cart-header-elite">
             <h2><i class="fas fa-shopping-basket"></i> Minha Sacola</h2>
-            <button class="btn-close-cart" onclick="toggleCarrinho()" aria-label="Fechar sacola">
+            <button class="btn-close-cart" onclick="toggleCarrinho()">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
-        <div id="cartItems" class="cart-content-scroll"></div>
+        <div id="cartItems" class="cart-content-scroll">
+            </div>
 
         <div class="cart-footer-elite">
             <div class="coupon-section">
                 <div class="coupon-wrapper">
-                    <input type="text" id="cupom" placeholder="CUPOM DE DESCONTO" aria-label="Cupom de desconto">
-                    <button class="btn-apply-coupon" onclick="aplicarCupom()" title="Aplicar cupom">
+                    <input type="text" id="cupom" placeholder="CUPOM DE DESCONTO">
+                    <button class="btn-apply-coupon" onclick="aplicarCupom()">
                         <i class="fas fa-check"></i>
                     </button>
                 </div>
@@ -193,7 +193,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="js/mapa.js" defer></script>
+    
     <script src="app.js" defer></script>
 </body>
 </html>
