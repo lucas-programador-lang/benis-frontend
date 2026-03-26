@@ -2,6 +2,7 @@
  * BENIS BURGUER - Gourmet Logic & Map Engine v7.0 (Elite Edition)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
+ * FIX: Sistema de Overlay e Trava de Scroll no Carrinho
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -195,7 +196,7 @@ function atualizarInterface() {
                 <h4>${item.quantidade}x ${item.name}</h4>
                 <p>${formatarMoeda(item.preco * item.quantidade)}</p>
             </div>
-            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})">
+            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" aria-label="Remover">
                 <i class="fas fa-trash-alt"></i>
             </button>`;
         list.appendChild(div);
@@ -307,17 +308,30 @@ function checkout() {
     descontoAtivo = 0;
     localStorage.removeItem('benis_cart');
     atualizarInterface();
-    if(document.getElementById("cartPanel")) document.getElementById("cartPanel").classList.remove("open");
+    toggleCarrinho(); // Fecha o carrinho após finalizar
 
     if (window.Swal) {
         Swal.fire({ title: 'Pedido Enviado!', text: 'Sua sacola foi limpa e o pedido enviado.', icon: 'success', background: '#1a1a1a', color: '#fff' });
     }
 }
 
-function toggleCarrinho() { 
+// --- CORREÇÃO: FUNÇÃO TOGGLE COM OVERLAY E TRAVA DE SCROLL ---
+function toggleCarrinho() {
     vibrar(25);
-    const panel = document.getElementById("cartPanel");
-    if (panel) panel.classList.toggle("open");
+    const panel = document.getElementById('cartPanel');
+    const overlay = document.getElementById('cartOverlay');
+    
+    if (!panel || !overlay) return;
+
+    panel.classList.toggle('open');
+    overlay.classList.toggle('active');
+    
+    // Impede o scroll do fundo quando o carrinho está aberto
+    if (panel.classList.contains('open')) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = 'auto';
+    }
 }
 
 // --- 7. CONTROLE DE HORÁRIO ---
@@ -347,39 +361,22 @@ function verificarStatusLoja() {
 
 // --- BOOTSTRAP COM ANIMAÇÃO DE BARRA DE PROGRESSO ---
 window.addEventListener('DOMContentLoaded', () => {
-    // Inicializa funções básicas
     verificarStatusLoja();
     atualizarInterface();
     mostrarCategoria("hamburguer");
     iniciarMapa();
 
-    // Fecha carrinho ao clicar fora
-    document.addEventListener('click', (e) => {
-        const panel = document.getElementById("cartPanel");
-        const cartToggle = document.getElementById("cartToggle");
-        if (panel && panel.classList.contains("open") && !panel.contains(e.target) && !cartToggle?.contains(e.target)) {
-            toggleCarrinho();
-        }
-    });
-
-    // Lógica da Barra de Carregamento Fluida
+    // Lógica do Loader
     const loader = document.getElementById('loader');
     const fill = document.querySelector('.progress-bar-fill');
     
     if (loader && fill) {
-        // Garantir que a barra chegue a 100% suavemente
         setTimeout(() => {
             fill.style.width = "100%";
-            
-            // Aguarda a transição de preenchimento (2s no CSS) terminar
             setTimeout(() => {
                 loader.style.opacity = "0";
                 loader.style.visibility = "hidden";
-                
-                // Remove do DOM após o fade-out
-                setTimeout(() => {
-                    loader.style.display = "none";
-                }, 800);
+                setTimeout(() => { loader.style.display = "none"; }, 800);
             }, 2000); 
         }, 100);
     }
