@@ -242,6 +242,8 @@ function mostrarCategoria(categoria) {
         btn.classList.toggle('active', btn.dataset.cat === categoria);
     });
 
+    if(!cardapio[categoria]) return;
+
     cardapio[categoria].forEach(item => {
         const card = document.createElement("div");
         card.className = "card-item anim-slide-up";
@@ -282,7 +284,7 @@ function checkout() {
     
     msg += "📍 *ENDEREÇO DE ENTREGA:* \n";
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
-    msg += "*Observação:* (Número da casa e Ponto de Referência)";
+    msg += "*Observação:* (Informe número da casa e ponto de referência)";
 
     window.open(`https://wa.me/${TELEFONE_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
 
@@ -313,7 +315,7 @@ function verificarStatusLoja() {
     const tempoFechamento = (23 * 60) + 59; 
 
     const statusText = document.getElementById("statusText");
-    const statusDot = document.getElementById("statusLabel");
+    const statusDot = document.getElementById("statusDot");
 
     if (diaSemana === 1) { 
         if (statusText) statusText.innerText = "Fechado • Abre Terça às 19:00";
