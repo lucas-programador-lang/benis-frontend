@@ -1,8 +1,8 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v7.9 (APK Optimized)
+ * BENIS BURGUER - Gourmet Logic & Map Engine v8.0 (APK & WebView Optimized)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
- * FIX APK DEFINITIVO: Interceptação de Intent e Correção de Remoção
+ * FIX APK DEFINITIVO: Correção de Layout de Remoção e Protocolo WhatsApp
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -154,7 +154,6 @@ function adicionarAoCarrinho(cat, id, event) {
     }, 1000);
 }
 
-// CORREÇÃO: Função de remover ajustada para APK
 function removerDoCarrinho(id) {
     vibrar(30); 
     const itemIndex = carrinho.findIndex(i => i.id === id);
@@ -174,6 +173,7 @@ function salvarEAtualizar() {
     atualizarInterface();
 }
 
+// FIX DEFINITIVO APK: Ajuste de HTML dinâmico para evitar distorção do botão remover
 function atualizarInterface() {
     const list = document.getElementById("cartItems");
     if (!list) return;
@@ -183,12 +183,13 @@ function atualizarInterface() {
     carrinho.forEach(item => {
         const div = document.createElement("div");
         div.className = "cart-item-elite anim-fade-in";
+        // Estilo inline no botão para garantir flexibilidade zero no WebView do APK
         div.innerHTML = `
-            <div class="cart-item-info">
+            <div class="cart-item-info" style="flex: 1;">
                 <h4>${item.quantidade}x ${item.name}</h4>
                 <p>${formatarMoeda(item.preco * item.quantidade)}</p>
             </div>
-            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" aria-label="Remover">
+            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" aria-label="Remover" style="width: 45px; height: 45px; flex-shrink: 0; margin-left: 10px; display: flex; align-items: center; justify-content: center;">
                 <i class="fas fa-trash-alt"></i>
             </button>`;
         list.appendChild(div);
@@ -270,7 +271,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP (FIX APK DEFINITIVO) ---
+// --- 6. CHECKOUT WHATSAPP (FIX APK UNIVERSAL) ---
 function checkout() {
     if (!carrinho.length) return;
     vibrar(100); 
@@ -294,19 +295,13 @@ function checkout() {
     msg += `🗺️ ${window.enderecoEntrega}\n\n`;
     msg += "*Observação:* (Informe número da casa e ponto de referência)";
 
-    // FIX APK: Uso de whatsapp:// em vez de https para forçar o app nativo no Android
-    const whatsappUrl = `whatsapp://send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
+    // FIX APK DEFINITIVO: Uso do link universal api.whatsapp para evitar ERR_UNKNOWN_URL_SCHEME
     const backupUrl = `https://api.whatsapp.com/send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
 
     try {
-        window.location.href = whatsappUrl;
-        
-        // Se a página não mudar em 500ms, tenta o link reserva
-        setTimeout(() => {
-            if (document.hasFocus()) window.location.href = backupUrl;
-        }, 500);
-    } catch (e) {
         window.location.href = backupUrl;
+    } catch (e) {
+        console.error("Erro ao redirecionar:", e);
     }
 
     // Limpeza após envio
