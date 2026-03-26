@@ -1,8 +1,8 @@
 /**
- * BENIS BURGUER - Gourmet Logic & Map Engine v8.1 (APK & WebView Optimized)
+ * BENIS BURGUER - Gourmet Logic & Map Engine v8.2 (APK & WebView Optimized)
  * Localidade: Porto Velho, RO - 2026
  * Sincronizado: app.js + Horários Oficiais + Cardápio Atualizado
- * FIX APK DEFINITIVO: Correção de Layout de Remoção e Protocolo WhatsApp
+ * FIX APK DEFINITIVO: Área de toque do Botão Remover & Persistência de Dados
  */
 
 // --- 1. CONFIGURAÇÕES E ESTADO GLOBAL ---
@@ -155,7 +155,7 @@ function adicionarAoCarrinho(cat, id, event) {
 }
 
 function removerDoCarrinho(id) {
-    vibrar(30); 
+    vibrar(40); 
     const itemIndex = carrinho.findIndex(i => i.id === id);
     
     if (itemIndex !== -1) {
@@ -173,7 +173,7 @@ function salvarEAtualizar() {
     atualizarInterface();
 }
 
-// FIX DEFINITIVO APK: Ajuste de HTML dinâmico para garantir que o botão remover seja clicável
+// FIX DEFINITIVO APK: Ajuste de HTML dinâmico para garantir clique no botão de remoção
 function atualizarInterface() {
     const list = document.getElementById("cartItems");
     if (!list) return;
@@ -184,14 +184,13 @@ function atualizarInterface() {
         const div = document.createElement("div");
         div.className = "cart-item-elite anim-fade-in";
         
-        // CORREÇÃO APK: Classe btn-remove padronizada com style.css e garantia de clique
+        // CORREÇÃO APK: onclick direto no botão e z-index garantido
         div.innerHTML = `
-            <div class="cart-item-info" style="flex: 1; min-width: 0;">
-                <h4 style="margin:0; font-size: 1rem; color: #fff;">${item.quantidade}x ${item.name}</h4>
-                <p style="margin:4px 0 0 0; color: #ff8c00; font-weight: bold;">${formatarMoeda(item.preco * item.quantidade)}</p>
+            <div class="cart-item-info">
+                <h4>${item.quantidade}x ${item.name}</h4>
+                <p>${formatarMoeda(item.preco * item.quantidade)}</p>
             </div>
-            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" aria-label="Remover" 
-                style="pointer-events: auto !important; cursor: pointer !important; position: relative; z-index: 10;">
+            <button class="btn-remove" onclick="removerDoCarrinho(${item.id})" style="pointer-events: auto !important; cursor: pointer !important;">
                 <i class="fas fa-trash-alt" style="pointer-events: none;"></i>
             </button>`;
         list.appendChild(div);
@@ -213,7 +212,7 @@ function atualizarInterface() {
     }
 }
 
-// --- 4. SISTEMA DE CUPOM (FIX Z-INDEX DEFINITIVO) ---
+// --- 4. SISTEMA DE CUPOM ---
 function aplicarCupom() {
     vibrar(40);
     const cupomInput = document.getElementById("cupom");
@@ -229,8 +228,7 @@ function aplicarCupom() {
             icon: 'warning', 
             background: '#1a1a1a', 
             color: '#fff',
-            target: 'body',
-            backdrop: 'rgba(0,0,0,0.8)'
+            confirmButtonColor: '#ff8c00'
         });
         return;
     }
@@ -241,31 +239,25 @@ function aplicarCupom() {
         const discVal = document.getElementById("discountValue");
         if (discVal) discVal.innerText = `- ${formatarMoeda(descontoAtivo)}`;
         
-        if(window.Swal) {
-            Swal.fire({ 
-                title: 'Cupom Aplicado!', 
-                text: 'R$ 10,00 de desconto garantido.', 
-                icon: 'success', 
-                background: '#1a1a1a', 
-                color: '#fff',
-                target: 'body',
-                confirmButtonColor: '#ff8c00'
-            });
-        }
+        Swal.fire({ 
+            title: 'Cupom Aplicado!', 
+            text: 'R$ 10,00 de desconto garantido.', 
+            icon: 'success', 
+            background: '#1a1a1a', 
+            color: '#fff',
+            confirmButtonColor: '#ff8c00'
+        });
     } else {
         descontoAtivo = 0;
         if (discountRow) discountRow.style.display = "none";
-        if(window.Swal) {
-            Swal.fire({ 
-                title: 'Cupom Inválido', 
-                text: 'Tente outro código.', 
-                icon: 'error', 
-                background: '#1a1a1a', 
-                color: '#fff',
-                target: 'body',
-                confirmButtonColor: '#6c5ce7'
-            });
-        }
+        Swal.fire({ 
+            title: 'Cupom Inválido', 
+            text: 'Tente outro código.', 
+            icon: 'error', 
+            background: '#1a1a1a', 
+            color: '#fff',
+            confirmButtonColor: '#ff4d4d'
+        });
     }
     salvarEAtualizar();
 }
@@ -302,7 +294,7 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP (FIX APK UNIVERSAL) ---
+// --- 6. CHECKOUT WHATSAPP ---
 function checkout() {
     if (!carrinho.length) return;
     vibrar(100); 
@@ -341,18 +333,15 @@ function checkout() {
     atualizarInterface();
     toggleCarrinho();
 
-    if (window.Swal) {
-        Swal.fire({ 
-            title: 'Pedido Enviado!', 
-            text: 'Conclua o envio no WhatsApp.', 
-            icon: 'success', 
-            background: '#1a1a1a', 
-            color: '#fff',
-            timer: 2500,
-            showConfirmButton: false,
-            target: 'body'
-        });
-    }
+    Swal.fire({ 
+        title: 'Pedido Enviado!', 
+        text: 'Conclua o envio no WhatsApp.', 
+        icon: 'success', 
+        background: '#1a1a1a', 
+        color: '#fff',
+        timer: 2500,
+        showConfirmButton: false
+    });
 }
 
 function toggleCarrinho() {
@@ -365,11 +354,7 @@ function toggleCarrinho() {
     panel.classList.toggle('open');
     overlay.classList.toggle('active');
     
-    if (panel.classList.contains('open')) {
-        document.body.style.overflow = 'hidden';
-    } else {
-        document.body.style.overflow = 'auto';
-    }
+    document.body.style.overflow = panel.classList.contains('open') ? 'hidden' : 'auto';
 }
 
 // --- 7. CONTROLE DE HORÁRIO ---
