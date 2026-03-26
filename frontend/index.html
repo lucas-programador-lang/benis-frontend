@@ -20,49 +20,14 @@
     <link rel="manifest" href="manifest.json">
 
     <style>
-        /* FIX DEFINITIVO PARA O BOTÃO REMOVER NO APK (PRINT 2) */
-        .cart-item-elite {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-            padding: 12px !important;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .cart-item-info {
-            flex: 1 !important; /* Faz o texto ocupar o espaço restante */
-            min-width: 0 !important; /* Importante para o truncate funcionar */
-            padding-right: 10px;
-        }
-
-        .cart-item-info h4 {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; /* Evita que o nome do lanche empurre o botão */
-        }
-
-        .btn-remove-item {
-            width: 44px !important;
-            height: 44px !important;
-            flex-shrink: 0 !important; /* IMPEDE O BOTÃO DE FICAR ESMAGADO NO APK */
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            background: rgba(255, 68, 68, 0.1) !important;
-            border: 1px solid #ff4444 !important;
-            border-radius: 10px !important;
-            color: #ff4444 !important;
-            cursor: pointer !important;
-            pointer-events: auto !important;
-            z-index: 10;
-        }
-
-        /* GARANTIA DE QUE O CUPOM NÃO FIQUE ESCONDIDO (PRINT 3) */
+        /* GARANTIA DE QUE O CUPOM NÃO FIQUE ESCONDIDO NO APK */
         .swal2-container {
-            z-index: 999999 !important;
+            z-index: 999999 !important; 
+        }
+        
+        /* FIX DE SOBREPOSIÇÃO PARA ELEMENTOS CLICÁVEIS NO WEBVIEW */
+        .cart-panel-elite {
+            pointer-events: auto !important;
         }
     </style>
 </head>
@@ -113,7 +78,7 @@
                         </div>
                     </a>
 
-                    <a href="https://maps.app.goo.gl/2Ynf8WiZVg2EbFLH6" target="_blank" class="btn-gps-elite-v2" style="text-decoration: none; justify-content: center;">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Benis+Burguer+Porto+Velho" target="_blank" class="btn-gps-elite-v2" style="text-decoration: none; justify-content: center;">
                         <i class="fas fa-location-dot"></i>
                         <span>VER NO MAPA / LOCALIZAR-ME</span>
                     </a>
@@ -150,7 +115,7 @@
         </div>
 
         <section id="menu" class="menu-grid container">
-        </section>
+            </section>
 
         <section class="location-section container">
             <div class="section-title">
@@ -198,7 +163,7 @@
         </div>
 
         <div id="cartItems" class="cart-content-scroll">
-        </div>
+            </div>
 
         <div class="cart-footer-elite">
             <div class="coupon-section">
@@ -237,7 +202,6 @@
     <script src="app.js" defer></script>
 
     <script>
-        // Função do Cupom integrada para garantir que o alerta apareça na frente do APK
         function aplicarCupom() {
             const inputCupom = document.getElementById('cupom').value.trim().toUpperCase();
             
@@ -248,36 +212,21 @@
                     icon: 'warning',
                     background: '#1a1a1a',
                     color: '#fff',
-                    confirmButtonColor: '#ff8c00',
-                    target: 'body'
+                    confirmButtonColor: '#ff8c00'
                 });
                 return;
             }
 
-            // Exemplo de lógica de cupom (deve estar sincronizada com seu app.js)
-            if (inputCupom === "BENIS10") {
-                Swal.fire({
-                    title: 'Sucesso!',
-                    text: 'Cupom aplicado.',
-                    icon: 'success',
-                    background: '#1a1a1a',
-                    color: '#fff',
-                    confirmButtonColor: '#ff8c00',
-                    target: 'body'
-                });
-                // Chama a função global do app.js se existir
-                if(typeof window.aplicarCupomApp === "function") window.aplicarCupomApp();
-            } else {
-                Swal.fire({
-                    title: 'Erro!',
-                    text: 'Cupom inválido.',
-                    icon: 'error',
-                    background: '#1a1a1a',
-                    color: '#fff',
-                    confirmButtonColor: '#6c5ce7',
-                    target: 'body'
-                });
-            }
+            // Correção para o SweetAlert aparecer sobre tudo no Android
+            Swal.fire({
+                title: 'Verificando...',
+                text: 'Validando seu cupom no sistema.',
+                icon: 'info',
+                background: '#1a1a1a',
+                color: '#fff',
+                confirmButtonColor: '#ff8c00',
+                target: 'body'
+            });
         }
     </script>
 </body>
