@@ -14,6 +14,7 @@ window.enderecoEntrega = "Não selecionado no mapa (Informe ao atendente)";
 
 const COORDS_LOJA = [-8.73953, -63.86025]; 
 const TELEFONE_WHATSAPP = "556993668336";
+const GOOGLE_MAPS_URL = `https://maps.google.com/?q=${COORDS_LOJA[0]},${COORDS_LOJA[1]}`;
 
 // Função auxiliar para feedback tátil (Mobile)
 const vibrar = (ms = 50) => {
@@ -21,16 +22,13 @@ const vibrar = (ms = 50) => {
 };
 
 // Inicialização segura do Carrinho via LocalStorage
-const carregarCarrinho = () => {
-    try {
-        const savedCart = localStorage.getItem('benis_cart');
-        return savedCart ? JSON.parse(savedCart) : [];
-    } catch (e) {
-        console.error("Erro ao carregar carrinho:", e);
-        return [];
-    }
-};
-carrinho = carregarCarrinho();
+try {
+    const savedCart = localStorage.getItem('benis_cart');
+    carrinho = savedCart ? JSON.parse(savedCart) : [];
+} catch (e) {
+    console.error("Erro ao carregar carrinho:", e);
+    carrinho = [];
+}
 
 const cardapio = {
     hamburguer: [
@@ -101,7 +99,7 @@ function iniciarMapa() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
             processarLocalizacao(pos.coords.latitude, pos.coords.longitude, true);
-        }, (err) => console.warn("Geolocalização não disponível."));
+        }, (err) => console.warn("Geolocalização negada."));
     }
 }
 
@@ -119,11 +117,10 @@ async function processarLocalizacao(lat, lng, centralizar = false) {
         const data = await res.json();
         const rua = data.address.road || data.address.pedestrian || 'Rua não identificada';
         const bairro = data.address.suburb || data.address.neighbourhood || 'Bairro não identificado';
-        const numero = data.address.house_number || 'S/N';
-        window.enderecoEntrega = `${rua}, ${numero} - ${bairro}`;
+        window.enderecoEntrega = `${rua}, ${data.address.house_number || 'S/N'} - ${bairro}`;
         marcadorUsuario.bindPopup(`<b>Entregar aqui:</b><br>${window.enderecoEntrega}`).openPopup();
     } catch (e) {
-        window.enderecoEntrega = `Localizado via mapa (Lat: ${lat.toFixed(4)})`;
+        window.enderecoEntrega = `Coordenadas: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
     }
 }
 
@@ -136,6 +133,12 @@ function adicionarAoCarrinho(cat, id, event) {
     const btn = event.currentTarget;
     const span = btn.querySelector('span');
     const icon = btn.querySelector('i');
+    const originalText = span ? span.innerText : '';
+    const originalIcon = icon ? icon.className : '';
+
+    if(span) span.innerText = 'ADICIONADO';
+    if(icon) icon.className = 'fas fa-check';
+    btn.classList.add('btn-success-anim');
     
     const itemExistente = carrinho.find(i => i.id === id);
     if (itemExistente) {
@@ -146,16 +149,11 @@ function adicionarAoCarrinho(cat, id, event) {
 
     salvarEAtualizar();
     
-    // Feedback Visual
-    if(span) {
-        const originalText = span.innerText;
-        span.innerText = 'ADICIONADO';
-        btn.classList.add('btn-success-anim');
-        setTimeout(() => { 
-            span.innerText = originalText;
-            btn.classList.remove('btn-success-anim');
-        }, 1000);
-    }
+    setTimeout(() => { 
+        if(span) span.innerText = originalText;
+        if(icon) icon.className = originalIcon;
+        btn.classList.remove('btn-success-anim');
+    }, 1000);
 }
 
 function removerDoCarrinho(id) {
@@ -172,9 +170,7 @@ function removerDoCarrinho(id) {
 }
 
 function salvarEAtualizar() {
-    try {
-        localStorage.setItem('benis_cart', JSON.stringify(carrinho));
-    } catch (e) { console.error("LocalStorage indisponível"); }
+    localStorage.setItem('benis_cart', JSON.stringify(carrinho));
     atualizarInterface();
 }
 
@@ -218,7 +214,9 @@ function atualizarInterface() {
 function aplicarCupom() {
     vibrar(40);
     const cupomInput = document.getElementById("cupom");
-    const cupom = cupomInput?.value.toUpperCase().trim();
+    if (!cupomInput) return;
+    
+    const cupom = cupomInput.value.toUpperCase().trim();
     const discountRow = document.getElementById("discountRow");
 
     if (cupom === "BENIS10") {
@@ -226,11 +224,16 @@ function aplicarCupom() {
         if (discountRow) discountRow.style.display = "flex";
         const discVal = document.getElementById("discountValue");
         if (discVal) discVal.innerText = `- ${formatarMoeda(descontoAtivo)}`;
-        if(window.Swal) Swal.fire({ title: 'Cupom Aplicado!', text: 'Desconto de R$ 10,00 aplicado.', icon: 'success', background: '#121212', color: '#fff' });
+        
+        if(window.Swal) {
+            Swal.fire({ title: 'Cupom Aplicado!', text: 'R$ 10,00 de desconto garantido.', icon: 'success', background: '#1a1a1a', color: '#fff' });
+        }
     } else {
         descontoAtivo = 0;
         if (discountRow) discountRow.style.display = "none";
-        if(window.Swal) Swal.fire({ title: 'Atenção!', text: 'Cupom inválido ou expirado.', icon: 'warning', background: '#121212', color: '#fff' });
+        if(window.Swal) {
+            Swal.fire({ title: 'Erro!', text: 'Cupom inválido.', icon: 'error', background: '#1a1a1a', color: '#fff' });
+        }
     }
     salvarEAtualizar();
 }
@@ -267,46 +270,58 @@ function mostrarCategoria(categoria) {
     });
 }
 
-// --- 6. CHECKOUT WHATSAPP (FIX APK) ---
+// --- 6. CHECKOUT WHATSAPP (FIX APK & BROWSER) ---
 function checkout() {
     if (!carrinho.length) return;
     vibrar(100); 
     
-    let msg = "🍔 *PEDIDO - BENIS BURGUER* 🍔\n";
+    let msg = "🍔 *NOVO PEDIDO - BENIS BURGUER* 🍔\n";
     msg += "━━━━━━━━━━━━━━━━━━━━━━\n\n";
     
     carrinho.forEach(item => {
         msg += `✅ *${item.quantidade}x ${item.name}*\n`;
-        msg += `    Preço: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
+        msg += `    Subtotal: ${formatarMoeda(item.preco * item.quantidade)}\n\n`;
     });
 
     const subtotal = carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0);
     const totalFinal = Math.max(0, subtotal - descontoAtivo);
     
     msg += "━━━━━━━━━━━━━━━━━━━━━━\n";
-    if (descontoAtivo > 0) msg += `🎁 *CUPOM:* - ${formatarMoeda(descontoAtivo)}\n`;
-    msg += `💰 *TOTAL A PAGAR:* ${formatarMoeda(totalFinal)}\n\n`;
+    if (descontoAtivo > 0) msg += `🎁 *DESCONTO:* - ${formatarMoeda(descontoAtivo)}\n`;
+    msg += `💰 *TOTAL DO PEDIDO:* ${formatarMoeda(totalFinal)}\n\n`;
     
-    msg += "📍 *LOCAL DE ENTREGA:* \n";
-    msg += `🏠 ${window.enderecoEntrega}\n\n`;
-    msg += "👉 _Por favor, confirme o número da casa e forma de pagamento._";
+    msg += "📍 *ENDEREÇO DE ENTREGA:* \n";
+    msg += `🗺️ ${window.enderecoEntrega}\n\n`;
+    msg += "*Observação:* (Informe número da casa e ponto de referência)";
 
-    // Link api.whatsapp.com é o mais estável para WebViews/APKs Android
+    // Uso de api.whatsapp.com: O formato mais compatível para APK/WebView e Navegadores Desktop
     const url = `https://api.whatsapp.com/send?phone=${TELEFONE_WHATSAPP}&text=${encodeURIComponent(msg)}`;
     
-    // Tenta abrir em nova aba, se falhar (comum em APK), abre na mesma
+    // Tenta abrir em nova aba, se falhar (comum em alguns WebViews de APK), abre na mesma janela
     const win = window.open(url, "_blank");
-    if(!win) window.location.href = url;
+    if (!win) {
+        window.location.href = url;
+    }
 
-    // Limpeza após pedido
+    // Opcional: Limpar carrinho após sucesso no redirecionamento
+    /*
     carrinho = [];
     descontoAtivo = 0;
     localStorage.removeItem('benis_cart');
     atualizarInterface();
     toggleCarrinho();
+    */
 
     if (window.Swal) {
-        Swal.fire({ title: 'Tudo pronto!', text: 'Você será redirecionado para o WhatsApp.', icon: 'success', background: '#121212', color: '#fff' });
+        Swal.fire({ 
+            title: 'Pedido Enviado!', 
+            text: 'Você está sendo redirecionado para o WhatsApp.', 
+            icon: 'success', 
+            background: '#1a1a1a', 
+            color: '#fff',
+            timer: 2000,
+            showConfirmButton: false
+        });
     }
 }
 
@@ -314,11 +329,17 @@ function toggleCarrinho() {
     vibrar(25);
     const panel = document.getElementById('cartPanel');
     const overlay = document.getElementById('cartOverlay');
+    
     if (!panel || !overlay) return;
 
     panel.classList.toggle('open');
     overlay.classList.toggle('active');
-    document.body.style.overflow = panel.classList.contains('open') ? 'hidden' : 'auto';
+    
+    if (panel.classList.contains('open')) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = 'auto';
+    }
 }
 
 // --- 7. CONTROLE DE HORÁRIO ---
@@ -335,7 +356,7 @@ function verificarStatusLoja() {
     const statusDot = document.getElementById("statusDot");
 
     if (diaSemana === 1) { 
-        if (statusText) statusText.innerText = "Fechado • Abre Terça";
+        if (statusText) statusText.innerText = "Fechado • Abre Terça às 19:00";
         statusDot?.classList.remove("online");
     } else if (tempoAtual >= tempoAbertura && tempoAtual <= tempoFechamento) {
         if (statusText) statusText.innerText = "Aberto • No Braseiro";
@@ -353,7 +374,7 @@ window.addEventListener('DOMContentLoaded', () => {
     mostrarCategoria("hamburguer");
     iniciarMapa();
 
-    const loader = document.getElementById('loader-wrapper');
+    const loader = document.getElementById('loader');
     const fill = document.querySelector('.progress-bar-fill');
     
     if (loader && fill) {
@@ -362,7 +383,9 @@ window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 loader.style.opacity = "0";
                 loader.style.visibility = "hidden";
-            }, 800);
+                setTimeout(() => { loader.style.display = "none"; }, 800);
+            }, 1000); 
         }, 100);
     }
 });
+
